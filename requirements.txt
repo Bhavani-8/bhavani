@@ -1,0 +1,10 @@
+allure-pytest
+pytest-xdist
+pyscreeze
+pyautogui
+pillow
+selenium
+openpyxl
+requests
+pytest
+pandas

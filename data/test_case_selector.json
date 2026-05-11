@@ -1,0 +1,89 @@
+{
+  "login_test_cases": [
+    {
+      "username": "test@test.com",
+      "password": "Test@123",
+      "expected_success": true
+    },
+    {
+      "username": "wrong@test.com",
+      "password": "Test@123",
+      "expected_success": false
+    },
+    {
+      "username": " test@test.com ",
+      "password": "Test@123",
+      "expected_success": false
+    },
+    {
+      "username": "test@test.com",
+      "password": "Wrong@123",
+      "expected_success": false
+    },
+    {
+      "username": "wrong@test.com",
+      "password": "Wrong@123",
+      "expected_success": false
+    },
+    {
+      "username": "",
+      "password": "Test@123",
+      "expected_success": false
+    },
+    {
+      "username": "test@test.com",
+      "password": "",
+      "expected_success": false
+    },
+    {
+      "username": "wrong@test.com",
+      "password": "",
+      "expected_success": false
+    },
+    {
+      "username": "",
+      "password": "",
+      "expected_success": false
+    }
+  ],
+  "forgot_password_cases":[
+    {
+      "email": "pythongala2003@gmail.com",
+      "expected_success": true
+    },
+    {
+      "email": " pythongala2003@gmail.com ",
+      "expected_success": false
+    },
+    {
+      "email": "piyushgala@gmail.com",
+      "expected_success": false
+    },
+    {
+      "email": "",
+      "expected_success": false
+    }
+  ],
+  "signup_cases": [
+    {
+      "email": "piyushgala2003@gmail.com",
+      "check_selection": 1,
+      "expected_success": true
+    },
+    {
+      "email": "piyushgala2003@gmail.com",
+      "check_selection": 0,
+      "expected_success": false
+    },
+    {
+      "email": " piyushgala2003@gmail.com ",
+      "check_selection": 1,
+      "expected_success": false
+    },
+    {
+      "email": "",
+      "check_selection": 1,
+      "expected_success": false
+    }
+  ]
+}
