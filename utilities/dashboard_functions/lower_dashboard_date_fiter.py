@@ -105,9 +105,7 @@ def lower_dashboard_date_filter(driver, wait, dash_type='QCC'):
         dash_value_validator_template = elements_details['dash_value_validator_template']
         dash_sum_value_selector = elements_details['dash_sum_value_selector']
         dash_select_all_checkbox = elements_details['dash_select_all_checkbox']
-        dashboard_icon = elements_details["dashboard_icon"]
-        special_task_icon = elements_details["special_task_icon"]
-
+        
     dash_buttons_others = {
             'Approval Pending': dash_approval_pending_btn,
             'Rejected Tasks': dash_rejected_task_btn,
@@ -115,10 +113,6 @@ def lower_dashboard_date_filter(driver, wait, dash_type='QCC'):
         }
 
     titles = [['Approval Pending by Me', 'Approval Pending by Others', 'CC', 'All'], ['Assigned To Me', 'Assigned To Others', 'CC', 'All'], ['Completed By Me', 'Completed By Others', 'CC', 'All']]
-    if dash_type == "QCC":
-        safe_click(driver, wait, dashboard_icon, "Dashboard Icon")
-    else:
-        safe_click(driver, wait, special_task_icon, "Special Task Dashboard Icon")
 
     wait_for_loader_to_disappear(driver, wait)
     for idx, (btn_name, btn_path) in enumerate(dash_buttons_others.items()):
@@ -218,4 +212,6 @@ def lower_dashboard_date_filter(driver, wait, dash_type='QCC'):
                     allure.attach(str(e), f"{btn_name}-Total Error", allure.attachment_type.TEXT)
     return True
 
-       
+
+# '//div[contains(text(),"selected")]'
+# //div[@class="initial-name__container ml-2"]

@@ -130,7 +130,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     if module_name == 'lower_dashboard_count':
         with allure.step("Lower Dashboard Count Validation"):
             try:
-                if lower_dashboard_validation(driver, wait, dash_type):
+                if lower_dashboard_validation(driver, wait):
                     print("✅ Lower Dashboard validation successful")
                     return True
                 else:
