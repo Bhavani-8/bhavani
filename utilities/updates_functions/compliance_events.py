@@ -70,8 +70,7 @@ def compliance_events(driver, wait):
         'Name',
         'License',
         'Frequency',
-        'Risk Rating',
-        'Impact'
+        'Risk Rating'
     ]
 
     filter_icons = wait.until(
@@ -96,7 +95,7 @@ def compliance_events(driver, wait):
                     continue
 
                 # Re-fetch each time (avoid stale)
-                filter_icons = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//button[@data-slot='popover-trigger']")))
+                filter_icons = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//button[.//*[contains(@class,'lucide-funnel')]]")))
 
                 filter_icon = filter_icons[index]
 
@@ -108,7 +107,7 @@ def compliance_events(driver, wait):
                 filter_icon.click()
                 print(f"🟦 Opened filter : {column_name}")
                 time.sleep(2)
-
+                
                 # Select checkbox
                 checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, "(//span[@class='truncate grow'])[1]")))
                 highlight_element(driver, checkbox)
@@ -126,7 +125,7 @@ def compliance_events(driver, wait):
 
                 # Re-open filter
                 filter_icons = wait.until(
-                    EC.presence_of_all_elements_located((By.XPATH, "//button[@data-slot='popover-trigger']"))
+                    EC.presence_of_all_elements_located((By.XPATH, "//button[.//*[contains(@class,'lucide-funnel')]]"))
                 )
                 filter_icon = filter_icons[index]
 
@@ -150,7 +149,27 @@ def compliance_events(driver, wait):
                             attachment_type=allure.attachment_type.TEXT)
                 failed_filters.append(column_name)
                 continue
+    with allure.step("Impact Button"):
 
+        try:
+            impact_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[.//*[contains(@class,'lucide-info')]]")))
+            highlight_element(driver, impact_btn_elem)
+            impact_btn_elem.click()
+            time.sleep(0.5)
+
+            compliance_events_label = wait.until(EC.element_to_be_clickable((By.XPATH, "//h2[text()='Compliance Events']")))
+            compliance_events_label.click()
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            print(f"❌ Impact button failed: {e}")
+
+            allure.attach(
+                str(e),
+                name="Impact Button Error",
+                attachment_type=allure.attachment_type.TEXT
+            )
+
+            failed_filters.append("Impact")
     # ✅ Fail after loop
     if failed_filters:
         pytest.fail(f"Filters failed for: {failed_filters}")

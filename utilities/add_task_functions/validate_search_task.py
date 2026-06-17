@@ -1,6 +1,4 @@
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 import pandas as pd
 import pytest
@@ -13,8 +11,7 @@ import glob
 
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
-from selenium.webdriver import ActionChains
-from selenium.common.exceptions import StaleElementReferenceException
+
 
 def validate_search_task(driver, wait, task_name):
 
@@ -52,8 +49,6 @@ def validate_search_task(driver, wait, task_name):
         allure.attach(str(err), "Close Button error", allure.attachment_type.TEXT)
         pytest.fail("Failed to click Close Button")
 
-    # with allure.step("Verify created task is displayed in the task list using the search functionality"):
-        # Click search icon
     try:
         search_icon_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_btn)))
         highlight_element(driver, search_icon_btn)
@@ -73,8 +68,6 @@ def validate_search_task(driver, wait, task_name):
         allure.attach(msg, name="Search Task Failure", attachment_type=allure.attachment_type.TEXT)
         return False
 
-
-    # with allure.step("Select all rows in Dashboard Table"):
     try:
         dash_col_all_selection_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_col_all_selection_btn)))
         highlight_element(driver, dash_col_all_selection_btn_elem)
@@ -86,7 +79,7 @@ def validate_search_task(driver, wait, task_name):
         print("❌ Failed to select all rows in Dashboard")
         allure.attach(str(e), name="Select_All_Error", attachment_type=allure.attachment_type.TEXT)
         raise
-    # with allure.step("Export Selected Rows after selecting rows"):
+   
     try:
         wait_for_loader_to_disappear(driver, wait)
         time.sleep(4)
@@ -104,8 +97,6 @@ def validate_search_task(driver, wait, task_name):
         allure.attach(str(e), name="Export_Selected_After_Error", attachment_type=allure.attachment_type.TEXT)
         return False
 
-    # with allure.step("Validate Search Task List"):
-
     try:
         
         downloads_path = os.path.join(os.getcwd(), "downloads")
@@ -115,8 +106,6 @@ def validate_search_task(driver, wait, task_name):
             raise Exception("No Excel files found in downloads folder.")
 
         latest_file = max(files, key=os.path.getctime)
-
-        # allure.attach(latest_file,name="Downloaded Excel File Path",attachment_type=allure.attachment_type.TEXT)
         excel_df = pd.read_excel(latest_file, sheet_name=0)
 
         if excel_df.empty:
@@ -124,14 +113,11 @@ def validate_search_task(driver, wait, task_name):
 
         print(f"📊 Total Rows: {len(excel_df)}")
 
-        # # -----------------------------
-        # # CLEAN COLUMN NAMES (IMPORTANT FIX)
-        # # -----------------------------
         excel_df.columns = (
             excel_df.columns
             .astype(str)
             .str.replace("\n", " ")
-            .str.replace("\xa0", " ")   # removes hidden non-breaking space
+            .str.replace("\xa0", " ")   
             .str.replace(r"\s+", " ", regex=True)
             .str.strip()
         )
@@ -145,16 +131,10 @@ def validate_search_task(driver, wait, task_name):
         missing_cols = [col for col in required_cols if col not in excel_df.columns]
 
         if missing_cols:
-            # 🚨 Attach full column debug to Allure
-            # allure.attach(str(excel_df.columns.tolist()),name="Actual Excel Columns",attachment_type=allure.attachment_type.TEXT)
-
             raise Exception(f"Missing columns in Excel: {missing_cols}")
 
         final_df = excel_df[required_cols].copy()
 
-        # -----------------------------
-        # CLEAN DATA VALUES
-        # -----------------------------
         def clean(val):
             return " ".join(str(val).split())
 
@@ -173,7 +153,7 @@ def validate_search_task(driver, wait, task_name):
             for idx, row in duplicate_df.iterrows():
 
                 msg = (
-                    # f"Row {idx + 1} → "
+                    
                     f"Task='{row['Task Name']}', "
                     f"Internal Deadline='{row['Internal Deadline']}', "
                     f"Due Date='{row['Due Date']}'"

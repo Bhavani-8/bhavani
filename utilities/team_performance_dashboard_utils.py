@@ -18,6 +18,7 @@ from utilities.team_performance_functions.special_team_count_validation import s
 from utilities.team_performance_functions.team_search_validation import search_validation
 from utilities.team_performance_functions.special_tm_search_validation import special_search_validation
 from utilities.team_performance_functions.team_date_validation import date_validation
+from utilities.team_performance_functions.special_tm_date_validation import special_tm_date_validation
 from utilities.team_performance_functions.project_validation import project_check
 from utilities.team_performance_functions.special_project_validation import special_project_check
 from utilities.search_utils import clear_search
@@ -237,6 +238,22 @@ def team_performance_dashboard_check(driver, dash_type='QCC', module_name=None, 
         with allure.step("Date Validation"):
             try:
                 date_validation(driver, wait)
+                print("✅ Date Filter validation successful")
+                return True
+            except AssertionError as ae:  
+                allure.attach(str(ae), name="Date Filter validation Failed", attachment_type=allure.attachment_type.TEXT)
+                print(f"❌ Validation Failed: {ae}")
+                return False 
+
+            except Exception as e:
+                # ⚠️ unexpected errors
+                allure.attach(str(e), name="Count Error", attachment_type=allure.attachment_type.TEXT)
+                print(f"⚠️ Unexpected Error: {e}")
+                return False 
+    if module_name == 'special_date_validation':
+        with allure.step("special Date Validation"):
+            try:
+                special_tm_date_validation(driver, wait)
                 print("✅ Date Filter validation successful")
                 return True
             except AssertionError as ae:  

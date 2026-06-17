@@ -17,7 +17,7 @@ def step_fail(driver, step_name, error):
     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
     pytest.fail(f"❌ {step_name} failed")
    
-def add_coowner(driver, wait, project_name, coowner_name):
+def add_coowner(driver, wait, coowner_name):
 
     with allure.step("Load locators.json"):
         try:
@@ -43,8 +43,12 @@ def add_coowner(driver, wait, project_name, coowner_name):
 
     with allure.step("Click the three dots menu for the task"):
         try:
-            three_dots_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[@title='{project_name}']]//button")))
-            driver.execute_script("arguments[0].scrollIntoView({block:'center'});", three_dots_btn)
+              # Read the project name created in create_project.py
+            project_file = os.path.join("data", "latest_project.txt")
+            with open(project_file, "r") as f:
+                created_project_name = f.read().strip()
+            three_dots_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[@title='{created_project_name}']]//button")))
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'start'});", three_dots_btn)
             highlight_element(driver, three_dots_btn)
             three_dots_btn.click()
         except Exception as e:
@@ -123,7 +127,11 @@ def add_coowner(driver, wait, project_name, coowner_name):
             done_btn.click()
     with allure.step("Click the three dots menu from the project"):
         try:
-            three_dots_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[@title='{project_name}']]//button")))
+              # Read the project name created in create_project.py
+            project_file = os.path.join("data", "latest_project.txt")
+            with open(project_file, "r") as f:
+                created_project_name = f.read().strip()
+            three_dots_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[@title='{created_project_name}']]//button")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", three_dots_btn)
             highlight_element(driver, three_dots_btn)
             three_dots_btn.click()

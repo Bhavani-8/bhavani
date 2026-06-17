@@ -140,6 +140,9 @@ def not_applicable_tasks(driver, wait, company_name, license_name):
         except TimeoutException:
             step_fail(driver, "Click Dashboard", e)
     with allure.step(f"Open Company/Project filter and search for company"):
+        company_file = os.path.join("data", "latest_company.txt")
+        with open(company_file, "r") as f:
+            created_company_name = f.read().strip()
         company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
         company_project_filter_btn.click()
         highlight_element(driver, company_project_filter_btn)
@@ -147,33 +150,22 @@ def not_applicable_tasks(driver, wait, company_name, license_name):
 
         search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
         search_input.clear()
-        search_input.send_keys(company_name)
+        search_input.send_keys(created_company_name)
         time.sleep(6)
 
     try:
-        search_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{company_name}']")))
+        search_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{created_company_name}']")))
         search_task.click()
         time.sleep(4)
         print("✅ Clicked 'Company'")
+
+        column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
+        column_filter_ok.click()
+        time.sleep(4)
     except TimeoutException:
         print("❌ 'License Name' not found in filter list")
         step_fail(driver, "Click Search Task", e)
-    button_clicked = False
-
-    try:
-        column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
-        column_filter_ok.click()
-        button_clicked = True
-    except TimeoutException:
-        step_fail(driver, "Click Column Filter OK", e)
-    if not button_clicked:
-        try:
-            column_filter_cancel = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_cancel_btn)))
-            column_filter_cancel.click()
-        except TimeoutException:
-            print("ℹ️ Close/Cancel button not present")
-    wait_for_loader_to_disappear(driver, wait)
-    time.sleep(4)
+    
 
     with allure.step(f"Open License filter"):
         license_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_license)))
@@ -334,7 +326,7 @@ def not_applicable_tasks(driver, wait, company_name, license_name):
     
     with allure.step("Click Mark Applicable"):
         try:
-            applicable_tasks_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{company_name}']/ancestor::tr//button[normalize-space()='Mark Applicable']")))
+            applicable_tasks_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{created_company_name}']/ancestor::tr//button[normalize-space()='Mark Applicable']")))
             highlight_element(driver,  applicable_tasks_btn)
             driver.execute_script("arguments[0].scrollIntoView(true);", applicable_tasks_btn)
             applicable_tasks_btn.click()
@@ -342,7 +334,7 @@ def not_applicable_tasks(driver, wait, company_name, license_name):
             step_fail(driver, "Click Mark Applicable", e)
     with allure.step("Click Are you sure you want to mark this task as 'Mark Applicable'?"):
         try:
-            yes_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']//button[normalize-space()='Yes']")))
+            yes_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Yes']")))
             highlight_element(driver, yes_btn)
             yes_btn.click()
             time.sleep(1)
@@ -385,6 +377,9 @@ def not_applicable_tasks(driver, wait, company_name, license_name):
         except Exception as e:
             step_fail(driver, "Search for the newly created task by name", e)
     with allure.step(f"Open Company/Project filter and search for company"):
+        company_file = os.path.join("data", "latest_company.txt")
+        with open(company_file, "r") as f:
+            created_company_name = f.read().strip()
         company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
         company_project_filter_btn.click()
         highlight_element(driver, company_project_filter_btn)
@@ -392,34 +387,21 @@ def not_applicable_tasks(driver, wait, company_name, license_name):
 
         search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
         search_input.clear()
-        search_input.send_keys(company_name)
+        search_input.send_keys(created_company_name)
         time.sleep(3)
 
     try:
-        search_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{company_name}']")))
+        search_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{created_company_name}']")))
         search_task.click()
         time.sleep(5)
         print("✅ Clicked 'Company'")
-    except TimeoutException:
-        print("❌ 'License Name' not found in filter list")
-        step_fail(driver, "Search for company in filter", "'License Name' not found in filter list")
-    button_clicked = False
-
-    try:
         column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
         column_filter_ok.click()
         time.sleep(2)
-        button_clicked = True
     except TimeoutException:
-        print("ℹ️ Ok button not available / not clickable")
-    if not button_clicked:
-        try:
-            column_filter_cancel = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_cancel_btn)))
-            column_filter_cancel.click()
-        except TimeoutException:
-            print("ℹ️ Close/Cancel button not present")
-    wait_for_loader_to_disappear(driver, wait)
-    time.sleep(4)
+        print("❌ 'License Name' not found in filter list")
+        step_fail(driver, "Search for company in filter", "'License Name' not found in filter list")
+   
     with allure.step("Opening task from table"):
         try:
             task_open_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, task_open_btn)))

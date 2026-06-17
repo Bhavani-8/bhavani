@@ -6,7 +6,7 @@ from datetime import datetime
 import pyautogui as pg
 
 from utilities.driver_setup import setup
-from utilities.notification_utils import get_test_case_list, notifications_check
+from utilities.notification_utils import get_test_case_list, notification_check
 from utilities.screen_recorder import ScreenRecorder
 
 at_test_case_list = get_test_case_list(module='notification')
@@ -32,7 +32,7 @@ def test_notifications_flow(setup, test_case_id, module_name, test_case_descript
     with allure.step("Notification Flow"):
         try:
             
-            success = notifications_check(driver, module_name=module_name, test_case_id=test_case_id)
+            success = notification_check(driver, module_name=module_name, test_case_id=test_case_id)
     
             if test_type == 'positive':
                 # assert True

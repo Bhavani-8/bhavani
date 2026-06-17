@@ -5,6 +5,7 @@ import json
 import time
 import pyautogui as pg
 import pytest
+import random
 
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException
@@ -86,13 +87,16 @@ def company_details(driver, wait, company_name):
         company_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter company name']")))
         highlight_element(driver, company_input)
         company_input.click()
-        if company_name:
-            company_input.send_keys(company_name)
-        else:
-            company_input.send_keys("Demo Test Company")
+        unique_company_name = f"{company_name}_{random.randint(1000, 9999)}"
+        company_input.send_keys(unique_company_name)
+        # Save latest company name
+        company_file = os.path.join("data", "latest_company.txt")
+        with open(company_file, "w") as f:
+            f.write(unique_company_name)
+
+        print(f"✅ Company Name Created: {unique_company_name}")
 
         time.sleep(1)
-        company_input.send_keys(Keys.TAB) 
         print("✅ Company Name Entered")
 
     with allure.step("Select Company Type"):
@@ -336,11 +340,11 @@ def company_details(driver, wait, company_name):
         
         search_input = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@aria-label='Search' and contains(@class,'dx-texteditor-input')]")))
         search_input.clear()
-        search_input.send_keys(company_name)
+        search_input.send_keys(unique_company_name)
         wait_for_loader_to_disappear(driver, wait)
         time.sleep(5)
 
-        company_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{company_name}']")))
+        company_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{unique_company_name}']")))
         highlight_element(driver, company_option)
         company_option.click()
         

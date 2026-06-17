@@ -22,7 +22,7 @@ def step_fail(driver, step_name, error):
     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
     pytest.fail(f"❌ {step_name} failed")
    
-def task_list_delete(driver, wait, project_name, milestone, task_list):
+def task_list_delete(driver, wait):
 
     with allure.step("Load locators.json"):
         try:
@@ -31,9 +31,9 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
 
             project_icon = elements_details["project_icon"]
             trash_icon = elements_details['trash_icon']
-            toast_msg = elements_details['toast_msg']
-            column_chooser_btn = elements_details['column_chooser_btn']
+            milestone_confirm_btn = elements_details['milestone_confirm_btn']
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
+            task_list_submit_btn = elements_details['task_list_submit_btn']
             print("✅ locators.json loaded")
         except Exception as e:
             step_fail(driver, "Select HOD", e)
@@ -49,7 +49,10 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
     # ✅ FETCH TASK NAME BEFORE DELETE
     with allure.step("Click Project Task"):
         try:
-            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{project_name}')]")))
+            project_file = os.path.join("data", "latest_project.txt")
+            with open(project_file, "r") as f:
+                created_project_name = f.read().strip()
+            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", project_task)
             highlight_element(driver, project_task)
             project_task.click()
@@ -64,31 +67,36 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
         except Exception as e:
             step_fail(driver, "Click 'Add New Milestone' button", e)
     with allure.step("Enter Milestone Name"):
-        milestone = f"{milestone}_restore_check"
+    
         try:
             milestone_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='milestone-title']")))
             highlight_element(driver, milestone_input)
-            milestone_input.send_keys(milestone)
+            created_milestone = f"milestone_restore_check"
+            milestone_input.send_keys(created_milestone)
+            milestone_file = os.path.join("data", "latest_milestone.txt")
+            with open(milestone_file, "w") as f:
+                f.write(created_milestone)
+
         except Exception as e:
            step_fail(driver, "Enter Milestone Name", e)
     with allure.step("Click Submit Milestone"):
         try:
-            submit_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Confirm']")))
-            highlight_element(driver, submit_btn)
-            submit_btn.click()
-            time.sleep(7)
+            confirm_btn = wait.until(EC.presence_of_element_located((By.XPATH, milestone_confirm_btn)))
+            highlight_element(driver, confirm_btn)
+            confirm_btn.click()
+            time.sleep(2)
             print("✅ Project Submit clicked")
-        except TimeoutException:
-            print("⚠️ Submit failed, trying Cancel...")
-           
-            cancel_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Cancel']")))
-            highlight_element(driver, cancel_btn)
-            cancel_btn.click()
-            print("✅ Project Submit clicked")
+        except Exception as e:
+            step_fail(driver, "Submit Task List", e)
 
     with allure.step("Click three dots menu"):
+        time.sleep(2)
         try:
-            milestone_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[contains(@title,'{milestone}')]]//button[contains(@class,'ant-btn-icon-only')]")))
+            milestone_file = os.path.join("data", "latest_milestone.txt")
+
+            with open(milestone_file, "r") as f:
+                created_milestone = f.read().strip()
+            milestone_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[contains(@title,'{created_milestone}')]]//button[contains(@class,'ant-btn-icon-only')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", milestone_btn)
             highlight_element(driver, milestone_btn)
             milestone_btn.click()
@@ -104,16 +112,23 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
         except Exception as e:
             step_fail(driver, "Click 'Add Tasklist' button", e)
     with allure.step("Enter Task List Name"):
-        task_list = f"{task_list}_delete_check"
+        
+        
         try:
             task_list_input = wait.until(EC.presence_of_element_located((By.XPATH, "(//input[@class='modal-input'])[2]")))
             highlight_element(driver, task_list_input)
-            task_list_input.send_keys(task_list)
+        
+            created_task_list = f"task_list_delete_check"
+            task_list_input.send_keys(created_task_list)
+            task_list_file = os.path.join("data", "latest_task_list.txt")
+            with open(task_list_file, "w") as f:
+                f.write(created_task_list)
+           
         except Exception as e:
             step_fail(driver, "Enter Task List Name", e)
     with allure.step("Submit Task List"):
         try:
-            submit_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Submit']")))
+            submit_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_list_submit_btn)))
             highlight_element(driver, submit_btn)
             submit_btn.click()
             time.sleep(2)
@@ -122,7 +137,11 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
             step_fail(driver, "Submit Task List", e)
     with allure.step("Click Dropdown Tasklist"):
         try:
-            drop_down_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@title='{milestone}']/ancestor::tr//div[contains(@class,'dx-treelist-empty-space')]")))
+            milestone_file = os.path.join("data", "latest_milestone.txt")
+
+            with open(milestone_file, "r") as f:
+                created_milestone = f.read().strip()
+            drop_down_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@title='{created_milestone}']/ancestor::tr//div[contains(@class,'dx-treelist-empty-space')]")))
             highlight_element(driver, drop_down_task)
             drop_down_task.click()
             time.sleep(3)
@@ -130,7 +149,11 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
             step_fail(driver, "Click Dropdown Tasklist", e)
     with allure.step("Verify Task List Creation"):
         try:
-            task_list_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//div[contains(text(),'{task_list}')]")))
+            task_list_file = os.path.join("data", "latest_task_list.txt")
+
+            with open(task_list_file, "r") as f:
+                created_task_list = f.read().strip()
+            task_list_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//div[contains(text(),'{created_task_list}')]")))
             highlight_element(driver, task_list_elem)
             fetch_task_list = task_list_elem.text.strip()
             print(f"✅ Task List '{fetch_task_list}' created successfully")
@@ -138,7 +161,11 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
             step_fail(driver, "Verify Task List Creation", e)
     with allure.step("Click Task List three dots menu"):
         try:
-            task_list_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[contains(@title,'{task_list}')]]//button[contains(@class,'ant-btn-icon-only')]")))
+            task_list_file = os.path.join("data", "latest_task_list.txt")
+
+            with open(task_list_file, "r") as f:
+                created_task_list = f.read().strip()
+            task_list_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[contains(@title,'{created_task_list}')]]//button[contains(@class,'ant-btn-icon-only')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", task_list_btn)
             highlight_element(driver, task_list_btn)
             task_list_btn.click()
@@ -187,7 +214,12 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
             step_fail(driver, "Click Task List Tab", e)
     with allure.step("Verify Deleted Task List in Trash"):
         try:
-            task_list_in_trash = wait.until(EC.visibility_of_element_located((By.XPATH, f"//span[@title='{task_list}']")))
+            task_list_file = os.path.join("data", "latest_task_list.txt")
+
+            with open(task_list_file, "r") as f:
+                created_task_list = f.read().strip()
+            
+            task_list_in_trash = wait.until(EC.visibility_of_element_located((By.XPATH, f"//span[@title='{created_task_list}']")))
             highlight_element(driver, task_list_in_trash)
             fetch_task_list_in_trash = task_list_in_trash.text.strip()
             print(f"✅ Task List '{fetch_task_list_in_trash}' found in Trash")
@@ -197,7 +229,11 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
     with allure.step("Restore Deleted Task List"):
         try:
             time.sleep(3)
-            restore_elem = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[@data-slot='table-row'][.//span[@title='{task_list}']]//button[@title='Restore Task List']")))
+            task_list_file = os.path.join("data", "latest_task_list.txt")
+
+            with open(task_list_file, "r") as f:
+                created_task_list = f.read().strip()
+            restore_elem = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[@data-slot='table-row'][.//span[@title='{created_task_list}']]//button[@title='Restore Task List']")))
             actions = ActionChains(driver)
             actions.move_to_element(restore_elem).perform()
             highlight_element(driver, restore_elem)
@@ -219,7 +255,10 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{project_name}')]")))
+            project_file = os.path.join("data", "latest_project.txt")
+            with open(project_file, "r") as f:
+                created_project_name = f.read().strip()
+            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", project_task)
             highlight_element(driver, project_task)
             project_task.click()
@@ -228,7 +267,11 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
             step_fail(driver, "Click Project Task", e)
     with allure.step("Click Dropdown Tasklist"):
         try:
-            drop_down_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@title='{milestone}']/ancestor::tr//div[contains(@class,'dx-treelist-empty-space')]")))
+            milestone_file = os.path.join("data", "latest_milestone.txt")
+
+            with open(milestone_file, "r") as f:
+                created_milestone = f.read().strip()
+            drop_down_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@title='{created_milestone}']/ancestor::tr//div[contains(@class,'dx-treelist-empty-space')]")))
             highlight_element(driver, drop_down_task)
             drop_down_task.click()
             time.sleep(3)
@@ -237,7 +280,11 @@ def task_list_delete(driver, wait, project_name, milestone, task_list):
     
     with allure.step("Click Task List three dots menu"):
         try:
-            task_list_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[contains(@title,'{task_list}')]]//button[contains(@class,'ant-btn-icon-only')]")))
+            task_list_file = os.path.join("data", "latest_task_list.txt")
+
+            with open(task_list_file, "r") as f:
+                created_task_list = f.read().strip()
+            task_list_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[contains(@title,'{created_task_list}')]]//button[contains(@class,'ant-btn-icon-only')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", task_list_btn)
             highlight_element(driver, task_list_btn)
             task_list_btn.click()

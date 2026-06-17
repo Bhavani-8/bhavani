@@ -126,12 +126,11 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
                   
 
     if module_name == 'create_milestone' and task_details:
-        project_name = task_details.get("project_name")
         milestone = task_details.get("milestone")
 
         with allure.step("Create Milestone"):
             try:
-                if create_milestone(driver, wait, project_name, milestone):
+                if create_milestone(driver, wait, milestone):
                     print("✅ Create Milestone successful")
                     return True
                 else:
@@ -140,12 +139,10 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
             except Exception as e:
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
     if module_name == 'create_task_list' and task_details:
-        project_name = task_details.get("project_name")
-        milestone = task_details.get("milestone")
         task_list = task_details.get("task_list")
         with allure.step("Create Task List"):
             try:
-                if create_task_list(driver, wait, project_name, milestone, task_list):
+                if create_task_list(driver, wait, task_list):
                     print("✅ Create Task List successful")
                     return True
                 else:
@@ -155,10 +152,9 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
     if module_name == 'add_coowner' and task_details:
         coowner_name = task_details.get("coowner_name")
-        project_name = task_details.get("project_name")
         with allure.step("Add Co-owner"):
             try:
-                if add_coowner(driver, wait, project_name, coowner_name):
+                if add_coowner(driver, wait, coowner_name):
                     print("✅ Add Co-owner successful")
                     return True
                 else:
@@ -167,7 +163,6 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
             except Exception as e:
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
     if module_name == 'create_project_task' and task_details:
-        project_name = task_details.get("project_name")
         project_task_name = task_details.get("project_task_name")
 
         print("📌 Data from Excel JSON:", task_details)
@@ -175,7 +170,7 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
         with allure.step("Create Project Task"):
             
             try:
-                if create_project_task(driver, wait, project_name, project_task_name):
+                if create_project_task(driver, wait, project_task_name):
                     print("✅ Create Project successful")
                     return True
                 else:
@@ -184,17 +179,15 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
             except Exception as e:
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
                 
-    if module_name == 'create_milestone_task_list' and task_details:
+    if module_name == 'create_milestone_task' and task_details:
         milestone_task_name = task_details.get("milestone_task_name")
-        milestone = task_details.get("milestone")
-        project_name = task_details.get("project_name")
 
         print("📌 Data from Excel JSON:", task_details)
 
         with allure.step("Create Milestone"):
             
             try:
-                if create_milestone_task(driver, wait, project_name, milestone, milestone_task_name):
+                if create_milestone_task(driver, wait, milestone_task_name):
                     print("✅ Create Milestone Task successful")
                     return True
                 else:
@@ -204,15 +197,12 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
                  
     if module_name == 'create_task_list_task' and task_details:
-        project_name = task_details.get("project_name")
-        milestone = task_details.get("milestone")
-        task_list = task_details.get("task_list")
         task_list_task_name = task_details.get("task_list_task_name")
         print("📌 Data from Excel JSON:", task_details)
         with allure.step("Create Task from task list"):
             
             try:
-                if create_task_list_task(driver, wait, project_name, milestone, task_list, task_list_task_name):
+                if create_task_list_task(driver, wait, task_list_task_name):
                     print("✅ Create Task from task list successful")
                     return True
                 else:
@@ -221,11 +211,10 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
             except Exception as e:
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
     if module_name == 'project_task_restore_delete':
-        project_name = task_details.get("project_name")
         with allure.step("Delete Task and Restore"):
             
             try:
-                if project_task_restore_delete(driver, wait, project_name):
+                if project_task_restore_delete(driver, wait):
                     print("✅ Delete Task and Restore successful")
                     return True
                 else:
@@ -235,13 +224,11 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
     
     if module_name == 'task_list_delete':
-        project_name = task_details.get("project_name")
-        milestone = task_details.get("milestone")
-        task_list = task_details.get("task_list")
+
         with allure.step("Delete Task list and Restore"):
             
             try:
-                if task_list_delete(driver, wait, project_name, milestone, task_list):
+                if task_list_delete(driver, wait):
                     print("✅Delete Task list and Restore successful")
                     return True
                 else:
@@ -251,11 +238,10 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
                 allure.attach(str(e), name="Delete Task list and Restore", attachment_type=allure.attachment_type.TEXT)
     
     if module_name == 'milestone_delete':
-        project_name = task_details.get("project_name")
-        milestone = task_details.get("milestone")
+
         with allure.step("Delete Milestone and Restore"): 
             try:
-                if milestone_delete(driver, wait, project_name, milestone):
+                if milestone_delete(driver, wait):
                     print("✅ Delete Milestone and Restore successful")
                     return True
                 else:
@@ -266,11 +252,10 @@ def create_project_check(driver, module_name=None, test_case_id=None, test_type=
      
  
     if module_name == 'project_restore_delete':
-        project_name = task_details.get("project_name")
-       
+    
         with allure.step("Delete Project and Restore"):     
             try:
-                if project_restore_delete(driver, wait, project_name):
+                if project_restore_delete(driver, wait):
                     print("✅ Delete Project and Restore successful")
                     return True
                 else:

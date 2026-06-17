@@ -51,26 +51,43 @@ def set_assign_to(driver, assign_to_dropdown, assign_to, wait):
 
     # Step 3: Open dropdown and enter Assign To
     try:
-        # with allure.step("Opening Assign To dropdown and entering value..."):
-        assign_input_elem = wait.until(EC.presence_of_element_located((By.XPATH, assign_to_dropdown)))
+        assign_input_elem = wait.until(
+            EC.element_to_be_clickable((By.XPATH, assign_to_dropdown))
+        )
         highlight_element(driver, assign_input_elem)
         assign_input_elem.click()
         time.sleep(1)
 
-        input_field = driver.switch_to.active_element
-        input_field.send_keys(assign_to)
-        time.sleep(1)
+        print("✅ Assign To dropdown opened (primary locator).")
 
-        # Locate all dropdown options
-        options_locator = (By.XPATH, "//div[contains(@class, '-option')]")
-        all_options = wait.until(EC.presence_of_all_elements_located(options_locator))
-        option_texts = [opt.text.strip() for opt in all_options if opt.text.strip()]
-        allure.attach('\n'.join(option_texts), name="All Dropdown Options", attachment_type=allure.attachment_type.TEXT)
-    except Exception as e:
-        msg = f"❌ Failed to open dropdown or enter value: {e}"
-        print(msg)
-        allure.attach(msg, name="Dropdown Interaction Error", attachment_type=allure.attachment_type.TEXT)
-        return False
+    except Exception:
+        print("⚠️ Primary locator failed, trying fallback locator...")
+
+        try:
+            assign_input_elem = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'control') and .//div[text()='Assign To*']]")))
+            highlight_element(driver, assign_input_elem)
+            assign_input_elem.click()
+            time.sleep(1)
+
+            print("✅ Assign To dropdown opened (fallback locator).")
+
+        except Exception as e:
+            msg = f"❌ Failed to open Assign To dropdown: {e}"
+            print(msg)
+            allure.attach(msg,name="Assign_To_Error",attachment_type=allure.attachment_type.TEXT)
+            return False
+
+
+    input_field = driver.switch_to.active_element
+    input_field.send_keys(assign_to)
+    time.sleep(1)
+
+    # Locate all dropdown options
+    options_locator = (By.XPATH, "//div[contains(@class, '-option')]")
+    all_options = wait.until(EC.presence_of_all_elements_located(options_locator))
+    option_texts = [opt.text.strip() for opt in all_options if opt.text.strip()]
+    allure.attach('\n'.join(option_texts), name="All Dropdown Options", attachment_type=allure.attachment_type.TEXT)
+    
 
     # Step 4: Handle dropdown selection
     try:

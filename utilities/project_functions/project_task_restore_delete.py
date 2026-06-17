@@ -20,7 +20,7 @@ def step_fail(driver, step_name, error):
     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
     pytest.fail(f"❌ {step_name} failed")
    
-def project_task_restore_delete(driver, wait, project_name):
+def project_task_restore_delete(driver, wait):
 
     with allure.step("Load locators.json"):
         try:
@@ -47,7 +47,10 @@ def project_task_restore_delete(driver, wait, project_name):
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{project_name}')]")))
+            project_file = os.path.join("data", "latest_project.txt")
+            with open(project_file, "r") as f:
+                created_project_name = f.read().strip()
+            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", project_task)
             highlight_element(driver, project_task)
             project_task.click()
@@ -114,6 +117,7 @@ def project_task_restore_delete(driver, wait, project_name):
             allure.attach(str(e), name="Add Task Error", attachment_type=allure.attachment_type.TEXT)
     with allure.step("Verify Project Task Creation"):
         try:
+            time.sleep(3)
             task_name_element = wait.until(EC.visibility_of_element_located((By.XPATH, f"//div[contains(text(),'{task_name}')]")))
             highlight_element(driver, task_name_element)
             fetch_task_name = task_name_element.text.strip()
@@ -210,7 +214,10 @@ def project_task_restore_delete(driver, wait, project_name):
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{project_name}')]")))
+            project_file = os.path.join("data", "latest_project.txt")
+            with open(project_file, "r") as f:
+                created_project_name = f.read().strip()
+            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", project_task)
             highlight_element(driver, project_task)
             project_task.click()

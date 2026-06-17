@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 import pytest
 import allure
-def copy_task_link(driver, wait, dash_type):
+def copy_task_link(driver, wait):
     try:
         with open(os.path.join("data", "locators.json"), "r") as f:
             locators = json.load(f)

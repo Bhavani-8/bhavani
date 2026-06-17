@@ -41,7 +41,7 @@ except FileNotFoundError:
 except json.JSONDecodeError:
     pytest.fail("❌ Invalid JSON in locators.json")
 
-def update_due_date_negative(driver, wait, dropdown_selection_val_data, dropdown_selection_val=None, text_case_id=None):
+def update_due_date_negative(driver, wait):
 
     wait_less = WebDriverWait(driver, 5)
     # date_selected = False

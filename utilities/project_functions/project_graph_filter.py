@@ -40,7 +40,7 @@ def graph_filter(driver, wait):
         try:
             first_project_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//tr[contains(@class,'dx-data-row')])[2]//td[1]//div[@title]")))
             highlight_element(driver, first_project_name_elem)
-            first_project_name = first_project_name_elem.text.strip()
+            first_project_name = first_project_name_elem.get_attribute("title").strip()
             if not first_project_name:
                 first_project_name= first_project_name_elem.get_attribute("title").strip()
             if not first_project_name:
@@ -68,13 +68,7 @@ def graph_filter(driver, wait):
         except Exception as e:
             step_fail(driver, "Click Filter Button", e)
     
-        # try:
-        #     apply_date_filter = wait.until(EC.presence_of_element_located((By.XPATH, "//span[@class='ant-picker-suffix']")))
-        #     highlight_element(driver, apply_date_filter)
-        #     apply_date_filter.click()
-        #     time.sleep(0.5)
-        # except Exception as e:
-        #     step_fail(driver, "Click Apply Date Filter", e)
+       
         
         with allure.step("Select Dates from Calendar"):
             try:

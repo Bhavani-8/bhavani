@@ -18,7 +18,7 @@ from utilities.login_utils import login_check
 
 
 
-def column_chooser_relogin(driver, wait, dropdown_selection_val_data, dropdown_selection_val=None):
+def column_chooser_relogin(driver, wait):
 
     wait_less = WebDriverWait(driver, 5)
     

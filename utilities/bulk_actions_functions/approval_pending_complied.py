@@ -31,7 +31,7 @@ except FileNotFoundError:
 except json.JSONDecodeError:
     pytest.fail("❌ Invalid JSON in locators.json")
 
-def approval_complied_bulk_action(driver, wait, dropdown_selection_val_data, dropdown_selection_val=None, test_case_id=None):
+def approval_complied_bulk_action(driver, wait):
     wait_less = WebDriverWait(driver, 5)
 
     try:

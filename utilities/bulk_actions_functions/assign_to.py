@@ -57,7 +57,7 @@ except json.JSONDecodeError:
     pytest.fail("❌ Invalid JSON in locators.json")
 
 
-def assign_to_bulk_action(driver, wait, dropdown_selection_val_data, dropdown_selection_val=None, task_name='Internal Task', text_case_id=None):
+def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
 
     wait_less = WebDriverWait(driver, 5)
     with allure.step("Clicking Dashboard Total button"):
@@ -200,7 +200,7 @@ def assign_to_bulk_action(driver, wait, dropdown_selection_val_data, dropdown_se
         search_task = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'dx-list-item-content') and normalize-space()='Internal Task']")))
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", search_task)
         search_task.click()
-        time.slee(3)
+        time.sleep(3)
         print("✅ Clicked 'Internal Task'")
 
     except TimeoutException:

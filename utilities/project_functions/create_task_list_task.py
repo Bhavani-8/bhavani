@@ -18,7 +18,7 @@ def step_fail(driver, step_name, error):
     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
     pytest.fail(f"❌ {step_name} failed")
    
-def create_task_list_task(driver, wait, project_name, milestone, task_list, task_list_task_name=None):
+def create_task_list_task(driver, wait, task_list_task_name=None):
 
     with allure.step("Load locators.json"):
         try:
@@ -51,7 +51,10 @@ def create_task_list_task(driver, wait, project_name, milestone, task_list, task
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{project_name}')]")))
+            project_file = os.path.join("data", "latest_project.txt")
+            with open(project_file, "r") as f:
+                created_project_name = f.read().strip()
+            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", project_task)
             highlight_element(driver, project_task)
             project_task.click()
@@ -68,31 +71,40 @@ def create_task_list_task(driver, wait, project_name, milestone, task_list, task
             step_fail(driver, "Click 'Add new task' button", e)
     with allure.step("Open milestone dropdown, enter milestone name, select option"):
         try:
+            milestone_file = os.path.join("data", "latest_milestone.txt")
+
+            with open(milestone_file, "r") as f:
+                created_milestone = f.read().strip()
+
             milestone_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "(//div[@class='css-b62m3t-container'])[1]")))
             highlight_element(driver, milestone_dropdown)
             milestone_dropdown.click()
             time.sleep(1)
 
             milestone_input = driver.switch_to.active_element
-            milestone_input.send_keys(milestone)
+            milestone_input.send_keys(created_milestone)
             time.sleep(1)
 
-            milestone_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'option') and normalize-space()='{milestone}']")))
+            milestone_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'option') and normalize-space()='{created_milestone}']")))
             highlight_element(driver, milestone_option)
             milestone_option.click()
         except Exception as e:
             step_fail(driver, "Open milestone dropdown, enter milestone name, select option", e)
     with allure.step("Open milestone dropdown, enter milestone name, select option"):
         try:
+            task_list_file = os.path.join("data", "latest_task_list.txt")
+
+            with open(task_list_file, "r") as f:
+                created_task_list = f.read().strip()
             task_list_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "(//div[@class='css-b62m3t-container'])[2]")))
             highlight_element(driver, task_list_dropdown)
             task_list_dropdown.click()
 
             task_list_input = driver.switch_to.active_element
-            task_list_input.send_keys(task_list)
+            task_list_input.send_keys(created_task_list)
             time.sleep(1)
 
-            task_list_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'option') and normalize-space()='{task_list}']")))
+            task_list_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'option') and normalize-space()='{created_task_list}']")))
             highlight_element(driver, task_list_option)
             task_list_option.click()
         except Exception as e:

@@ -22,6 +22,8 @@ from utilities.settings_functions.team_members import invite_team_member
 from utilities.settings_functions.task_category import task_category
 from utilities.settings_functions.not_applicable_tasks import not_applicable_tasks
 from utilities.settings_functions.department_export_data import department_export_all_data
+from utilities.settings_functions.configurations_normal_task import configurations_normal_task
+from utilities.settings_functions.configurations_special_task import configurations_special_task
 from utilities.settings_functions.license_task import license_task
 from utilities.settings_functions.account import license_subscription
 from utilities.settings_functions.account_deactivation import account_deactivation_module
@@ -72,6 +74,7 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
 
     if module_name == 'account_deactivation' and task_details:
+        driver.get("https://preprodreact.compliancesutra.com/login")
         # Extract the credentials directly from the Excel task_details column!
         tm_user = task_details.get("tm_user")
         tm_pwd = task_details.get("tm_pwd")
@@ -250,13 +253,38 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
         with allure.step("Export Department Data"):
             try:
                 if department_export_all_data(driver, wait):
-                    print("✅ Create Department Detials successful")
+                    print("✅ Export Department Detials successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Create Department Detials", name="Create Department Detials Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Export Department Detials", name="Export Department Detials Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(str(e), name="Export All Data Button Error", attachment_type=allure.attachment_type.TEXT)
+    
+    if module_name == 'configurations_normal_task':
+        config_normal_task_name = task_details.get("config_normal_task_name")
+        with allure.step("Configurations Normal Task"):
+            try:
+                if configurations_normal_task(driver, wait, config_normal_task_name):
+                    print("✅ Configurations  Normal Task Detials successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Configurations Normal Task Detials", name="Configurations Normal Task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Configurations Normal Task Button Error", attachment_type=allure.attachment_type.TEXT)
+    
+    if module_name == 'configurations_special_task':
+        with allure.step("Configurations Special Task"):
+            try:
+                if configurations_special_task(driver, wait):
+                    print("✅ Configurations  Special Special Detials successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Configurations special Task Detials", name="Configurations Special Task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Configurations Special Task Button Error", attachment_type=allure.attachment_type.TEXT)
    
     if module_name == 'license_task' and task_details:
         company_license_name = task_details.get("company_name")
@@ -284,7 +312,12 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
     #                 return False
     #         except Exception as e:
     #             step_fail(driver, "License Task", e)
-    allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
+    # allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
+
+    else:
+        msg = f"❌ Unknown module name: {module_name}"
+        allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
 
 
 def get_test_case_list(module=None):

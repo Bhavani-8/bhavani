@@ -51,7 +51,7 @@ from load_test_config_excel_data import load_test_config_excel_data
 
 
 
-def special_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_due_date_is_on_holiday, end_frequency_date, weekday_name, repeat_day_and_month, end_time, internal_deadline, assign_to, approver, cc, risk_rating, license_name, task_category, description, attach_file_name, impact_details, impact_file_name, circular_search, test_type, task_type=None, refresh=False, login_required=True):
+def special_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_due_date_is_on_holiday, end_frequency_date, weekday_name, repeat_day_and_month, end_time, internal_deadline, assign_to, approver, cc, risk_rating, license_name, task_category, description, attach_file_name, impact_details, impact_file_name, circular_search, test_type, task_type=None, refresh=False, login_required=True, direct_task_creation = False):
     # Get all arguments as a local variable dictionary
     args = locals()
 
@@ -124,12 +124,7 @@ def special_task_check(driver, task_name, start_date, due_date, frequency, repea
             submit_button = elements_details['task_submit_btn']
             err_msg_toast = elements_details['err_msg_toast']
             toast_msg = elements_details['toast_msg']
-            special_task_icon = elements_details['special_task_icon']
-            task_open_btn = elements_details['task_open_btn']
-            task_close_btn = elements_details['task_close_btn']
-            dash_total_btn = elements_details['dash_total_btn']
-            task_search_btn = elements_details['task_search_btn']
-            task_search_input = elements_details['task_search_input']
+            
 
 
 
@@ -137,99 +132,90 @@ def special_task_check(driver, task_name, start_date, due_date, frequency, repea
         pytest.fail("locators.json file not found")
     except json.JSONDecodeError:
         pytest.fail("Invalid JSON in locators.json")
-    # if login_required:
-    #     # if refresh:
-    #     #     driver.get('https://preprodreact.compliancesutra.com/dashboard-view')
-    #     # if not "dashboard-view" in driver.current_url:
-    #     target_url = None
-    #     if "project-management" in driver.current_url:
-    #         target_url = "https://preprodreact.compliancesutra.com/project-management"
-    #     elif "dashboard-view" in driver.current_url:
-    #         target_url = "https://preprodreact.compliancesutra.com/dashboard-view"
-    #     elif "updates" in driver.current_url:
-    #         target_url = "https://preprodreact.compliancesutra.com/updates"
-    #     else:
-    #         # Default target
-    #         target_url = "https://preprodreact.compliancesutra.com/dashboard-view"
-    #     if refresh and target_url:driver.get(target_url)
+    if login_required:
+
+        # if refresh:
+        #     driver.get('https://preprodreact.compliancesutra.com/dashboard-view')
+        # if not "dashboard-view" in driver.current_url:
+        target_url = None
+        if "project-management" in driver.current_url:
+            target_url = "https://preprodreact.compliancesutra.com/project-management"
+        elif "dashboard-view" in driver.current_url:
+            target_url = "https://preprodreact.compliancesutra.com/dashboard-view"
+        elif "updates" in driver.current_url:
+            target_url = "https://preprodreact.compliancesutra.com/updates"
+        elif "settings" in driver.current_url:
+            target_url = "https://preprodreact.compliancesutra.com/settings"
+        else:
+            # Default target
+            target_url = "https://preprodreact.compliancesutra.com/dashboard-view"
+        if refresh and target_url:driver.get(target_url)
 
     # Only login if not already on dashboard or project page
-        # if not any(x in driver.current_url for x in ["dashboard-view", "project-management", "updates"]):
-    
-    if not "dashboard-view" in driver.current_url:
-        print("✅ Already logged in, skipping login")
+        if not any(x in driver.current_url for x in ["dashboard-view", "project-management", "updates", "settings"]):
 
-    elif "special-task-dashboard" in driver.current_url:
-        print("✅ Already on Special Task Dashboard")
-    else:
-        # Navigate to dashboard first
-        driver.get('https://preprodreact.compliancesutra.com/dashboard-view')
-        wait_for_loader_to_disappear(driver, wait)
-        time.sleep(2)
-    # driver.get("https://preprodreact.compliancesutra.com/login")
+            driver.get("https://preprodreact.compliancesutra.com/login")
+        # driver.get("https://preprodreact.compliancesutra.com/login")
 
-    wait_for_loader_to_disappear(driver, wait)
-    time.sleep(2)
-
-    # ✅ Step 1: Login Check
-    with allure.step("Login with valid credentials"):
-        print("🔐 Logging in with valid credentials...")
-        credentials_df = pd.read_excel(os.path.join('data', 'test_case_selector.xlsx'), sheet_name='credentials').fillna("")
-        user = str(credentials_df['username'].iloc[0]).strip()
-        pwd = str(credentials_df['password'].iloc[0]).strip()
-        login_check_success = login_check(driver, waittime=10, trial=1, username=user, password=pwd, user_validation=False)
-        if login_check_success:
-            allure.attach("Login successful", name="Login Status", attachment_type=allure.attachment_type.TEXT)
-        else:
-            allure.attach("Login failed", name="Login Status", attachment_type=allure.attachment_type.TEXT)
-            return False
         
-    wait_for_loader_to_disappear(driver, wait, loader_class="dx-loadpanel-content")
+        # ✅ Step 1: Login Check
+            with allure.step("Login with valid credentials"):
+                print("🔐 Logging in with valid credentials...")
+                credentials_df = pd.read_excel(os.path.join('data', 'test_case_selector.xlsx'), sheet_name='credentials').fillna("")
+                user = str(credentials_df['username'].iloc[0]).strip()
+                pwd = str(credentials_df['password'].iloc[0]).strip()
+                login_check_success = login_check(driver, waittime=10, trial=1, username=user, password=pwd, user_validation=False)
+                if login_check_success:
+                    allure.attach("Login successful", name="Login Status", attachment_type=allure.attachment_type.TEXT)
+                else:
+                    allure.attach("Login failed", name="Login Status", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            
+    #     wait_for_loader_to_disappear(driver, wait, loader_class="dx-loadpanel-content")
 
     # # ✅ Step 2: Ensure dashboard loaded
-    # if "dashboard-view" not in driver.current_url:
-    #     driver.get("https://preprodreact.compliancesutra.com/dashboard-view")
-    #     wait_for_loader_to_disappear(driver, wait)
-    #     time.sleep(2)
+    #     if "dashboard-view" not in driver.current_url:
+    #         driver.get("https://preprodreact.compliancesutra.com/dashboard-view")
+    #         wait_for_loader_to_disappear(driver, wait)
+    #         time.sleep(2)
 
-    # print("✅ Dashboard loaded")
+    #     print("✅ Dashboard loaded")
         
-    # try:
-    #     time.sleep(2)
-    #     special_task_icon_elem = wait.until(EC.presence_of_element_located((By.XPATH, special_task_icon)))
-    #     highlight_element(driver, special_task_icon_elem)
-    #     special_task_icon_elem.click()
-    #     print("✅ Special Task Dashboard icon clicked")
-    # except Exception as e:
-    #     allure.attach(str(e), name="Dashboard Open Error", attachment_type=allure.attachment_type.TEXT)
-    #     return False
+    
                 
     wait_for_loader_to_disappear(driver, wait)
     time.sleep(3)
     # ✅ Step 2: Locate and click on Add Task Float
-    with allure.step("Opening Add Task Float"):
-        try:
-            add_task_float_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, add_task_float)))
-            highlight_element(driver, add_task_float_btn)
-            add_task_float_btn.click()
-        
-        except Exception as err:
-            add_task_float_btns = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, add_task_float)))
-            for btn in add_task_float_btns:
-                highlight_element(driver, btn)
-                btn.click()
-            allure.attach(err, name="Add task float button error", attachment_type=allure.attachment_type.TEXT)
-
-    with allure.step("Clicking on Add Task Button"):
-        try:
-            add_task_button = wait.until(EC.element_to_be_clickable((By.XPATH, add_task_btn)))
-            highlight_element(driver, add_task_button)
-            add_task_button.click()
-        
-        except TimeoutException:
-            add_comment_task_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "(//button[@aria-label='Add' and not(ancestor::div[@hidden])])[last()]")))
-            highlight_element(driver, add_comment_task_btn)
-            add_comment_task_btn.click()
+    if direct_task_creation:
+        with allure.step("Task form is already open"):
+            print("ℹ️ Direct task creation mode: skipping button clicks.")
+    else:
+        with allure.step("Opening Add Task Float"):
+            try:
+                add_task_float_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, add_task_float)))
+                highlight_element(driver, add_task_float_btn)
+                add_task_float_btn.click()
+            
+            except Exception as err:
+                add_task_float_btns = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, add_task_float)))
+                for btn in add_task_float_btns:
+                    highlight_element(driver, btn)
+                    btn.click()
+                allure.attach(err, name="Add task float button error", attachment_type=allure.attachment_type.TEXT)
+    if direct_task_creation:
+        with allure.step("Task form is already open"):
+            print("ℹ️ Direct task creation mode: skipping button clicks.")
+    else:
+        with allure.step("Clicking on Add Task Button"):
+            try:
+                add_task_button = wait.until(EC.element_to_be_clickable((By.XPATH, add_task_btn)))
+                highlight_element(driver, add_task_button)
+                add_task_button.click()
+            
+            except TimeoutException:
+                add_comment_task_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "(//button[@aria-label='Add' and not(ancestor::div[@hidden])])[last()]")))
+                highlight_element(driver, add_comment_task_btn)
+                add_comment_task_btn.click()
 
 
     # ✅ Step 3: Set Task Name
@@ -335,24 +321,107 @@ def special_task_check(driver, task_name, start_date, due_date, frequency, repea
             show_toast(driver, msg)
             time.sleep(2)
             return False
+
+    if task_type == 'mandatory':
+        with allure.step(f"Selecting Task Category: '{task_category}'"):
+            print()
+            print(f"Setting task category: {task_category}")
+            allure.attach(f"Setting task category: {task_category}", name="Task Category", attachment_type = allure.attachment_type.TEXT)
+            task_category_success = set_task_category(driver, task_category_dropdown, task_category, wait)
+            if task_category_success == 'blank':
+                msg = "Task category input is blank."
+                print(msg)
+                allure.attach(msg, name="Category Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                # return False
+            
+            if task_category_success:
+                allure.attach("Task category set successfully", name="Task Category Status", attachment_type=allure.attachment_type.TEXT)
+                print("✅ Task category set successfully.")
+                # return True
+            else:
+                msg = "❌ Failed to set task category."
+                print(msg)
+                allure.attach(msg, name="Category Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                return False
+    
+    if task_type == 'mandatory':
+        with allure.step(f"Selecting Assign To: '{assign_to}'"):
+            print()
+            print(f"Setting assign to: {assign_to}")
+            allure.attach(f"Setting assign to: {assign_to}", name="Assign To", attachment_type=allure.attachment_type.TEXT)
+            assign_to_success = set_assign_to(driver, assign_to_dropdown, assign_to, wait)
+            if assign_to_success == 'blank':
+                msg = "Assign to input is blank."
+                print(msg)
+                allure.attach(msg, name="Assign To Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                # return False
+            
+            elif assign_to_success:
+                allure.attach("Assign to set successfully", name="Assign To Status", attachment_type=allure.attachment_type.TEXT)
+                print("✅ Assign to set successfully.")
+                # return True
+            
+            else:
+                msg = "❌ Failed to set assign to."
+                print(msg)
+                allure.attach(msg, name="Assign To Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                return False
+    if task_type == 'mandatory':  
+        # ✅ Step 10: Set Approver
+        with allure.step(f"Selecting Approver: '{approver}'"):
+            print()
+            print(f"Setting approver: {approver}")
+            allure.attach(f"Setting approver: {approver}", name="Approver", attachment_type=allure.attachment_type.TEXT)
+            approver_success = set_approver(driver, approver_dropdown, approver, wait)
+            if approver_success == 'blank':
+                msg = "Approver input is blank."
+                print(msg)
+                allure.attach(msg, name="Approver Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                # return False
+            
+            elif approver_success:
+                allure.attach("Approver set successfully", name="Approver Status", attachment_type=allure.attachment_type.TEXT)
+                print("✅ Approver set successfully.")
+                # return True
+            
+            else:
+                msg = "❌ Failed to set approver."
+                print(msg)
+                allure.attach(msg, name="Approver Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                return False  
+    
     # ✅ Step 7: Set End Time
     if task_type == 'mandatory':
         print(f'Only mandatory fields added')
         with allure.step(f"Click Submit button: '{submit_button}'"):
             print()
-            # print(f"Submitting Task:")
-            submit_task_success = submit_task(driver=driver, submit_button=submit_button, wait=wait, toast_msg=toast_msg)
+            print(f"Submitting Task:")
+            submit_task_success = submit_task(driver, submit_button, toast_msg, wait)
+            wait_for_loader_to_disappear(driver, wait)
+            time.sleep(3)
             if submit_task_success:
-                msg = "Task submitted successfully."
-                print(msg)
-                allure.attach(msg, name="Submit Task Status", attachment_type=allure.attachment_type.TEXT)
-                time.sleep(1)
+                allure.attach("Task submitted successfully", name="Submit Task Status", attachment_type=allure.attachment_type.TEXT)
+                print("✅ Task submitted successfully.")
+                time.sleep(3)
                 return True
             else:
                 msg = "❌ Failed to submit Task."
                 print(msg)
                 allure.attach(msg, name="Submit Task Status", attachment_type=allure.attachment_type.TEXT)
-                time.sleep(1)
+                show_toast(driver, msg)
+                time.sleep(2)
                 return False
     else:
         # ✅ Step 7: Set End Time
@@ -734,6 +803,7 @@ def special_task_check(driver, task_name, start_date, due_date, frequency, repea
             if validation_success:
                 allure.attach("Validate Task Details After Submission successful", name="Validation Status", attachment_type=allure.attachment_type.TEXT)
                 print("✅ Validate Task Details After Submission successful.")
+                time.sleep(1)
                 # return True
             else:
                 msg = "❌ Failed to validate after submitting task."

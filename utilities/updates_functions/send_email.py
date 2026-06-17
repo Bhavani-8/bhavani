@@ -43,7 +43,7 @@ def send_circular_to_user(driver, wait, user_name):
         print("✅ Circular checkbox selected")
         time.sleep(2)
 
-        circular_label = wait.until(EC.visibility_of_element_located((By.XPATH, "(//p[@class='text-xs leading-snug font-semibold text-left'])[1]")))
+        circular_label = wait.until(EC.visibility_of_element_located((By.XPATH, "(//p[@class='text-xs leading-snug font-medium text-left'])[1]")))
         driver.execute_script("arguments[0].scrollIntoView({block:'center'});", circular_label)
         time.sleep(1)
         highlight_element(driver, circular_label, 0.2)  # Assuming your highlight function exists
@@ -97,31 +97,87 @@ def send_circular_to_user(driver, wait, user_name):
 
         
         
+    # with allure.step("Select Start and End Dates"):
+    #     try:
+           
+    #         date_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@data-slot='popover-trigger']")))
+    #         date_button.click()
+
+    #         today = datetime.today()
+    #         today_str = today.strftime("%#m/%#d/%Y")  # use %-m on Mac/Linux
+
+    #         date_btn = wait.until(EC.element_to_be_clickable((By.XPATH, f"//button[@data-day='{today_str}']")))
+
+    #         highlight_element(driver, date_btn)
+
+    #         # Click twice
+    #         date_btn.click()
+    #         time.sleep(2)
+
+    #         email_log_label = wait.until(EC.element_to_be_clickable((By.XPATH, "//h1[text()='Email Log']")))
+    #         email_log_label.click()
+
+    #     except Exception as e:
+    #         print(f"❌ Calendar interaction failed: {e}")
+    #         allure.attach(str(e), name="Calendar Failure", attachment_type=allure.attachment_type.TEXT)   
+    #         pytest.fail("Date selection failed")
     with allure.step("Select Start and End Dates"):
         try:
-           
-            date_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@data-slot='popover-trigger']")))
+            # Open calendar
+            date_button = wait.until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, "//button[@data-slot='popover-trigger']")
+                )
+            )
+            highlight_element(driver, date_button)
             date_button.click()
 
             today = datetime.today()
-            today_str = today.strftime("%#m/%#d/%Y")  # use %-m on Mac/Linux
 
-            date_btn = wait.until(
-                EC.element_to_be_clickable((By.XPATH, f"//button[@data-day='{today_str}']"))
+            # Windows
+            today_str = today.strftime("%#m/%#d/%Y")
+            # Linux/Mac use:
+            # today_str = today.strftime("%-m/%-d/%Y")
+
+            today_xpath = f"//button[@data-day='{today_str}']"
+
+            # First click → Start Date
+            first_date = wait.until(
+                EC.element_to_be_clickable((By.XPATH, today_xpath))
             )
+            highlight_element(driver, first_date)
+            first_date.click()
+            print("✅ Start date selected")
 
-            highlight_element(driver, date_btn)
+            time.sleep(1)
 
-            # Click twice
-            date_btn.click()
-            time.sleep(2)
+            # Second click → End Date
+            second_date = wait.until(
+                EC.element_to_be_clickable((By.XPATH, today_xpath))
+            )
+            highlight_element(driver, second_date)
+            second_date.click()
+            print("✅ End date selected")
 
-            email_log_label = wait.until(EC.element_to_be_clickable((By.XPATH, "//h1[text()='Email Log']")))
+            time.sleep(1)
+
+            # Close calendar if required
+            email_log_label = wait.until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, "//h1[text()='Email Log']")
+                )
+            )
             email_log_label.click()
 
         except Exception as e:
             print(f"❌ Calendar interaction failed: {e}")
-            allure.attach(str(e), name="Calendar Failure", attachment_type=allure.attachment_type.TEXT)   
+
+            allure.attach(
+                str(e),
+                name="Calendar Failure",
+                attachment_type=allure.attachment_type.TEXT
+            )
+
             pytest.fail("Date selection failed")
 
         user_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//td[normalize-space()='{user_name}']")))

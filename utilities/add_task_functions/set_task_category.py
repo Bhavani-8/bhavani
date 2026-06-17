@@ -56,7 +56,7 @@ def set_task_category(driver, task_category_dropdown, task_category, wait):
         # -------------------------------
         try:
             selected_elem = wait.until(EC.presence_of_element_located((
-                By.XPATH, "(//div[contains(@class,'singleValue')])[4]"
+                By.XPATH, f"//div[contains(@class,'singleValue') and normalize-space()='{task_category}']"
             )))
             highlight_element(driver, selected_elem)
 

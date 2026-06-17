@@ -182,7 +182,7 @@ def apply_date_filter(driver, wait, col_name, date_filter_apply_btn):
 def apply_search_filter(driver, wait, dash_col_filter_search_btn, dash_col_filter_ok_btn, col_name):
     search_input = wait.until(EC.element_to_be_clickable((By.XPATH, dash_col_filter_search_btn)))
     search_input.clear()
-    search_input.send_keys("QA developers")
+    search_input.send_keys("QA Testers")
     time.sleep(10)
     # result_summary = ""
 

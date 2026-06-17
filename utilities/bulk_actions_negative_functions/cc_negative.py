@@ -50,7 +50,7 @@ def step_fail(driver, step_name, error):
     allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
     pytest.fail(f"❌ {step_name} failed")
-def cc_negative(driver, wait, dropdown_selection_val_data, dropdown_selection_val=None, task_name='Internal Task', text_case_id=None):
+def cc_negative(driver, wait):
     wait_less = WebDriverWait(driver, 5)
     with allure.step("Clicking Dashboard Total button"):
         try:

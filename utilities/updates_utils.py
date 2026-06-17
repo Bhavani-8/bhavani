@@ -18,6 +18,7 @@ from utilities.updates_functions.compliance_events import compliance_events
 from utilities.updates_functions.issuer_link_downloads import issuer_link_downloads
 from utilities.updates_functions.export_circulars import export_circulars
 from utilities.updates_functions.check_filters import check_filters
+from utilities.updates_functions.mark_actionable import mark_actionable
 from load_test_config_excel_data import load_test_config_excel_data
 
 
@@ -145,6 +146,17 @@ def updates_check(driver, module_name=None, test_case_id=None, task_details=None
             except Exception as e:
                 allure.attach(str(e), name="Check Filters Error", attachment_type=allure.attachment_type.TEXT)
 
+
+    if module_name == 'mark_actionable':
+        with allure.step("Mark Actionable Validation"):
+            try:
+                if mark_actionable(driver, wait):
+                    print("✅ Mark Actionable validation successful")
+                    return True
+                else:
+                    raise Exception("❌ Mark Actionable validation failed")
+            except Exception as e:
+                allure.attach(str(e), name="Mark Actionable Error", attachment_type=allure.attachment_type.TEXT)
 
 
     else:

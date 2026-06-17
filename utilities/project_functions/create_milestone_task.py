@@ -20,7 +20,7 @@ def step_fail(driver, step_name, error):
     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
     pytest.fail(f"❌ {step_name} failed")
    
-def create_milestone_task(driver, wait, project_name, milestone, milestone_task_name=None):
+def create_milestone_task(driver, wait, milestone_task_name=None):
 
     with allure.step("Load locators.json"):
         try:
@@ -52,7 +52,10 @@ def create_milestone_task(driver, wait, project_name, milestone, milestone_task_
             step_fail(driver, " Click project icon", e)
     with allure.step("Click project task in the list"):
         try:
-            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{project_name}')]")))
+            project_file = os.path.join("data", "latest_project.txt")
+            with open(project_file, "r") as f:
+                created_project_name = f.read().strip()
+            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", project_task)
             highlight_element(driver, project_task)
             project_task.click()
@@ -71,15 +74,21 @@ def create_milestone_task(driver, wait, project_name, milestone, milestone_task_
         
     with allure.step("Open milestone dropdown, enter milestone name, select option"):
         try:
+            milestone_file = os.path.join("data", "latest_milestone.txt")
+
+            with open(milestone_file, "r") as f:
+                created_milestone = f.read().strip()
+
+            print(f"Using Milestone: {created_milestone}")  
             milestone_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "(//div[@class='css-b62m3t-container'])[1]")))
             highlight_element(driver, milestone_dropdown)
             milestone_dropdown.click()
 
             milestone_input = driver.switch_to.active_element
-            milestone_input.send_keys(milestone)
+            milestone_input.send_keys(created_milestone)
             time.sleep(1)
 
-            milestone_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'option') and normalize-space()='{milestone}']")))
+            milestone_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'option') and normalize-space()='{created_milestone}']")))
             highlight_element(driver, milestone_option)
             milestone_option.click()
         except Exception as e:

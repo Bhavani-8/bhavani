@@ -28,7 +28,7 @@ def issuer_link_downloads(driver, wait):
 
     with allure.step("Select Update Checkbox"):
         try:
-            select_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//div[@class='flex flex-col min-w-0 flex-1 gap-1'])[1]")))
+            select_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//div[@class='flex flex-col min-w-0 flex-1 gap-1'])[5]")))
             highlight_element(driver, select_elem)
             select_elem.click()
             print("🟦 First checkbox clicked")

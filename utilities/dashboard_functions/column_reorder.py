@@ -24,7 +24,7 @@ from selenium.webdriver import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException
 
 
-def column_reorder(driver, wait, dropdown_selection_val_data):
+def column_reorder(driver, wait):
     try:
         with open(os.path.join("data", "locators.json"), "r") as f:
             locators = json.load(f)

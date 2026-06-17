@@ -18,6 +18,7 @@ from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.dashboard_functions.upper_dashboard_validation import upper_dashboard_validation
 from utilities.dashboard_functions.lower_dashboard_validation import lower_dashboard_validation
+from utilities.dashboard_functions.lower_sp_dashboard_validation import lower_sp_dashboard_validation
 from utilities.dashboard_functions.column_filter_validation import column_filter_validation
 from utilities.dashboard_functions.column_filter_negative import column_filter_negative
 from utilities.bulk_actions_functions.bulk_actions_module import bulk_actions_module
@@ -28,9 +29,12 @@ from utilities.dashboard_functions.export_without_selecting_data import export_w
 from utilities.dashboard_functions.column_chooser_validation import column_chooser_validation
 from utilities.dashboard_functions.upper_dashboard_date_filter import upper_dashboard_date_filter
 from utilities.dashboard_functions.lower_dashboard_date_fiter import lower_dashboard_date_filter
+from utilities.dashboard_functions.lower_sp_dashboard_date_filter import lower_sp_dashboard_date_filter
 from utilities.dashboard_functions.copy_task_link import copy_task_link
 from utilities.dashboard_functions.search_task_by_existing_task_name import search_task_by_existing_task_name
 from utilities.dashboard_graph_functions.graph_count import dashboard_graph_count
+from utilities.dashboard_graph_functions.new_compliances_added_normal_task import new_compliances_normal_task
+from utilities.dashboard_graph_functions.new_compliances_added_special_task import new_compliances_special_task
 from utilities.search_utils import clear_search
 from load_test_config_excel_data import load_test_config_excel_data
 from selenium.webdriver.common.keys import Keys
@@ -38,9 +42,9 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 
 
-def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None):
+def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None,task_details=None):
     wait = WebDriverWait(driver, 30)
-
+    driver.get("https://preprodreact.compliancesutra.com/login")
     # ✅ Step 1: Login
     with allure.step("Login with valid credentials"):
 
@@ -98,7 +102,6 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                 allure.attach(str(e), name="Dashboard Open Error", attachment_type=allure.attachment_type.TEXT)
                 return False
 
-    task_name = 'Automation_bulk_task_creation_27_Nov2'
 
     if module_name == 'bulk_task_creation':
         # ✅ Step 4: Read Excel bulk task creation file
@@ -117,7 +120,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     if module_name == 'upper_dashboard_count':
         with allure.step("Upper Dashboard Count Validation"):
             try:
-                if upper_dashboard_validation(driver, wait, dash_type):
+                if upper_dashboard_validation(driver, wait):
                     print("✅ Upper Dashboard validation successful")
                     return True
                 else:
@@ -139,11 +142,35 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
             except Exception as e:
                 allure.attach(str(e), name="Lower Dashboard Error", attachment_type=allure.attachment_type.TEXT)
 
+    if module_name == 'lower_sp_dashboard_count':
+        with allure.step("Lower Special Dashboard Count Validation"):
+            try:
+                if lower_sp_dashboard_validation(driver, wait):
+                    print("✅ Lower Dashboard validation successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Lower Dashboard", name="Lower Dashboard Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Lower Dashboard Error", attachment_type=allure.attachment_type.TEXT)
+
     # # ✅ Step 7: Lower Dashboard Validation
     if module_name == 'lower_dashboard_date_filter_count':
         with allure.step("Lower Dashboard Date Filter Validation"):
             try:
-                if lower_dashboard_date_filter(driver, wait, dash_type):
+                if lower_dashboard_date_filter(driver, wait):
+                    print("✅ Lower Dashboard Date Filter validation successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Lower Dashboard Date Filter", name="Lower Dashboard Date Filter Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Lower Dashboard Error", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'lower_sp_dashboard_date_filter_count':
+        with allure.step("Lowerspecial  Dashboard Date Filter Validation"):
+            try:
+                if lower_sp_dashboard_date_filter(driver, wait):
                     print("✅ Lower Dashboard Date Filter validation successful")
                     return True
                 else:
@@ -155,7 +182,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     if module_name == 'upper_dashboard_date_filter_count':
         with allure.step("Upper Dashboard Filter Validation"):
             try:
-                if upper_dashboard_date_filter(driver, wait, dash_type):
+                if upper_dashboard_date_filter(driver, wait):
                     print("✅ Dashboard Filter successful")
                     return True
                 else:
@@ -193,7 +220,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     if module_name == 'column_chooser_relogin':
         with allure.step("Verify column chooser selections are unchanged after relogin"):
             try:
-                if column_chooser_relogin(driver, wait, dash_type):
+                if column_chooser_relogin(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -205,7 +232,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     if module_name == 'column_filter_reorder':
         with allure.step("Column Filter Reorder Validation"):
             try:
-                if column_reorder(driver, wait, dash_type):
+                if column_reorder(driver, wait):
                     print("✅ Column Filter validation Reorder successful")
                     return True
                 else:
@@ -219,7 +246,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     if module_name == 'export_all_data':
         with allure.step("Export Data Validation"):
             try:
-                if export_all_data(driver, wait, dash_type):
+                if export_all_data(driver, wait):
                     print("✅ Export Data validation successful")
                     return True
                 else:
@@ -232,7 +259,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     if module_name == 'export_without_selecting_data':
         with allure.step("Export Without Selectig Data Validation"):
             try:
-                if export_without_selecting_data(driver, wait, dash_type):
+                if export_without_selecting_data(driver, wait):
                     print("✅ Export Without Selectig Data Validation successful")
                     return True
                 else:
@@ -284,7 +311,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     if module_name == 'copy_task_link':
         with allure.step("Validate Copy Task Link functionality"):
             try:
-                if copy_task_link(driver, wait, dash_type):
+                if copy_task_link(driver, wait):
                     print("✅ Copy Task Link validation successful")
                     return True
                 else:
@@ -300,7 +327,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     'reject_task_bulk_action','rejected_tasks_bulk_action','completed_tasks_bulk_Action']:
         with allure.step("Bulk Action Validation"):
             try:
-                if bulk_actions_module(driver, wait, module_name, dash_type, test_case_id, task_name):
+                if bulk_actions_module(driver, wait, module_name):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -320,11 +347,37 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Dashboard Graph Count Error", attachment_type=allure.attachment_type.TEXT)
-                
+    
+    if module_name == 'new_compliances_added'and task_details:
+        new_compliance_task = task_details.get("newly_compliance_task")
+        with allure.step("New Compliances Normal Task"):
+            try:
+                if new_compliances_normal_task(driver, wait, new_compliance_task):
+                    print("✅ New Compliances Normal Task validation successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for New Compliances Normal Task", name="New Compliances Normal Task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="New Compliances Normal Task Error", attachment_type=allure.attachment_type.TEXT)
+    
+    if module_name == 'new_compliances_special_task'and task_details:
+        new_compliance_task = task_details.get("newly_compliance_task")
+        with allure.step("New compliances Special Task"):
+            try:
+                if new_compliances_special_task(driver, wait, new_compliance_task):
+                    print("✅ New compliances Special Task validation successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for New compliances Special Task", name="New compliances Special Task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="New compliances Special Task Error", attachment_type=allure.attachment_type.TEXT)
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)
         raise Exception(msg) 
+    
 def get_test_case_list(module=None):
     try:
         # 🔹 Load selector config
@@ -357,6 +410,13 @@ def get_test_case_list(module=None):
             # Add the positive/negative mark based on test_type
             if row_test_type in ["positive", "negative"]:
                 marks.append(getattr(pytest.mark, row_test_type))
+            task_details_raw = row.get("task_details", "")
+            task_details = {}
+            if task_details_raw:
+                try:
+                    task_details = json.loads(task_details_raw)
+                except Exception as e:
+                    print(f"❌ JSON error in task_details for {row.get('test_case_id')}: {e}")
 
             test_case_list.append(
                 pytest.param(
@@ -364,6 +424,7 @@ def get_test_case_list(module=None):
                     row.get("module_name"),
                     row.get("test_case_description"),
                     row_test_type,
+                    task_details,
                     marks=marks
                 )
             )

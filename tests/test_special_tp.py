@@ -6,7 +6,7 @@ import time
 import allure
 import os
 
-from utilities.dashboard_utils import get_test_case_list, dashboard_check
+from utilities.team_performance_dashboard_utils import get_test_case_list, team_performance_dashboard_check
 from utilities.driver_setup import setup
 from utilities.screen_recorder import ScreenRecorder
 
@@ -15,7 +15,7 @@ at_test_case_list = get_test_case_list(module='special_tp')
 @allure.suite("Special Team Performance Test Suite")
 @allure.sub_suite("Special Team Performance Validation")
 @pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type", at_test_case_list)
-def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_description, test_type):
+def test_special_tp_flow(setup, test_case_id, module_name, test_case_description, test_type):
     # allure.dynamic.title(f"Dashboard Validation")
     # allure.dynamic.description(f"This test checks dashboard functionality.")
     allure.dynamic.title(f"{test_case_id}_{module_name}")
@@ -29,7 +29,7 @@ def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_desc
     time.sleep(2)
     with allure.step(f"Special Team Performance Flow"):
         try:
-            success = dashboard_check(driver, dash_type='special', module_name=module_name, test_case_id=test_case_id)
+            success = team_performance_dashboard_check(driver, dash_type='special', module_name=module_name, test_case_id=test_case_id)
             # if success and test_type == 'positive':
             if test_type == 'positive':
                 assert success, "Special Team Performance Dashboard failed with valid scenario"

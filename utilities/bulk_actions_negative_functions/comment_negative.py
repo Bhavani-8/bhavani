@@ -31,7 +31,7 @@ except json.JSONDecodeError:
     pytest.fail("❌ Invalid JSON in locators.json")
 
 
-def comment_negative(driver, wait, dropdown_selection_val_data, dropdown_selection_val=None, text_case_id=None):
+def comment_negative(driver, wait):
 
     wait_less = WebDriverWait(driver, 5)
     with allure.step("Clicking Dashboard Total button"):

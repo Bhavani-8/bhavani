@@ -18,11 +18,6 @@ def project_search_name(driver, wait):
     try:
         with open(os.path.join("data", "locators.json"), "r") as f:
             locators = json.load(f)
-            task_search_btn = locators["task_search_btn"]
-            task_search_input = locators["task_search_input"]
-            dash_total_btn = locators["dash_total_btn"]
-            column_chooser_btn = locators["column_chooser_btn"]
-            column_chooser_save_btn = locators["column_chooser_save_btn"]
             project_icon = locators["project_icon"]
 
     except Exception as e:
@@ -41,9 +36,9 @@ def project_search_name(driver, wait):
     
     with allure.step("Fetch first task name from Projects"):
         try:
-            first_task_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//tr[contains(@class,'dx-data-row')])[2]//td[1]//div[@title]")))
+            first_task_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//tr[contains(@class,'dx-data-row')])[1]//div[@title]")))
             highlight_element(driver, first_task_name_elem)
-            first_task_name = first_task_name_elem.text.strip()
+            first_task_name = first_task_name_elem.get_attribute("title").strip()
             print(f"✅ First task name fetched: {first_task_name}")
         except Exception as e:
             step_fail(driver, "Fetch first task name from Projects", e)
@@ -63,9 +58,9 @@ def project_search_name(driver, wait):
              step_fail(driver, f"Search using task name: {first_task_name}", e)
     with allure.step("Verify search name after search"):
         try:
-            search_task_name_label = wait.until(EC.presence_of_element_located((By.XPATH, "(//div[@class='w-full truncate'])[1]")))
-            highlight_element(driver, search_task_name_label)
-            search_task_name_label = search_task_name_label.text.strip()
+            search_task_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//div[@class='w-full truncate' and @title])[1]")))
+            highlight_element(driver, search_task_name_elem)
+            search_task_name_label = search_task_name_elem.get_attribute("title").strip()
             print(f"🔍 Task name label after search: {search_task_name_label}")
             if search_task_name_label == first_task_name:
                 allure.attach(f"Expected: {first_task_name}, Found: {search_task_name_label}", name="Search Name Match", attachment_type=allure.attachment_type.TEXT)

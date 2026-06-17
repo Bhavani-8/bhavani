@@ -31,7 +31,7 @@ def dashboard_graph_count(driver, wait):
             graph_btn.click()
 
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(3)  # Extra wait to ensure results load
+            time.sleep(3) 
         except Exception as e:
             print(f"❌ Failed to search using first task name: {e}")
             return False
@@ -69,7 +69,7 @@ def dashboard_graph_count(driver, wait):
     
     with allure.step("Validate Graph Count vs Selected Count"):
         try:
-            # ✅ Click Select All
+           
             select_all_checkbox = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-checkbox-container']")))
             highlight_element(driver, select_all_checkbox)
             select_all_checkbox.click()
@@ -93,33 +93,17 @@ def dashboard_graph_count(driver, wait):
             if graph_count != selected_count:
                 print(f"❌ FAIL: {validation_msg}")
 
-                allure.attach(
-                    driver.get_screenshot_as_png(),
-                    name="Graph Count Mismatch",
-                    attachment_type=allure.attachment_type.PNG
-                )
-
+                allure.attach(driver.get_screenshot_as_png(),name="Graph Count Mismatch",attachment_type=allure.attachment_type.PNG)
                 pytest.fail(validation_msg)
 
             else:
                 print(f"✅ PASS: {validation_msg}")
 
         except Exception as e:
-            # 🔥 Screenshot for ANY failure (network, element, timeout, etc.)
             error_msg = f"❌ Graph Validation Error: {str(e)}"
             print(error_msg)
 
-            allure.attach(
-                error_msg,
-                name="Graph Validation Error",
-                attachment_type=allure.attachment_type.TEXT
-            )
-
-            allure.attach(
-                driver.get_screenshot_as_png(),
-                name="Error Screenshot",
-                attachment_type=allure.attachment_type.PNG
-            )
-
+            allure.attach(error_msg,name="Graph Validation Error",attachment_type=allure.attachment_type.TEXT)
+            allure.attach(driver.get_screenshot_as_png(),name="Error Screenshot",attachment_type=allure.attachment_type.PNG)
             pytest.fail(error_msg)
         return True

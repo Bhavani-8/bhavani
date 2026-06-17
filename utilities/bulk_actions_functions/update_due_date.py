@@ -50,7 +50,7 @@ except json.JSONDecodeError:
     pytest.fail("❌ Invalid JSON in locators.json")
 
 
-def update_due_date_bulk_action(driver, wait, dropdown_selection_val_data, task_name='Internal Task', test_case_id=None):
+def update_due_date_bulk_action(driver, wait, task_name='Internal Task'):
 
     wait_less = WebDriverWait(driver, 5)
     selected_date_text = ""

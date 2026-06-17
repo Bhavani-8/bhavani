@@ -38,7 +38,7 @@ def attach_failure_artifacts(driver, test_name, error=None):
 
 
 def column_filter_validation(driver, wait):
-    wait_less = WebDriverWait(driver, 5)
+    wait_less = WebDriverWait(driver, 3)
 
     with open(os.path.join("data", "locators.json"), "r") as f:
         elements_details = json.load(f)

@@ -69,7 +69,7 @@ def special_tm_count_validation(driver, wait):
                             break
 
                 if parent_header_text and sub_header_text:
-                    full_col_name = f"{parent_header_text} -> {sub_header_text}"
+                    full_col_name = f"{parent_header_text} - {sub_header_text}"
                 elif parent_header_text:
                     full_col_name = parent_header_text
                 elif sub_header_text:
@@ -95,11 +95,11 @@ def special_tm_count_validation(driver, wait):
                     no_task_elem = driver.find_element(By.XPATH, f"{XPATH_NO_TASK_FOUND}[contains(., 'No Task') or contains(., 'No data')] | //*[contains(text(),'No Task Found')]")
                     
                     if no_task_elem.is_displayed():
-                        validation_msg = f"{full_col_name} | Summary Count: {column_value} | Drill-down Popup: 'No Task Found'"
+                        validation_msg = f"{full_col_name} | Actual Count: {column_value} | Expected Count: 'No Task Found'"
                         failures.append(validation_msg)
                         
                         try:
-                            with allure.step(f"Validate {full_col_name} (Summary: {column_value} vs Drill-down: 'No Task Found')"):
+                            with allure.step(f"Validate {full_col_name} (Actual Count: {column_value} vs Expected Count: 'No Task Found')"):
                                 allure.attach(validation_msg, name="No Task Validation Failure", attachment_type=allure.attachment_type.TEXT)
                                 allure.attach(driver.get_screenshot_as_png(), name=f"No Task Screenshot - {full_col_name}", attachment_type=allure.attachment_type.PNG)
                                 print(f"❌ FAIL: {validation_msg}")
@@ -107,7 +107,10 @@ def special_tm_count_validation(driver, wait):
                         except AssertionError:
                             pass 
 
-                        driver.back()
+                        # driver.back()
+                        driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                        highlight_element(driver, driver_back)
+                        driver_back.click()
                         wait_for_loader_to_disappear(driver, wait)
                         continue 
                 except NoSuchElementException:
@@ -134,8 +137,8 @@ def special_tm_count_validation(driver, wait):
                     expected_count = 0
 
                 try:
-                    with allure.step(f"Validate {full_col_name} (Summary: {column_value} vs Drill-down: {expected_count})"):
-                        validation_msg = f"{full_col_name} | Summary Count: {column_value} | Drill-down Task Count: {expected_count}"
+                    with allure.step(f"Validate {full_col_name} (Actual Count: {column_value} vs Expected Count: {expected_count})"):
+                        validation_msg = f"{full_col_name} | Actual Count: {column_value} | Expected Count: {expected_count}"
                         
                         if column_value != expected_count:
                             failures.append(validation_msg)
@@ -149,13 +152,19 @@ def special_tm_count_validation(driver, wait):
                 except AssertionError:
                     pass 
 
-                driver.back()
+                # driver.back()
+                driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                highlight_element(driver, driver_back)
+                driver_back.click()
                 wait_for_loader_to_disappear(driver, wait)
 
             except Exception as e:
                 print(f"⚠️ Error processing button {idx + 1}: {e}")
                 try:
-                    driver.back()
+                    # driver.back()
+                    driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                    highlight_element(driver, driver_back)
+                    driver_back.click()
                     wait_for_loader_to_disappear(driver, wait)
                 except:
                     pass
@@ -221,7 +230,7 @@ def special_tm_count_validation(driver, wait):
                             break
 
                 if parent_header_text and sub_header_text:
-                    col_name = f"{parent_header_text} -> {sub_header_text}"
+                    col_name = f"{parent_header_text} - {sub_header_text}"
                 elif parent_header_text:
                     col_name = parent_header_text
                 elif sub_header_text:
@@ -244,27 +253,23 @@ def special_tm_count_validation(driver, wait):
                 time.sleep(1)
 
                 try:
-                    no_task_elem = driver.find_element(By.XPATH, f"{XPATH_NO_TASK_FOUND}[contains(., 'No Task') or contains(., 'No data')] | //*[contains(text(),'No Task Found')]")
+                    no_task_elem = driver.find_element(By.XPATH, "//*[contains(text(),'No Task Found')]")
 
                     if no_task_elem.is_displayed():
-                        validation_msg = f"{col_name} | Summary Count: {column_value} | Drill-down Popup: 'No Task Found'"
-                        failures.append(validation_msg)
-                        
-                        try:
-                            with allure.step(f"Validate {col_name} (Summary: {column_value} vs Drill-down: 'No Task Found')"):
-                                allure.attach(validation_msg, name="No Task Validation Failure", attachment_type=allure.attachment_type.TEXT)
-                                allure.attach(driver.get_screenshot_as_png(), name=f"No Task Screenshot - {col_name}", attachment_type=allure.attachment_type.PNG)
-                                print(f"❌ FAIL: {validation_msg}")
-                                raise AssertionError(validation_msg) 
-                        except AssertionError:
-                            pass 
+                        validation_msg = f"{col_name}: actual='{column_value}', expected='No Task Found'"
 
-                        driver.back()
-                        wait_for_loader_to_disappear(driver, wait)
-                        continue 
-                except NoSuchElementException:
-                    pass
+                        allure.attach(validation_msg, "No Task Validation", allure.attachment_type.TEXT)
+                        allure.attach(driver.get_screenshot_as_png(),
+                                    name=f"No Task Screenshot - {col_name}",
+                                    attachment_type=allure.attachment_type.PNG)
 
+                        print(f"❌ FAIL: {validation_msg}")
+                        raise AssertionError(validation_msg)
+
+                except AssertionError:
+                    driver.back()
+                    wait_for_loader_to_disappear(driver, wait)
+                    continue
                 try:
                     dashboard_title_elem = wait.until(EC.presence_of_element_located((By.XPATH,"//p[contains(@class,'_dashboardHeaderTitleActive')]")))
                     highlight_element(driver, dashboard_title_elem)
@@ -287,8 +292,8 @@ def special_tm_count_validation(driver, wait):
                 selected_count = int(match.group(1)) if match else 0
                 
                 try:
-                    with allure.step(f"Validate {col_name} (Summary: {column_value} vs Drill-down: {selected_count})"):
-                        validation_msg = f"{col_name} | Summary Count: {column_value} | Drill-down Task Count: {selected_count}"
+                    with allure.step(f"Validate {col_name} (Actual Count: {column_value} vs Expected Count: {selected_count})"):
+                        validation_msg = f"{col_name} | Actual Count: {column_value} | Expected Count: {selected_count}"
                         
                         if column_value != selected_count:
                             failures.append(validation_msg)
@@ -302,13 +307,19 @@ def special_tm_count_validation(driver, wait):
                 except AssertionError:
                     pass 
 
-                driver.back()
+                # driver.back()
+                driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                highlight_element(driver, driver_back)
+                driver_back.click()
                 wait_for_loader_to_disappear(driver, wait)
             
             except Exception as e:
                 print(f"⚠️ Subtotal error: {e}")
                 try:
-                    driver.back()
+                    # driver.back()
+                    driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                    highlight_element(driver, driver_back)
+                    driver_back.click()
                     wait_for_loader_to_disappear(driver, wait)
                 except:
                     pass

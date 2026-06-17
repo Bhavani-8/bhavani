@@ -180,9 +180,9 @@ def updates_add_task(driver, wait, updates_task_name):
             fetched_update_circ = update_circ.text.strip()
             print(f"Update Circular: {fetched_update_circ}")
 
-            update_circular_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, task_fetch_circ)))
-            highlight_element(driver, update_circular_checkbox)
-            update_circular_checkbox.click()
+            update_circular_elem = wait.until(EC.presence_of_element_located((By.XPATH, task_fetch_circ)))
+            highlight_element(driver, update_circular_elem)
+            update_circular_elem.click()
             time.sleep(2)
             print("Update Circular Opened successfully.")
         except Exception as e:

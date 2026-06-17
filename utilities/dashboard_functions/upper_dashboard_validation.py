@@ -39,7 +39,7 @@ def wait_for_loader_to_disappear(driver, wait):
         )
     except:
         pass
-def upper_dashboard_validation(driver, wait, dash_type='QCC'):
+def upper_dashboard_validation(driver, wait):
 
     # =====================================================
     # 🔹 LOAD LOCATORS
@@ -71,27 +71,12 @@ def upper_dashboard_validation(driver, wait, dash_type='QCC'):
 
     titles = ["Assigned To Me", "Assigned To Others", "Not Assigned", "CC"]
 
-    # =====================================================
-    # 🔹 OPEN DASHBOARD
-    # =====================================================
-    if dash_type == "QCC":
-        safe_click(driver, wait, dashboard_icon, "Dashboard Icon")
-    else:
-        safe_click(driver, wait, special_task_icon, "Special Task Dashboard Icon")
 
-    wait_for_loader_to_disappear(driver, wait)
-
-    # =====================================================
-    # 🔁 ITERATE DASHBOARD BUTTONS
-    # =====================================================
     for idx, (btn_name, btn_path) in enumerate(dash_buttons.items()):
 
         safe_click(driver, wait, btn_path, f"{btn_name} Button")
         wait_for_loader_to_disappear(driver, wait)
 
-        # ==========================
-        # 🔹 SUB-TITLE VALIDATION
-        # ==========================
         for title in titles:
             with allure.step(f"Validating '{title}' in '{btn_name}'"):
                 try:
@@ -114,17 +99,15 @@ def upper_dashboard_validation(driver, wait, dash_type='QCC'):
 
                     # --- Activate the grid
                     driver.execute_script("arguments[0].click();", validator_elem)
-                    time.sleep(4)
+                    time.sleep(3)
                     # highlight_element(driver, validator_elem, duration=0.2)
                     wait_for_loader_to_disappear(driver, wait)
 
                     
                     # --- Click Select All
-                    select_all_elem = wait.until(
-                        EC.presence_of_element_located((By.XPATH, dash_select_all_checkbox))
-                    )
+                    select_all_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_select_all_checkbox)))
                     driver.execute_script("arguments[0].click();", select_all_elem)
-                    time.sleep(3)
+                    time.sleep(2)
                     wait_for_loader_to_disappear(driver, wait)
 
                     # --- OUTPUT FORMAT (UNIFORM)

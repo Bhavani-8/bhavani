@@ -15,7 +15,7 @@ from load_test_config_excel_data import load_test_config_excel_data
 def signup_check(driver, email, check_selection, test_type):
     if pd.isna(email):
         email = ""
-    wait = WebDriverWait(driver, 30)
+    wait = WebDriverWait(driver, 20)
 
     # --- Load locators ---
     # with allure.step("Loading locators from JSON"):
@@ -27,6 +27,7 @@ def signup_check(driver, email, check_selection, test_type):
             signup_btn_path = elements_details['signup_btn']
             input_err_msg = elements_details['input_err_msg']
             err_msg_toast_path = elements_details['err_msg_toast']
+            signup_checkbox_btn = elements_details['signup_checkbox_btn']
             acknowledgement_text_path = elements_details['signup_acknowledgement_txt']
             current_url = driver.current_url
             if 'preprod' in current_url:
@@ -59,7 +60,7 @@ def signup_check(driver, email, check_selection, test_type):
 
     # --- Handle Terms Checkbox ---
     with allure.step("Handling Terms & Conditions Checkbox"):
-        checkbox = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, terms_checkbox)))
+        checkbox = wait.until(EC.presence_of_element_located((By.XPATH, signup_checkbox_btn)))
         highlight_element(driver, checkbox)
         is_checked = checkbox.is_selected()
 
@@ -71,7 +72,7 @@ def signup_check(driver, email, check_selection, test_type):
     # --- Click Verify Email ---
     with allure.step("Clicking Verify Email Button"):
         try:
-            verify_mail_btn = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, signup_btn_path)))
+            verify_mail_btn = wait.until(EC.presence_of_element_located((By.XPATH, signup_btn_path)))
             highlight_element(driver, verify_mail_btn)
 
             # blank input
@@ -111,39 +112,6 @@ def signup_check(driver, email, check_selection, test_type):
             except Exception as e:
                 allure.attach(str(e), name="Toast/Redirect Error", attachment_type=allure.attachment_type.TEXT)
                 return False
-
-# def load_test_config_excel_data():
-#     df = pd.read_excel(os.path.join('data', 'test_case_selector.xlsx'), sheet_name='test_details')
-#     print(f'Excel data loaded:\n{df}')
-
-#     browser = str(df.iloc[0]['browser']).strip()
-#     website = str(df.iloc[0]['website']).strip()
-
-#     # detect if Excel is marker-driven (like smoke/regression only)
-#     if "modules_to_test" in df.columns and df["modules_to_test"].str.strip().iloc[0].lower() in ["smoke", "regression"]:
-#         return {
-#             "browser": browser,
-#             "website": website,
-#             "modules_to_test": df["modules_to_test"].str.strip().iloc[0].lower()
-#         }
-    
-#     # Build modules_to_test dict
-#     modules_to_test = {}
-#     for _, row in df.iterrows():
-#         module = str(row['modules_to_test']).strip()
-#         test_types = [t.strip() for t in str(row['test_type']).split(",") if t.strip()]
-#         if not module:
-#             continue
-#         modules_to_test.setdefault(module, [])
-#         for t in test_types:
-#             if t not in modules_to_test[module]:
-#                 modules_to_test[module].append(t)
-    
-#     return {
-#         "browser": browser,
-#         "website": website,
-#         "modules_to_test": modules_to_test
-#     }
 
 
 def get_test_case_list(module=None):

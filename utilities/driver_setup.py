@@ -40,6 +40,8 @@ def setup(request):
             module_marker = "signup"
         elif "dashboard" in calling_file:
             module_marker = "dashboard"
+        elif "remove_task" in calling_file:
+            module_marker = "trash"
         elif "special_add_task" in calling_file:
             module_marker = "special_task_dashboard"
         elif "special_dashboard" in calling_file:
@@ -138,7 +140,7 @@ def setup(request):
         print(f"❌ Unsupported browser: {browser}")
         sys.exit(1)
 
-    driver.get(target_url)
+    # driver.get(target_url)
     allure.attach(browser, name="🖥️ Browser Used", attachment_type=allure.attachment_type.TEXT)
     time.sleep(1)
     

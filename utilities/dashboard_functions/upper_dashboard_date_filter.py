@@ -50,7 +50,7 @@ def wait_for_loader_to_disappear(driver, wait):
     except:
         pass
 
-def upper_dashboard_date_filter(driver, wait, dash_type='QCC'):
+def upper_dashboard_date_filter(driver, wait):
     """Validate dashboard tiles and check sub-title counts using the same Select All logic."""
 
     # -------------------------------
@@ -141,35 +141,18 @@ def upper_dashboard_date_filter(driver, wait, dash_type='QCC'):
 
     titles = ["Assigned To Me", "Assigned To Others", "Not Assigned", "CC"]
 
-    # =====================================================
-    # 🔹 OPEN DASHBOARD
-    # =====================================================
-    if dash_type == "QCC":
-        safe_click(driver, wait, dashboard_icon, "Dashboard Icon")
-    else:
-        safe_click(driver, wait, special_task_icon, "Special Task Dashboard Icon")
-
-    wait_for_loader_to_disappear(driver, wait)
-
-    # =====================================================
-    # 🔁 ITERATE DASHBOARD BUTTONS
-    # =====================================================
     for idx, (btn_name, btn_path) in enumerate(dash_buttons.items()):
 
         safe_click(driver, wait, btn_path, f"{btn_name} Button")
         wait_for_loader_to_disappear(driver, wait)
 
         # ==========================
-        # 🔹 SUB-TITLE VALIDATION
-        # ==========================
         for title in titles:
             with allure.step(f"Validating '{title}' in '{btn_name}'"):
                 try:
-                    # --- Get the value element
+                    
                     dash_value_selector = dash_value_selector_template.replace("{title}", title)
-                    dash_value_elements = wait.until(
-                        EC.presence_of_all_elements_located((By.XPATH, dash_value_selector))
-                    )
+                    dash_value_elements = wait.until(EC.presence_of_all_elements_located((By.XPATH, dash_value_selector)))
 
                     if len(dash_value_elements) <= idx:
                         continue
@@ -177,18 +160,16 @@ def upper_dashboard_date_filter(driver, wait, dash_type='QCC'):
                     value_elem = dash_value_elements[idx]
                     actual_value = int(value_elem.text.replace(",", "").strip() or 0)
 
-                    # --- Get the validator element for expected value
+                   
                     dash_value_validator = dash_value_validator_template.replace("{title}", title)
-                    validator_elem = wait.until(
-                        EC.presence_of_element_located((By.XPATH, dash_value_validator))
-                    )
+                    validator_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_value_validator)))
                     expected_value = int(validator_elem.text.replace(",", "").strip() or 0)
                     highlight_element(driver, validator_elem, duration=0.2)  # Header
                     highlight_element(driver, value_elem, duration=0.3)      # Actual value
 
                     # --- Activate the grid
                     driver.execute_script("arguments[0].click();", validator_elem)
-                    time.sleep(4)
+                    time.sleep(3)
                     # highlight_element(driver, validator_elem, duration=0.2)
                     wait_for_loader_to_disappear(driver, wait)
 

@@ -56,6 +56,25 @@ def set_approver(driver, approver_dropdown, approver, wait):
         highlight_element(driver, approver_input_elem)
         approver_input_elem.click()
         time.sleep(1)
+    
+
+    except Exception:
+        print("⚠️ Primary locator failed, trying fallback locator...")
+
+        try:
+            approver_input_elem = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'control') and .//div[text()='Approver*']]")))
+            highlight_element(driver, approver_input_elem)
+            approver_input_elem.click()
+            time.sleep(1)
+
+            print("✅ Approver To dropdown opened (fallback locator).")
+
+        except Exception as e:
+            msg = f"❌ Failed to open Approver To dropdown: {e}"
+            print(msg)
+            allure.attach(msg,name="Approver Error",attachment_type=allure.attachment_type.TEXT)
+            return False
+
 
         input_field = driver.switch_to.active_element
         input_field.send_keys(approver)
@@ -66,11 +85,7 @@ def set_approver(driver, approver_dropdown, approver, wait):
         all_options = wait.until(EC.presence_of_all_elements_located(options_locator))
         option_texts = [opt.text.strip() for opt in all_options if opt.text.strip()]
         allure.attach('\n'.join(option_texts), name="All Dropdown Options", attachment_type=allure.attachment_type.TEXT)
-    except Exception as e:
-        msg = f"❌ Failed to open dropdown or enter value: {e}"
-        print(msg)
-        allure.attach(msg, name="Dropdown Interaction Error", attachment_type=allure.attachment_type.TEXT)
-        return False
+    
 
     # Step 4: Handle dropdown selection
     try:

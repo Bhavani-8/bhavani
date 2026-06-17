@@ -20,6 +20,8 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.special_add_task)
         elif 'test_dashboard.py' in item.nodeid:
             item.add_marker(pytest.mark.dashboard)
+        elif 'test_remove_task.py' in item.nodeid:
+            item.add_marker(pytest.mark.delete_task)
         elif 'test_special_dashboard.py' in item.nodeid:
             item.add_marker(pytest.mark.special_dashboard)
         elif 'test_normal_tp.py' in item.nodeid:

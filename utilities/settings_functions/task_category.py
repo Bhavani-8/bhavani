@@ -49,7 +49,7 @@ def task_category(driver, wait, category_name, category_desc):
 
     with allure.step("Click on Add Category"):
         try:
-            add_category_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[.//span[contains(text(),'Add Task Category')]]")))
+            add_category_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[contains(.,'Add Task Category')]")))
             highlight_element(driver, add_category_btn)
             add_category_btn.click()
         except Exception as e:
@@ -82,18 +82,14 @@ def task_category(driver, wait, category_name, category_desc):
             step_fail(driver, "Click Create Button", e)
     
     try:
-        task_category_elem = wait.until(EC.visibility_of_element_located((By.XPATH, "//td[text()='Simple']")))
+        task_category_elem = wait.until(EC.visibility_of_element_located((By.XPATH, "//td[text()='IT']")))
         driver.execute_script("arguments[0].scrollIntoView({block:'center'});", task_category_elem)
         time.sleep(0.3)
         highlight_element(driver, task_category_elem, 0.2)  # Assuming your highlight function exists
 
         fetched_category = task_category_elem.text.strip()
         print(f"Task Category from Settings: {fetched_category}")
-        # allure.attach(fetched_category, name="Task Category", attachment_type=allure.attachment_type.TEXT)
-
-        # =========================
-        # Step 2: Open Dashboard / Special Task
-        # =========================
+        
         with allure.step("Open Dashboard"):
             try:
                 time.sleep(2)
@@ -104,23 +100,18 @@ def task_category(driver, wait, category_name, category_desc):
                 allure.attach(str(e), name="Dashboard Open Error", attachment_type=allure.attachment_type.TEXT)
                 return False
 
-        task_dashboard_label_elem = wait.until(EC.visibility_of_element_located((By.XPATH, "//div[text()='Simple']")))
+        task_dashboard_label_elem = wait.until(EC.visibility_of_element_located((By.XPATH, "//button[normalize-space()='IT']")))
         driver.execute_script("arguments[0].scrollIntoView({block:'center'});", task_dashboard_label_elem)
         highlight_element(driver, task_dashboard_label_elem, 0.2)
         fetched_dashboard_category = task_dashboard_label_elem.text.strip()
         print(f"Task Category from Dashboard: {fetched_dashboard_category}")
-        # allure.attach(fetched_dashboard_category, name="Dashboard Task Category", attachment_type=allure.attachment_type.TEXT)
-
-        # =========================
-        # Step 4: Validate Task Category
-        # =========================
+        
         with allure.step("Verify Task Category in Dashboard"):
             actual = fetched_dashboard_category
             expected = fetched_category
             if actual == expected:
                 msg = f"Task Category Matched | Actual: '{actual}' | Expected: '{expected}'"
                 print(f"✅ {msg}")
-
                 allure.attach(msg,name="Task Category Validation",attachment_type=allure.attachment_type.TEXT)
         
                 return True

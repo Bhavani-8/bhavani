@@ -131,14 +131,17 @@ def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if
             target_url = "https://preprodreact.compliancesutra.com/dashboard-view"
         elif "updates" in driver.current_url:
             target_url = "https://preprodreact.compliancesutra.com/updates"
+        elif "settings" in driver.current_url:
+            target_url = "https://preprodreact.compliancesutra.com/settings"
         else:
             # Default target
             target_url = "https://preprodreact.compliancesutra.com/dashboard-view"
         if refresh and target_url:driver.get(target_url)
 
     # Only login if not already on dashboard or project page
-        if not any(x in driver.current_url for x in ["dashboard-view", "project-management", "updates"]):
+        if not any(x in driver.current_url for x in ["dashboard-view", "project-management", "updates", "settings"]):
 
+            driver.get("https://preprodreact.compliancesutra.com/login")
 
             # ✅ Step 1: Login Check
             with allure.step("Login with valid credentials"):

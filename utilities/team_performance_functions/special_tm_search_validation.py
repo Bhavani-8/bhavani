@@ -347,15 +347,25 @@ def special_search_validation(driver, wait):
                         print(f"❌ FAIL: {validation_msg}")
                         raise AssertionError(validation_msg)
 
-                except:
-                    pass
-
-                # ✅ Select All
-                select_all_elem = wait.until(EC.element_to_be_clickable((
-                    By.XPATH, "//div[@role='checkbox' and @aria-label='Select all']//span"
-                )))
-                select_all_elem.click()
-
+                except AssertionError:
+                    driver.back()
+                    wait_for_loader_to_disappear(driver, wait)
+                    apply_search(driver, wait, username)
+                    continue
+                try:
+                    dashboard_title_elem = wait.until(EC.presence_of_element_located((By.XPATH,"//p[contains(@class,'_dashboardHeaderTitleActive')]")))
+                    highlight_element(driver, dashboard_title_elem)
+                    print(f"✅ Dashboard title: {dashboard_title_elem.text.strip()}")
+                except Exception:
+                    print("⚠️ Dashboard title not found")
+                try:
+                    select_all = wait.until(EC.presence_of_element_located((By.XPATH,"//div[@role='checkbox' and @aria-label='Select all']//span")))
+                    highlight_element(driver, select_all)
+                    select_all.click()
+                    time.sleep(2)
+                    print("✅ Select All clicked")
+                except Exception as e:
+                    print(f"⚠️ Select All failed: {e}")
                 # ✅ Get selected count
                 selected_elem = wait.until(EC.presence_of_element_located((
                     By.XPATH, "//div[contains(@class,'dx-item-content') and contains(.,'selected')]"

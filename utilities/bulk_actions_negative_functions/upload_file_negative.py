@@ -45,7 +45,7 @@ except json.JSONDecodeError:
     pytest.fail("❌ Invalid JSON in locators.json")
 
 
-def upload_file_negative(driver, wait, dropdown_selection_val_data, dropdown_selection_val=None, task_name='Internal Task', text_case_id=None):
+def upload_file_negative(driver, wait, task_name='Internal Task'):
     wait_less = WebDriverWait(driver, 5)
     with allure.step("Clicking Dashboard Total button"):
         try:

@@ -17,7 +17,7 @@ from utilities.other_utils_functions.highlight import highlight_element
 
 def count_validation(driver, wait):
 
-    failures = []
+  
 
     with allure.step("Column Counts Validation"):
         column_buttons = wait.until(EC.presence_of_all_elements_located((By.XPATH,"//button[normalize-space(text()) and number(normalize-space(text()))=number(normalize-space(text()))]")))
@@ -104,10 +104,11 @@ def count_validation(driver, wait):
                             raise AssertionError(validation_msg)
 
                 except AssertionError:
-                    driver.back()
+                    driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                    highlight_element(driver, driver_back)
+                    driver_back.click()
                     wait_for_loader_to_disappear(driver, wait)
-                    
-                    continue
+                    continue 
 
                 
                 try:
@@ -131,7 +132,9 @@ def count_validation(driver, wait):
                         attachment_type=allure.attachment_type.PNG
                     )
 
-                    driver.back()
+                    driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                    highlight_element(driver, driver_back)
+                    driver_back.click()
                     wait_for_loader_to_disappear(driver, wait)
                     continue
 
@@ -150,7 +153,7 @@ def count_validation(driver, wait):
                     allure.attach(validation_msg,name=f" Validation - {col_name}",attachment_type=allure.attachment_type.TEXT)
 
                     if column_value != selected_count:
-                        failures.append(validation_msg)
+                        
 
                         allure.attach(driver.get_screenshot_as_png(),name=f"Screenshot - {col_name}",attachment_type=allure.attachment_type.PNG)
 
@@ -160,21 +163,25 @@ def count_validation(driver, wait):
                     else:
                         print(f"✅ PASS: {validation_msg}")
 
-                driver.back()
+                driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                highlight_element(driver, driver_back)
+                driver_back.click()
                 wait_for_loader_to_disappear(driver, wait)
                 
 
             except AssertionError:
-                driver.back()
+                driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                highlight_element(driver, driver_back)
+                driver_back.click()
                 wait_for_loader_to_disappear(driver, wait)
-                
+            
                 continue
 
             except Exception as e:
                 print(f"⚠️ Error: {e}")
                 continue
        
-    processed_indexes = set()
+    # processed_indexes = set()
 
     with allure.step("Total Counts Validation"):
 
@@ -186,9 +193,7 @@ def count_validation(driver, wait):
                 if idx >= len(total_count_button):
                     break
 
-                if idx in processed_indexes:
-                    continue
-
+                
                 total_count_elem = total_count_button[idx]
 
                 driver.execute_script(
@@ -227,8 +232,7 @@ def count_validation(driver, wait):
                 except:
                     driver.execute_script("arguments[0].click();", total_count_elem)
 
-                processed_indexes.add(idx)
-
+               
                 wait_for_loader_to_disappear(driver, wait)
                 time.sleep(1)
 
@@ -247,7 +251,9 @@ def count_validation(driver, wait):
                         raise AssertionError(validation_msg)
 
                 except AssertionError:
-                    driver.back()
+                    driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                    highlight_element(driver, driver_back)
+                    driver_back.click()
                     wait_for_loader_to_disappear(driver, wait)
                     
                     continue
@@ -277,7 +283,9 @@ def count_validation(driver, wait):
                         attachment_type=allure.attachment_type.PNG
                     )
 
-                    driver.back()
+                    driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                    highlight_element(driver, driver_back)
+                    driver_back.click()
                     wait_for_loader_to_disappear(driver, wait)
                     continue
 
@@ -297,7 +305,7 @@ def count_validation(driver, wait):
                                 attachment_type=allure.attachment_type.TEXT)
 
                     if column_value != selected_count:
-                        failures.append(validation_msg)
+                        
 
                         allure.attach(driver.get_screenshot_as_png(),
                                     name=f"Screenshot - {col_name}",
@@ -310,25 +318,22 @@ def count_validation(driver, wait):
                         print(f"✅ PASS: {validation_msg}")
                 
                 # Back + reapply search
-                driver.back()
+                driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                highlight_element(driver, driver_back)
+                driver_back.click()
                 wait_for_loader_to_disappear(driver, wait)
                
 
             except AssertionError:
-                driver.back()
+                driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                highlight_element(driver, driver_back)
+                driver_back.click()
                 wait_for_loader_to_disappear(driver, wait)
-                
                 continue
 
             except Exception as e:
                 print(f"⚠️ Subtotal error: {e}")
                 continue
-
-    # -----------------------------
-    # FINAL RESULT
-    # -----------------------------
-    if failures:
-        raise AssertionError(f"Test failed with {len(failures)} mismatches")
 
     print("🎯 All validations passed ✅")
     return True

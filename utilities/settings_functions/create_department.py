@@ -4,6 +4,7 @@ import json
 import time
 import pyautogui as pg
 import pytest
+import random
 
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -60,43 +61,49 @@ def create_department(driver, wait, company_name, department_name, hod_name, ali
 
     with allure.step("Select Company"):
         try:
-            company_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'control') and .//div[text()='Select Company']]")))
+            company_file = os.path.join("data", "latest_company.txt")
+            with open(company_file, "r") as f:
+                created_company_name = f.read().strip()
+            company_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@role='combobox' and .//span[normalize-space()='Select Company']]")))
             highlight_element(driver, company_dropdown)
             company_dropdown.click()
+            
+            company_option = wait.until(EC.element_to_be_clickable((By.XPATH,f"//div[normalize-space()='{created_company_name}']")))
+            driver.execute_script("arguments[0].scrollIntoView({block:'center'});",company_option)
 
-            company_input = driver.switch_to.active_element
-            company_input.send_keys(company_name)
-            time.sleep(1)
-
-            company_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class, '-option') and text()='{company_name}']")))
             highlight_element(driver, company_option)
             company_option.click()
+
+            print(f"✅ Selected Company: {created_company_name}")
+
         except Exception as e:
             step_fail(driver, "Select Company", e)
 
     with allure.step("Enter Department Name"):
         try:
+            
+           
             department_input = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@name='department_name']")))
             highlight_element(driver, department_input)
             department_input.clear()
             department_input.send_keys(department_name)
+            
         except Exception as e:
             step_fail(driver, "Enter Department Name", e)
 
     with allure.step("Select HOD"):
         try:
-            hod_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'control') and .//div[text()='Select HOD']]")))
+            hod_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@role='combobox' and .//span[normalize-space()='Select HOD']]")))
             highlight_element(driver, hod_dropdown)
             hod_dropdown.click()
 
-            hod_input = driver.switch_to.active_element
-            hod_input.send_keys(hod_name)
-            time.sleep(1)
-            print(f"Typed HOD name: {hod_name}")
-            hod_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'-option') and contains(., '{hod_name}')]")))
-            highlight_element(driver, hod_option)
-            print(f"Selecting HOD option: {hod_option.text.strip()}")
-            driver.execute_script("arguments[0].click();", hod_option)
+             
+            hod_input = wait.until(EC.element_to_be_clickable((By.XPATH,f"//div[normalize-space()='{hod_name}']")))
+            driver.execute_script("arguments[0].scrollIntoView({block:'center'});",hod_input)
+
+            highlight_element(driver, hod_input)
+            hod_input.click()
+            
         except Exception as e:
             step_fail(driver, "Select HOD", e)
 
@@ -141,7 +148,7 @@ def create_department(driver, wait, company_name, department_name, hod_name, ali
             step_fail(driver, "Toast Message Verification", e)
 
     with allure.step("Fetch Department Name from Department Tab"):
-        department_elem = wait.until(EC.visibility_of_element_located((By.XPATH,"(//td[@role='gridcell' and @aria-colindex='5']//p[@title])[1]")))
+        department_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//td[normalize-space()='{created_company_name}']/following-sibling::td[3]")))
         driver.execute_script("arguments[0].scrollIntoView({block:'center'});", department_elem)
         highlight_element(driver, department_elem, 0.2)
         fetched_department = department_elem.text.strip()

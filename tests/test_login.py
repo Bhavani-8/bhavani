@@ -31,12 +31,25 @@ def test_login_flow(setup, test_case_id, test_case_description, username, passwo
                 assert success, "Login failed with valid credentials"
 
             elif test_type == "negative":
+                #  # Capture screenshot immediately while toast is visible
+                # if toast_message:
+                #     allure.attach(
+                #         driver.get_screenshot_as_png(),
+                #         name=f"Toast Message: {toast_message}",
+                #         attachment_type=allure.attachment_type.PNG
+                #     )
+
+                #     allure.attach(
+                #         toast_message,
+                #         name="Toast Text",
+                #         attachment_type=allure.attachment_type.TEXT
+                #     )
                 assert not success, "Login succeeded with invalid credentials"
         except Exception as e:
 
             recorder.stop()
 
-            time.sleep(2) 
+            time.sleep(1) 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
             os.makedirs("screenshots", exist_ok=True)

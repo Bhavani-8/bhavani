@@ -24,11 +24,11 @@ from utilities.bulk_actions_functions.rejected_task import rejected_bulk_action
 from utilities.bulk_actions_functions.completed_task import completed_task_bulk_action
 from utilities.search_utils import clear_search
 
-def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_case_id=None, task_name=None):  
+def bulk_actions_module(driver, wait, module_name=None):  
     if module_name == 'assign_to_bulk_action':
         with allure.step("Verify 'Assign To' bulk action functionality"):
             try:
-                if assign_to_bulk_action(driver, wait, dash_type):
+                if assign_to_bulk_action(driver, wait):
                     print("✅ Assign To bulk action validation successful")
                     return True
                 else:
@@ -40,7 +40,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'assign_to_bulk_action_negative':
         with allure.step("Verify 'Assign To' bulk action negative functionality"):
             try:
-                if assign_to_negative(driver, wait, dash_type):
+                if assign_to_negative(driver, wait):
                     print("✅ Negative scenario validated successfully")
                     return True
                 else:
@@ -52,7 +52,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'add_approver_bulk_action':
         with allure.step("Verify 'Approver' bulk action functionality"):
             try:
-                if approver_bulk_action(driver, wait, dash_type):
+                if approver_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -64,7 +64,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'add_approver_bulk_action_negative':
         with allure.step("Verify 'Approver' bulk action Negative functionality"):
             try:
-                if approver_negative(driver, wait, dash_type, text_case_id=test_case_id):
+                if approver_negative(driver, wait):
                     print("✅ Negative scenario validated successfully")
                     return True
                 else:
@@ -79,7 +79,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'add_cc_bulk_action':
         with allure.step("Verify 'CC' bulk action functionality"):
             try:
-                if  cc_bulk_action(driver, wait, dash_type):
+                if  cc_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -91,7 +91,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'add_cc_bulk_action_negative':
         with allure.step("Verify 'CC' bulk action Negative functionality"):
             try:
-                if cc_negative(driver, wait, dash_type, text_case_id=test_case_id):
+                if cc_negative(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -103,7 +103,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'add_comment_bulk_action':
         with allure.step("Verify 'Comment' bulk action functionality"):
             try:
-                if comment_bulk_action(driver, wait, dash_type):
+                if comment_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -115,7 +115,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'add_comment_bulk_action_negative':
         with allure.step("Verify 'Comment' bulk action Negative functionality"):
             try:
-                if comment_negative(driver, wait, dash_type, text_case_id=test_case_id):
+                if comment_negative(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -127,7 +127,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'upload_file_bulk_action':
         with allure.step("Verify 'Upload File' bulk action functionality"):
             try:
-                if upload_file_bulk_action(driver, wait, dash_type):
+                if upload_file_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -139,7 +139,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'upload_file_bulk_action_negative':
         with allure.step("Verify 'Upload File' bulk action Negative functionality"):
             try:
-                if upload_file_negative(driver, wait, dash_type):
+                if upload_file_negative(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -152,7 +152,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'update_due_date_bulk_action':
         with allure.step("Verify 'Update Due Date' bulk action functionality"):
             try:
-                if update_due_date_bulk_action(driver, wait, dash_type):
+                if update_due_date_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -164,7 +164,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'update_due_date_bulk_action_negative':
         with allure.step("Verify 'Update Due Date' bulk action Negative functionality"):
             try:
-                if update_due_date_negative(driver, wait, dash_type):
+                if update_due_date_negative(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -176,7 +176,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'approval_complied_bulk_action':
         with allure.step("Verify 'Approval Complied' bulk action functionality"):
             try:
-                if approval_complied_bulk_action(driver, wait, task_name,dash_type):
+                if approval_complied_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -188,7 +188,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'approval_not_complied_bulk_action':
         with allure.step("Verify 'Approval Not Complied' bulk action functionality"):
             try:
-                if approval_not_complied_bulk_action(driver, wait, task_name,dash_type):
+                if approval_not_complied_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -200,7 +200,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'rejected_complied_bulk_action':
         with allure.step("Verify 'Rejected Complied' bulk action functionality"):
             try:
-                if rejected_complied_bulk_action(driver, wait, task_name,dash_type):
+                if rejected_complied_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -212,7 +212,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'rejected_not_complied_bulk_action':
         with allure.step("Verify 'Rejected Not Complied' bulk action functionality"):
             try:
-                if rejected_not_complied_bulk_action(driver, wait, task_name,dash_type):
+                if rejected_not_complied_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -224,7 +224,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'mark_complete_bulk_action':
         with allure.step("Verify 'Mark Complete' bulk action functionality"):
             try:
-                if mark_complete_bulk_action(driver, wait, dash_type):
+                if mark_complete_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -236,7 +236,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'mark_complete_bulk_action_negative':
         with allure.step("Verify 'Mark Complete' bulk action Negative functionality"):
             try:
-                if mark_complete_negative(driver, wait, dash_type):
+                if mark_complete_negative(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -248,7 +248,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'approve_task_bulk_action':
         with allure.step("Verify 'Approve Task' bulk action functionality"):
             try:
-                if approve_bulk_action(driver, wait, dash_type):
+                if approve_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -260,7 +260,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'reject_task_bulk_action':
         with allure.step("Verify 'Reject Task' bulk action functionality"):
             try:
-                if reject_bulk_action(driver, wait, dash_type):
+                if reject_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -272,7 +272,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'rejected_tasks_bulk_action':
         with allure.step("Verify 'Rejected Tasks' bulk action functionality"):
             try:
-                if rejected_bulk_action(driver, wait, dash_type):
+                if rejected_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
@@ -284,7 +284,7 @@ def bulk_actions_module(driver, wait, module_name=None, dash_type='QCC', test_ca
     if module_name == 'completed_tasks_bulk_Action':
         with allure.step("Verify 'Completed Tasks' bulk action functionality"):
             try:
-                if completed_task_bulk_action(driver, wait, dash_type):
+                if completed_task_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:

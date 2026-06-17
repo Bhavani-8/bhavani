@@ -161,14 +161,12 @@ def login_check(driver, waittime, trial, username, password, user_validation=Fal
         pass
     for i in range(5):
         if not "dashboard-view" in driver.current_url:
-        #  if any(x in driver.current_url for x in ["dashboard-view", "special-task-dashboard"]):
-        #     break
-            time.sleep(2)
+        
+            time.sleep(1)
         else:
             break
     
     if "dashboard-view" in driver.current_url:
-    # if any(x in driver.current_url for x in ["dashboard-view","special-task-dashboard"]):
 
         print(f"✅ Login successful")
         # return True

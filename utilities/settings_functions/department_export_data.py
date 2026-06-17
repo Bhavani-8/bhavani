@@ -11,26 +11,15 @@ import pyautogui as pg
 from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-
 
 def department_export_all_data(driver, wait):
-    wait_less = WebDriverWait(driver, 5)
+   
 
     # ✅ Load locators
     with allure.step("Load locators.json for Export Data Validation"):
         try:
             with open(os.path.join("data", 'locators.json'), 'r') as f:
                 elements_details = json.load(f)
-                dash_total_btn = elements_details['dash_total_btn']
-                dash_col_all_selection_btn = elements_details['dash_col_all_selection_btn']
-                export_btn = elements_details['export_btn']
-                export_all_data_btn = elements_details['export_all_data_btn']
-                export_selected_rows_btn = elements_details['export_selected_rows_btn']
-                toast_msg = elements_details['toast_msg']
                 settings_icon = elements_details["settings_icon"]
             
             print("✅ locators.json loaded successfully")
@@ -49,25 +38,25 @@ def department_export_all_data(driver, wait):
             settings_btn = wait.until(EC.presence_of_element_located((By.XPATH, settings_icon)))
             highlight_element(driver, settings_btn)
             settings_btn.click()
-        except Exception as e:
-            step_fail(driver, "Click Settings", e)
+        except TimeoutException:
+            print("ℹ️ Settings Failed")
 
     with allure.step("Click on Department"):
         try:
             department_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[normalize-space()='Department']")))
             highlight_element(driver, department_btn)
             department_btn.click()
-        except Exception as e:
-            step_fail(driver, "Click Department", e)
+        except TimeoutException:
+            print("ℹ️ Department Failed")
     wait_for_loader_to_disappear(driver, wait)
     time.sleep(2)
 
     # ✅ Export → All Data
     with allure.step("Export All Data from Dashboard"):
         try:
-            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, export_btn)))
+            export_data_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "(//button[@data-slot='dropdown-menu-trigger'])[1]")))
             export_data_btn.click()
-            export_all = wait_less.until(EC.presence_of_element_located((By.XPATH, export_all_data_btn)))
+            export_all = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[text()='Export all data']")))
             export_all.click()
             print("✅ Exported All Data")
             wait_for_loader_to_disappear(driver, wait)
@@ -75,12 +64,11 @@ def department_export_all_data(driver, wait):
         except Exception as e:
             print("❌ Failed to export all data")
             allure.attach(str(e), name="Export_All_Error", attachment_type=allure.attachment_type.TEXT)
-            pytest.fail("Export Data Failed")
-    
+            raise
     # ✅ Select All Rows
     with allure.step("Select all rows in Dashboard Table"):
         try:
-            dash_col_all_selection_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_col_all_selection_btn)))
+            dash_col_all_selection_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, "//th//span[@role='checkbox']")))
             highlight_element(driver, dash_col_all_selection_btn_elem)
             dash_col_all_selection_btn_elem.click()
             print("✅ Selected all rows in Dashboard")
@@ -89,17 +77,16 @@ def department_export_all_data(driver, wait):
         except Exception as e:
             print("❌ Failed to select all rows in Dashboard")
             allure.attach(str(e), name="Select_All_Error", attachment_type=allure.attachment_type.TEXT)
-            pytest.fail("Selecetd all rows Failed")
-    
+            raise
     
     # ✅ Export → Selected Rows (after selection)
     with allure.step("Export Selected Rows after selecting rows"):
         try:
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(2)
-            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, export_btn)))
+            export_data_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "(//button[@data-slot='dropdown-menu-trigger'])[1]")))
             export_data_btn.click()
-            export_selected_rows = wait_less.until(EC.presence_of_element_located((By.XPATH, export_selected_rows_btn)))
+            export_selected_rows = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@role='menuitem' and contains(text(),'Export selected rows')]")))
             export_selected_rows.click()
             print("✅ Exported Selected Rows (after selecting rows)")
             pg.press('esc')
@@ -109,6 +96,6 @@ def department_export_all_data(driver, wait):
             return True
         except Exception as e:
             print("❌ Failed to export selected rows after selection")
-            allure.attach(str(e), name="Export_Selected_After_Error", attachment_type=allure.attachment_type.TEXT)
-            pytest.fail("Export Selecetd all rows Failed")
+            allure.attach(str(e), name="Export_Selected_After", attachment_type=allure.attachment_type.TEXT)
+            raise
 

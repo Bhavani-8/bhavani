@@ -3,12 +3,13 @@ import json
 import os
 import time
 import pytest
-from selenium.webdriver import ActionChains
+
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_utils import wait_for_loader_to_disappear
+from datetime import datetime
+import random
 
 def step_fail(driver, step_name, error):
     allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
@@ -50,13 +51,25 @@ def create_project(driver, wait, project_name, project_description):
             time.sleep(1)
         except Exception as e:
            step_fail(driver, "Click 'Add New Project' button", e)
+    #
     with allure.step("Enter Project Name"):
         try:
             project_input = wait.until(EC.presence_of_element_located((By.XPATH, project_input_elem)))
             highlight_element(driver, project_input)
-            project_input.send_keys(project_name)
+
+
+            unique_project_name = f"{project_name}_{random.randint(1000, 9999)}"
+
+            project_input.send_keys(unique_project_name)
+            
+            project_file = os.path.join("data", "latest_project.txt")
+            with open(project_file, "w") as f:
+                f.write(unique_project_name)
+
+            print(f"Project Name Created: {unique_project_name}")
+
         except Exception as e:
-           step_fail(driver, "Enter Project Name", e)
+            step_fail(driver, "Enter Project Name", e)
 
     with allure.step("Enter Project Description"):
         try:
@@ -89,7 +102,7 @@ def create_project(driver, wait, project_name, project_description):
 
     with allure.step("Verify project task"):
         try:
-            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{project_name}')]")))
+            project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{unique_project_name}')]")))
             driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", project_task)
             time.sleep(0.5)                                                                   
             highlight_element(driver, project_task)

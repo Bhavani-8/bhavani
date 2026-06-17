@@ -23,7 +23,7 @@ def step_fail(driver, step_name, error):
     pytest.fail(f"❌ {step_name} failed")
 
 
-def notifications_check(driver, module_name=None, test_case_id=None):
+def notification_check(driver, module_name=None, test_case_id=None):
     wait = WebDriverWait(driver, 30)
 
     

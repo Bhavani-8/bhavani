@@ -3,7 +3,7 @@
     "mail_input": "input[placeholder='Enter your company email']",
     "forgot_pass_mail_input": "input[placeholder='Enter your registered email']",
     "pass_input": "input[placeholder='Enter your password']", 
-    "signup_btn": "button.verify-email",
+    "signup_btn": "//button[contains(.,'Verify Email')]",
     "add_task_float": "button[aria-label='Add']",
     "task_name_input": "input[placeholder='Task Name*']",
     "start_date_input": "input[placeholder='Start Date*']",
@@ -18,6 +18,7 @@
     "task_submit_btn": ".add-edit-project-submit-btn",
     "signup_checkbox":"label[for='magicBtn']",
     "toast_close_button":"button.Toastify__close-button",
+    "signup_checkbox_btn": "//input[@class='custom-control-input']",
 
     "team_performance_btn":"//div[text()='Team Performance']",
     "special_team_performance_btn":"//div[normalize-space(text())='Team Performance']",
@@ -28,7 +29,7 @@
     "XPATH": "for below elements, you can use the following XPATH to locate them",
     "show_pass_btn": "//button[contains(@class,'ant-btn-circle') and contains(@class,'ant-btn-icon-only')]",
     
-    "forgot_pass_btn": "//button[text()='Send Link']",
+    "forgot_pass_btn": "//button[.//span[text()='Send Link']]",
     "logout_btn": "//button[@title='Logout']", 
     "onprem_logout_btn": "//div[@class='second-icon-list']//div[3]", 
     "login_btn": "//button[span[text()='Login']]", 
@@ -110,7 +111,7 @@
     "task_impact_details": "//div[@class='_impactContainer_znnvx_56']/p",
     "task_impact_file": "//p[@class='_fileTitleText_znnvx_26 truncate mb-0']",
     "task_impact_close_btn": "//button[@aria-label='Close']",
-    "task_circular_list": "//div[@class='checkbox-title']",
+    "task_circular_list": "//div[@class='flex flex-col min-w-0 flex-1 gap-1']",
     "task_close_btn": "//div[contains(@class,'taskCloseIcon')]//button[4]",
     "task_license_close_btn":"//div[contains(@class,'taskCloseIcon')]//button[2]",
     "task_project_close_btn": "//div[contains(@class,'taskCloseIcon')]//button[3]",
@@ -189,6 +190,8 @@
     "export_btn": "//div[@class='dx-button-content']//i[@class='dx-icon dx-icon-export-to']",
     "export_all_data_btn": "//div[@title='Export all data']",
     "export_selected_rows_btn": "//div[@title='Export selected rows']",
+
+    "new_compliances_added_btn":"//button[@title='New Compliances Added']",
     
     "notification_all_items" : "//p[contains(@class,'text-xs leading-5')]",
     
@@ -198,6 +201,7 @@
     "column_filter_cc" : "//td[@role='columnheader'][.//text()[normalize-space()='CC']]//span[contains(@class,'dx-header-filter')]",
     "column_filter_creator": "//td[@role='columnheader'][.//text()[normalize-space()='Creator']]//span[contains(@class,'dx-header-filter')]",
     "column_filter_license": "//td[@role='columnheader'][.//text()[normalize-space()='License']]//span[contains(@class,'dx-header-filter')]",
+    "column_filter_internal_deadline": "//span[text()='Internal Deadline']/following-sibling::button",
     "column_filter_search_input": "//div[contains(@class,'dx-list-search')]//input[@class='dx-texteditor-input']",
     "column_filter_ok_btn": "//div[contains(@class,'dx-toolbar')]//div[@role='button' and @aria-label='OK']",
     "column_filter_cancel_btn": "//div[contains(@class,'dx-toolbar')]//div[@role='button' and @aria-label='Cancel']",
@@ -231,19 +235,19 @@
     "project_cancel_btn" : "//button//span[text()='Cancel']",
     "add_new_milestone" : "//button[@title='Add new milestone']",
     "milestone_input_elem" : "//input[@id='milestone-title']",
-    "milestone_submit_btn": "//button//span[text()='Confirm']",
+    "milestone_confirm_btn": "//button//span[text()='Confirm']",
     "milestone_add_cancel_btn": "//button//span[text()='Cancel']",
     "milestone_cancel_btn": "//div[@class='flex justify-between items-center']//button[contains(@class,'ant-btn-icon-only')]",
     "add_task_list": "//button[@title='Add Tasklist']",
     "task_list_input_elem": "(//input[contains(@class,'modal-input') and @type='text'])[1]",
     "task_list_submit_btn": "//button//span[text()='Submit']",
 
-    "update_circ_checkbox_label": "(//p[@class='text-xs leading-snug font-semibold text-left'])[1]",
+    "update_circ_checkbox_label": "(//p[@class='text-xs leading-snug font-medium text-left'])[1]",
     "select_circular": "//div[@class='flex flex-col min-w-0 flex-1 gap-1']",
     "create_own_task": "//button[text()='Create your own task']",
-    "task_update_circ": "(//div[@class='col-span-10'])[1]",
-    "task_fetch_circ": "//div[@class='checkbox-title']",
-    "task_circ_close_btn": "//div[contains(@class,'ant-drawer-body')]//button[contains(@class,'ant-btn-icon-only')]",
+    "task_update_circ": "//p[@class='text-xs leading-snug font-medium text-left']",
+    "task_fetch_circ": "//div[@class='flex flex-col min-w-0 flex-1 gap-1']",
+    "task_circ_close_btn": "//button[@data-slot='drawer-close']",
     "update_filter_btn": "//button[@data-slot='drawer-trigger']",
     "issuer_btn": "//span[text()='Select Issuer']",
     "select_first_issuer": "(//div[@class='flex flex-1 gap-2 shrink-0 whitespace-nowrap'])[1]",
@@ -260,6 +264,8 @@
     "fetch_applied_topic_elem": "(//span[@data-slot='badge'])[3]",
     "rest_all_btn": "//span[text()='Reset all']",
 
+    "task_delete_btn": "//button[@title='Delete']",
+    "delete_yes_btn": "//button[span='Yes']",
 
 
     "special_task_icon": "//button[@title='Special Task']",
@@ -306,6 +312,7 @@
         "compliance_history": "https://preprodreact.compliancesutra.com/compliance-history",
         "project_management": "https://preprodreact.compliancesutra.com/project-management",
         "updates": "https://preprodreact.compliancesutra.com/updates",
+        "trash": "https://preprodreact.compliancesutra.com/project-trash",
         "overall_happy_path_flow": "https://preprodreact.compliancesutra.com/dashboard-view",
 
         
@@ -356,9 +363,9 @@
     "security_tab": "//span[text()='Security']",
     "full_name_input": "//input[@id='full_name']",
     
-    "deactivate_account_btn": "//p[text()='Deactivate account']",
+    "deactivate_account_btn": "//button[text()='Deactivate account']",
     "deactivate_reason_input": "//div[contains(@class, '')]//textarea",
-    "deactivate_submit_btn": "//span[text()='Submit']",
+    "deactivate_submit_btn": "//button[@type='submit']",
     "deactivate_request_sent":"//div[@id=1]"
   },
      "Approval_request":"//button[text()='Approval Pending']",

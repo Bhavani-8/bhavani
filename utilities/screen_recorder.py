@@ -16,26 +16,24 @@ class ScreenRecorder:
         self.out = None
 
     def start(self):
-        # width, height = pyautogui.size()
-        # self.video_size = (width, height)
+       
         width, height = pyautogui.size()
 
         taskbar_height = 50
         self.region = (0, 0, width, height - taskbar_height)
         self.video_size = (width, height - taskbar_height)
 
-        # ✅ Use AVI (100% reliable)
-        fourcc = cv2.VideoWriter_fourcc(*"avc1")   # ✅ REAL MP4
+        fourcc = cv2.VideoWriter_fourcc(*"avc1")   
         self.raw_file = self.filename  
 
         self.out = cv2.VideoWriter(self.raw_file,fourcc,self.fps,self.video_size)
 
-        # 🔴 CRITICAL CHECK
+        
         if not self.out.isOpened():
             print("❌ VideoWriter failed to open")
             return
 
-        print("✅ VideoWriter started")
+        # print("✅ VideoWriter started")
 
         self.recording = True
 
@@ -47,7 +45,7 @@ class ScreenRecorder:
                 frame = np.array(img)
 
                 if frame is None or frame.size == 0:
-                    print("❌ Empty frame")
+                    # print("❌ Empty frame")
                     continue
 
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
@@ -60,7 +58,7 @@ class ScreenRecorder:
 
                 time.sleep(1 / self.fps)
 
-            print(f"🎥 Total frames recorded: {frame_count}")
+            
 
         self.thread = threading.Thread(target=record, daemon=True)
         self.thread.start()
@@ -81,6 +79,7 @@ class ScreenRecorder:
                 os.rename(self.raw_file, self.final_file)
                 print("✅ Video saved:", self.final_file)
         except Exception as e:
-            print("❌ Rename failed:", e)
+            # print("❌ Rename failed:", e)
+            pass
 
         return True

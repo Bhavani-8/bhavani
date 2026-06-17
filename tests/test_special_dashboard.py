@@ -14,8 +14,8 @@ at_test_case_list = get_test_case_list(module='special_dashboard')
 
 @allure.suite("Special Dashboard Test Suite")
 @allure.sub_suite("Special Dashboard Validation")
-@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type", at_test_case_list)
-def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_description, test_type):
+@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details", at_test_case_list)
+def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details):
     # allure.dynamic.title(f"Dashboard Validation")
     # allure.dynamic.description(f"This test checks dashboard functionality.")
     allure.dynamic.title(f"{test_case_id}_{module_name}")
@@ -29,7 +29,7 @@ def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_desc
     time.sleep(2)
     with allure.step(f"Special Dashboard Flow"):
         try:
-            success = dashboard_check(driver, dash_type='special', module_name=module_name, test_case_id=test_case_id)
+            success = dashboard_check(driver, dash_type='special', module_name=module_name, test_case_id=test_case_id, task_details=task_details)
             # if success and test_type == 'positive':
             if test_type == 'positive':
                 assert success, "Special Dashboard failed with valid scenario"

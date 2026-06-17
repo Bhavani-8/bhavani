@@ -40,7 +40,7 @@ def test_settings_flow(setup, test_case_id, module_name, test_case_description, 
             time.sleep(2)
             recorder.stop()
 
-            time.sleep(7) 
+            time.sleep(7)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
             os.makedirs("screenshots", exist_ok=True)
@@ -54,9 +54,7 @@ def test_settings_flow(setup, test_case_id, module_name, test_case_description, 
                 allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
             else:
                 print("❌ Video missing or empty")
-    
             allure.attach(str(e), name="Failure Reason", attachment_type=allure.attachment_type.TEXT)
-            # pytest.fail('Failure')
             pytest.fail(f"Failure reason: {e}")
             
         finally:

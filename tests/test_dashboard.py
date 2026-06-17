@@ -15,8 +15,8 @@ at_test_case_list = get_test_case_list(module='dashboard')
 
 @allure.suite("Dashboard Test Suite")
 @allure.sub_suite("Dashboard Validation")
-@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type", at_test_case_list)
-def test_dashboard_flow(setup, test_case_id, module_name, test_case_description, test_type):
+@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details", at_test_case_list)
+def test_dashboard_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details):
     # allure.dynamic.title(f"Dashboard Validation")
     allure.dynamic.title(f"{test_case_id}_{module_name}")
     allure.dynamic.description(f'{test_case_description}')
@@ -31,7 +31,7 @@ def test_dashboard_flow(setup, test_case_id, module_name, test_case_description,
     with allure.step(f"Dashboard Flow"):
         try:
             
-            success = dashboard_check(driver, dash_type='QCC', module_name=module_name, test_case_id=test_case_id)
+            success = dashboard_check(driver, dash_type='QCC', module_name=module_name, test_case_id=test_case_id, task_details=task_details)
             # if success and test_type == 'positive':
             if test_type == 'positive':
                 # assert True
@@ -48,8 +48,8 @@ def test_dashboard_flow(setup, test_case_id, module_name, test_case_description,
             screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
             os.makedirs("screenshots", exist_ok=True)
             time.sleep(0.5)
-            screenshot = pg.screenshot()
-            screenshot.save(screenshot_path)
+            driver.save_screenshot(screenshot_path) 
+
 
             # ✅ Attach to Allure report
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
