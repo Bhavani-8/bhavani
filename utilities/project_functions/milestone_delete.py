@@ -87,15 +87,13 @@ def milestone_delete(driver, wait):
            step_fail(driver, "Enter Milestone Name", e)
     with allure.step("Click Submit Milestone"):
         try:
-            submit_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Confirm']")))
-            highlight_element(driver, submit_btn)
-            submit_btn.click()
-            time.sleep(5)
+            confirm_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Confirm']")))
+            highlight_element(driver, confirm_btn)
+            confirm_btn.click()
+            time.sleep(2)
         except TimeoutException:
-            print("⚠️ Submit failed, trying Cancel...")     
-            cancel_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Cancel']")))
-            highlight_element(driver, cancel_btn)
-            cancel_btn.click()
+            print("⚠️ Confirm failed")     
+            
     with allure.step("Verify Milestone Creation"):
         try:
             
@@ -232,6 +230,8 @@ def milestone_delete(driver, wait):
             milestone_btn.click()
         except Exception as e:
             step_fail(driver, "Click three dots menu", e)
+    
+    
     with allure.step("Click Delete Milestone"):
         try:
             delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Delete']")))

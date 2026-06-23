@@ -76,15 +76,15 @@ def set_approver(driver, approver_dropdown, approver, wait):
             return False
 
 
-        input_field = driver.switch_to.active_element
-        input_field.send_keys(approver)
-        time.sleep(1)
+    input_field = driver.switch_to.active_element
+    input_field.send_keys(approver)
+    time.sleep(1)
 
-        # Locate all dropdown options
-        options_locator = (By.XPATH, "//div[contains(@class, '-option')]")
-        all_options = wait.until(EC.presence_of_all_elements_located(options_locator))
-        option_texts = [opt.text.strip() for opt in all_options if opt.text.strip()]
-        allure.attach('\n'.join(option_texts), name="All Dropdown Options", attachment_type=allure.attachment_type.TEXT)
+    # Locate all dropdown options
+    options_locator = (By.XPATH, "//div[contains(@class, '-option')]")
+    all_options = wait.until(EC.presence_of_all_elements_located(options_locator))
+    option_texts = [opt.text.strip() for opt in all_options if opt.text.strip()]
+    allure.attach('\n'.join(option_texts), name="All Dropdown Options", attachment_type=allure.attachment_type.TEXT)
     
 
     # Step 4: Handle dropdown selection
@@ -164,3 +164,7 @@ def set_approver(driver, approver_dropdown, approver, wait):
         print(msg)
         allure.attach(msg, name="Error", attachment_type=allure.attachment_type.TEXT)
         return False
+    
+
+
+    #  "approver_value_check": "(//div[contains(@class,'singleValue')])[2]",

@@ -122,6 +122,7 @@ def setup(request):
             }
         options.add_experimental_option("prefs", prefs)
         options.add_argument("--start-maximized")
+        options.add_argument("--guest")
         driver = webdriver.Chrome(options=options)
 
     elif browser == "firefox":

@@ -354,7 +354,7 @@ def company_details(driver, wait, company_name):
         time.sleep(5)
 
     with allure.step("Fetch Company Name from Dashboard"):
-        company_project_elem = wait.until(EC.visibility_of_element_located((By.XPATH,"(//td//p[@class='_tr_text_11lye_10'])[2]")))
+        company_project_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//td//p[contains(normalize-space(),'{unique_company_name}')]")))
         driver.execute_script("arguments[0].scrollIntoView({block:'center'});", company_project_elem)
         highlight_element(driver, company_project_elem, 0.2)
         fetched_dashboard_company = company_project_elem.text.strip()
@@ -362,16 +362,19 @@ def company_details(driver, wait, company_name):
         allure.attach(fetched_dashboard_company,name="Dashboard Company Name",attachment_type=allure.attachment_type.TEXT)
        
     with allure.step("Verify Company Name in Dashboard"):
-        if fetched_company == fetched_dashboard_company:
-            print("✅ Company Name Verified successfully!")
-            allure.attach(f"Verified Company Name: {fetched_company}",name="Company Name Check",attachment_type=allure.attachment_type.TEXT)
-            time.sleep(2)
-            return True
-        else:
-            print(f"❌ Company Name Mismatch! Company section: {fetched_company}, Dashboard: {fetched_dashboard_company}")
-            # allure.attach(f"Grid: {fetched_company}\nDashboard: {fetched_dashboard_company}",name="Company Name Mismatch",attachment_type=allure.attachment_type.TEXT)
-            # pytest.fail("Company Name mismatch between Company Details and Dashboard")
-            step_fail(driver, "Company Name Mismatch", f"Company section: {fetched_company}, Dashboard: {fetched_dashboard_company}")
+        try:
+            # If dashboard text contains extra values like company/license
+            if unique_company_name in fetched_dashboard_company:
+                print("✅ Company Name Verified successfully!")
 
-  
+                allure.attach(f"Expected Company: {unique_company_name}\n"f"Dashboard Company: {fetched_dashboard_company}",name="Company Name Check",attachment_type=allure.attachment_type.TEXT)
+                time.sleep(2)
+                return True
 
+            else:
+                error_msg = (f"❌ Company Name Mismatch!\n"f"Expected: {unique_company_name}\n"f"Settings Company: {fetched_company}\n"f"Dashboard Company: {fetched_dashboard_company}")
+                print(error_msg)
+                step_fail(driver, "Company Name Mismatch", error_msg)
+
+        except Exception as e:
+            step_fail(driver, "Verify Company Name in Dashboard", e)

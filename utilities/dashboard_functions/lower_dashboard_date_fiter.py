@@ -78,28 +78,44 @@ def lower_dashboard_date_filter(driver, wait):
         dash_title_label = elements_details['dash_title_label']
         dash_others_value_selector_template = elements_details['dash_others_value_selector_template']
         dash_value_validator_template = elements_details['dash_value_validator_template']
-        dash_sum_value_selector = elements_details['dash_sum_value_selector']
         dash_select_all_checkbox = elements_details['dash_select_all_checkbox']
+        dash_in_time = elements_details['dash_in_time']
+        dash_not_in_time = elements_details['dash_not_in_time']
 
-        dash_complied_btn = elements_details['dash_complied_btn']
-        dash_not_complied_btn = elements_details['dash_not_complied_btn']
 
 
     dash_buttons_others = {
             'Approval Pending': dash_approval_pending_btn,
             'Rejected Tasks': dash_rejected_task_btn,
             'Completed': dash_completed_btn,
+            'In Time': dash_in_time,
+            'Not In Time': dash_not_in_time
         }
 
    
 
-    titles = [['Approval Pending by Me', 'Approval Pending by Others', 'CC', 'All'], ['Assigned To Me', 'Assigned To Others', 'CC', 'All'], ['Completed By Me', 'Completed By Others', 'CC', 'All']]
+    titles_map = {
+        'Approval Pending': ['Approval Pending by Me', 'Approval Pending by Others', 'CC', 'All'],
+        'Rejected Tasks': ['Assigned To Me', 'Assigned To Others', 'CC', 'All'],
+        'Completed': ['Completed By Me', 'Completed By Others', 'CC', 'All'],
+        'In Time': ['Completed By Me', 'Completed By Others', 'CC', 'All'],
+        'Not In Time': ['Completed By Me', 'Completed By Others', 'CC', 'All']
+    }
 
     wait_for_loader_to_disappear(driver, wait)
 
     validation_failures = []
 
     for idx, (btn_name, btn_path) in enumerate(dash_buttons_others.items()):
+
+        if btn_name == 'In Time':
+            expand_btn = wait.until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, "//button[@title='Completed']/following-sibling::button")
+                )
+            )
+            driver.execute_script("arguments[0].click();", expand_btn)
+            time.sleep(2)
 
         btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, btn_path)))
         highlight_element(driver,btn_elem,duration=0.5)
@@ -117,8 +133,7 @@ def lower_dashboard_date_filter(driver, wait):
         dash_others_value_selector = (dash_others_value_selector_template.replace('{title}', btn_name))
         dash_others_value_selector_elem = wait.until(EC.presence_of_all_elements_located((By.XPATH, dash_others_value_selector)))
 
-        for i, (elem, title) in enumerate(zip(dash_others_value_selector_elem, titles[idx]), start=1):
-
+        for i, (elem, title) in enumerate(zip(dash_others_value_selector_elem, titles_map[btn_name]), start=1):
             actual_value = 0
             expected_value = 0
 

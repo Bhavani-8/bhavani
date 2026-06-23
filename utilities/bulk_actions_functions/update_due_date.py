@@ -154,22 +154,11 @@ def update_due_date_bulk_action(driver, wait, task_name='Internal Task'):
             time.sleep(1)
             search_task.click()
             print("✅ Clicked 'Internal Task'")
-        except TimeoutException:
-            print("❌ 'Internal Task' not found in filter list")
-        button_clicked = False
 
-        try:
             column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
             column_filter_ok.click()
-            button_clicked = True
         except TimeoutException:
-            print("ℹ️ Ok button not available / not clickable")
-        if not button_clicked:
-            try:
-                column_filter_cancel = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_cancel_btn)))
-                column_filter_cancel.click()
-            except TimeoutException:
-                print("ℹ️ Close/Cancel button not present")
+            print("❌ 'Internal Task' not found in filter list")
         
         wait_for_loader_to_disappear(driver, wait)
     

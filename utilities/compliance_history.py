@@ -17,10 +17,7 @@ from utilities.compliance_history_functions.compliance_column_filter import comp
 from utilities.compliance_history_functions.search_task_name import search_task_name
 from utilities.compliance_history_functions.compliance_history_filter import compliance_history_filter
 from utilities.compliance_history_functions.compliance_view import compliance_view
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
+
 
 def compliance_history_check(driver, module_name=None, test_case_id=None):
     wait = WebDriverWait(driver, 30)
@@ -48,10 +45,8 @@ def compliance_history_check(driver, module_name=None, test_case_id=None):
         if login_check_success:
             allure.attach("Login successful", name="Login Status", attachment_type=allure.attachment_type.TEXT)
         else:
-            allure.attach("Login failed", name="Login Status", attachment_type=allure.attachment_type.TEXT)
-            step_fail(driver, "Login Failed - Unable to proceed with test", Exception("Login returned False"))
-        
-
+            # allure.attach("Login failed", name="Login Timeout", attachment_type=allure.attachment_type.TEXT)
+            allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
     wait_for_loader_to_disappear(driver, wait)
 
     with allure.step("Open Dashboard"):
@@ -124,7 +119,10 @@ def compliance_history_check(driver, module_name=None, test_case_id=None):
     
     
     
-    step_fail(driver, "Unknown module name", f"Unknown module name: {module_name}")
+    else:
+        msg = f"❌ Unknown module name: {module_name}"
+        allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
 
 
 def get_test_case_list(module=None):

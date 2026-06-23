@@ -188,7 +188,7 @@ def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if
                 add_task_button = wait.until(EC.element_to_be_clickable((By.XPATH, add_task_btn)))
                 highlight_element(driver, add_task_button)
                 add_task_button.click()
-            
+                time.sleep(1)
             except TimeoutException:
                 add_comment_task_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "(//button[@aria-label='Add' and not(ancestor::div[@hidden])])[last()]")))
                 highlight_element(driver, add_comment_task_btn)
@@ -300,6 +300,60 @@ def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if
             show_toast(driver, msg)
             time.sleep(2)
             return False
+    
+    if task_type == 'mandatory':
+        with allure.step(f"Selecting Assign To: '{assign_to}'"):
+            print()
+            print(f"Setting assign to: {assign_to}")
+            allure.attach(f"Setting assign to: {assign_to}", name="Assign To", attachment_type=allure.attachment_type.TEXT)
+            assign_to_success = set_assign_to(driver, assign_to_dropdown, assign_to, wait)
+            if assign_to_success == 'blank':
+                msg = "Assign to input is blank."
+                print(msg)
+                allure.attach(msg, name="Assign To Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                # return False
+            
+            elif assign_to_success:
+                allure.attach("Assign to set successfully", name="Assign To Status", attachment_type=allure.attachment_type.TEXT)
+                print("✅ Assign to set successfully.")
+                # return True
+            
+            else:
+                msg = "❌ Failed to set assign to."
+                print(msg)
+                allure.attach(msg, name="Assign To Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                return False
+    if task_type == 'mandatory':  
+        # ✅ Step 10: Set Approver
+        with allure.step(f"Selecting Approver: '{approver}'"):
+            print()
+            print(f"Setting approver: {approver}")
+            allure.attach(f"Setting approver: {approver}", name="Approver", attachment_type=allure.attachment_type.TEXT)
+            approver_success = set_approver(driver, approver_dropdown, approver, wait)
+            if approver_success == 'blank':
+                msg = "Approver input is blank."
+                print(msg)
+                allure.attach(msg, name="Approver Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                # return False
+            
+            elif approver_success:
+                allure.attach("Approver set successfully", name="Approver Status", attachment_type=allure.attachment_type.TEXT)
+                print("✅ Approver set successfully.")
+                # return True
+            
+            else:
+                msg = "❌ Failed to set approver."
+                print(msg)
+                allure.attach(msg, name="Approver Status", attachment_type=allure.attachment_type.TEXT)
+                show_toast(driver, msg)
+                time.sleep(2)
+                return False  
     
     # ✅ Step 7: Set End Time
     if task_type == 'mandatory':

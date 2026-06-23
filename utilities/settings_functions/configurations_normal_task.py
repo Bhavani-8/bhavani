@@ -165,7 +165,7 @@ def configurations_normal_task(driver, wait, config_normal_task_name):
             if add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_holiday, end_freq_date,
                 repeat_weekday, repeat_day_month, end_time, internal_deadline, assign_to, approver, cc,
                 risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name,
-                circular_search, test_type, direct_task_creation=False):
+                circular_search, test_type, task_type='mandatory', direct_task_creation=False):
                 print("✅ Task creation successful")
                 # return True
             else:

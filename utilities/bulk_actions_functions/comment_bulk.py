@@ -198,14 +198,12 @@ def comment_bulk_action(driver, wait, task_name='Internal Task'):
         search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
         highlight_element(driver, search_input)
         search_input.clear()
-
-        # 🔥 Dynamic search value
         search_input.send_keys(username)
 
         print(f"🔍 Searching Creator filter using username: {username}")
         allure.attach(username, "Creator Filter Search Value", allure.attachment_type.TEXT)
 
-        time.sleep(2)
+        time.sleep(3)
 
     try:
         search_task = wait.until(EC.element_to_be_clickable((By.XPATH,f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{username}']")))

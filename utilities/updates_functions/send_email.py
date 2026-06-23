@@ -188,7 +188,7 @@ def send_circular_to_user(driver, wait, user_name):
         print(f"User Name Found: {fetched_user_email_log}")
         
 
-        subject = wait.until(EC.visibility_of_element_located((By.XPATH, "(//span[@class='line-clamp-2'])[last()]")))
+        subject = wait.until(EC.visibility_of_element_located((By.XPATH, "//div[@class='contain-inline-size']")))
         driver.execute_script("arguments[0].scrollIntoView({block:'center'});", subject)
         time.sleep(0.3)
         highlight_element(driver, subject, 0.2)  # Assuming your highlight function exists

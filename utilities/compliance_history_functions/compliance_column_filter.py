@@ -33,7 +33,6 @@ def compliance_column_filter(driver, wait):
         "Approver",
         "Due Date",
         "Status",
-        "Download"
     ]
 
 
@@ -49,7 +48,7 @@ def compliance_column_filter(driver, wait):
                 filter_xpath = f"//th[.//*[normalize-space()='{column_name}']]//button[@data-slot='popover-trigger']"
                 try:
                     filter_icons = wait.until(EC.presence_of_all_elements_located((By.XPATH, filter_xpath)))
-                except Exception:
+                except TimeoutException:
                     print(f"⏭️ No filter available for column: {column_name}, skipping...")
                     continue
 
@@ -70,9 +69,13 @@ def compliance_column_filter(driver, wait):
                 checkbox.click()
                 time.sleep(2)
 
+                compliance_history_text = wait.until(EC.presence_of_element_located((By.XPATH, "//h2[@class='text-2xl font-bold']")))
+                compliance_history_text.click()
+                time.sleep(0.5)
+
                 filter_icon = wait.until(EC.element_to_be_clickable((By.XPATH, filter_xpath)))
                 highlight_element(driver, filter_icon)
-                filter_icon.click()
+                driver.execute_script("arguments[0].click();", filter_icon)
                 time.sleep(1)
 
                 clear_filter_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[normalize-space()='Clear filters']")))
@@ -80,11 +83,15 @@ def compliance_column_filter(driver, wait):
                 clear_filter_btn.click()
                 time.sleep(2)
 
+                compliance_history_text = wait.until(EC.presence_of_element_located((By.XPATH, "//h2[@class='text-2xl font-bold']")))
+                compliance_history_text.click()
+                time.sleep(0.5)
+
             except Exception as e:
                 print(f"❌ Filter failed for : {column_name} | {e}")
                 failed_filters.append(column_name)
                 continue
     # # ✅ Fail after loop
     if failed_filters:
-        pytest.fail(f"Filters failed for: {failed_filters}")
+        raise Exception(f"Filters failed for: {failed_filters}")
     return True

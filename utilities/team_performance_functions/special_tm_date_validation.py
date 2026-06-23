@@ -147,11 +147,12 @@ def special_tm_date_validation(driver, wait):
                 try:
                     wait.until(EC.element_to_be_clickable(current_elem))
                     current_elem.click()
+                    time.sleep(3)
                 except:
                     driver.execute_script("arguments[0].click();", current_elem)
 
                 wait_for_loader_to_disappear(driver, wait)
-                time.sleep(1.5)
+                time.sleep(3.5)
 
                 try:
                     no_task_elem = driver.find_element(By.XPATH, f"{XPATH_NO_TASK_FOUND}[contains(., 'No Task') or contains(., 'No data')] | //*[contains(text(),'No Task Found')]")
@@ -184,7 +185,7 @@ def special_tm_date_validation(driver, wait):
                         if cb.is_displayed():
                             highlight_element(driver, cb)
                             cb.click()
-                            time.sleep(1.5)
+                            time.sleep(3.5)
                             print("✅ Select All Checkbox clicked")
                             break
                 except TimeoutException:
@@ -194,6 +195,7 @@ def special_tm_date_validation(driver, wait):
                     selected_elem = wait.until(EC.presence_of_element_located((By.XPATH, XPATH_TOTAL_SELECTED_COUNT_TP)))
                     match = re.search(r'(\d+)', selected_elem.text.strip())
                     expected_count = int(match.group(1)) if match else 0
+                    time.sleep(2.5)
                 except TimeoutException:
                     print("⚠️ Selected count text not found.")
                     expected_count = 0
@@ -312,7 +314,7 @@ def special_tm_date_validation(driver, wait):
                     driver.execute_script("arguments[0].click();", total_count_elem)
 
                 wait_for_loader_to_disappear(driver, wait)
-                time.sleep(1)
+                time.sleep(2)
 
                 try:
                     no_task_elem = driver.find_element(By.XPATH, "//*[contains(text(),'No Task Found')]")
@@ -343,7 +345,7 @@ def special_tm_date_validation(driver, wait):
                     select_all = wait.until(EC.presence_of_element_located((By.XPATH,"//div[@role='checkbox' and @aria-label='Select all']//span")))
                     highlight_element(driver, select_all)
                     select_all.click()
-                    time.sleep(2)
+                    time.sleep(2.5)
                     print("✅ Select All clicked")
                 except Exception as e:
                     print(f"⚠️ Select All failed: {e}")
@@ -352,6 +354,7 @@ def special_tm_date_validation(driver, wait):
                 selected_text = selected_elem.text.strip()
                 match = re.search(r'(\d+)', selected_text)
                 selected_count = int(match.group(1)) if match else 0
+                time.sleep(2)
                 
                 try:
                     with allure.step(f"Validate {col_name} (Actual Count: {column_value} vs Expected Count: {selected_count})"):

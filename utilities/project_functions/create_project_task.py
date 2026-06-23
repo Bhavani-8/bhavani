@@ -172,6 +172,7 @@ def create_project_task(driver, wait, project_task_name=None):
             highlight_element(driver, total_tab)
             total_tab.click()
             wait_for_loader_to_disappear(driver, wait)
+            time.sleep(3)
             # click search icon
             search_icon_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_btn)))
             highlight_element(driver, search_icon_btn)
@@ -183,7 +184,7 @@ def create_project_task(driver, wait, project_task_name=None):
             search_input.send_keys(task_name)
 
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(4)  # Extra wait to ensure results load
+            time.sleep(5)  # Extra wait to ensure results load
     
             task_open_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, task_open_btn)))
             highlight_element(driver, task_open_btn_elem)
