@@ -20,7 +20,11 @@ def project_filter(driver, wait):
                 elements_details = json.load(f)
 
             project_icon = elements_details["project_icon"]
-
+            project_filter_btn = elements_details['project_filter_btn']
+            from_date_input = elements_details['from_date_input']
+            to_date_input = elements_details['to_date_input']
+            date_apply_btn = elements_details['date_apply_btn']
+            filter_reset_btn = elements_details['filter_reset_btn']
 
             print("✅ locators.json loaded")
         except Exception as e:
@@ -40,7 +44,7 @@ def project_filter(driver, wait):
            return False
     with allure.step("Click Project filter button"):
         try:
-            project_filter = wait.until(EC.element_to_be_clickable((By.XPATH, "//i[@class='dx-icon dx-icon-filter']")))
+            project_filter = wait.until(EC.element_to_be_clickable((By.XPATH, project_filter_btn)))
             highlight_element(driver, project_filter)
             driver.execute_script("arguments[0].click();", project_filter)
             time.sleep(1)
@@ -55,7 +59,7 @@ def project_filter(driver, wait):
             today = datetime.today().date()
             past_date = (today - timedelta(days=3)).strftime("%Y-%m-%d")
             future_date = (today + timedelta(days=3)).strftime("%Y-%m-%d")
-            from_input = wait.until(EC.element_to_be_clickable((By.XPATH, "//input[@placeholder='From']")))
+            from_input = wait.until(EC.element_to_be_clickable((By.XPATH, from_date_input)))
             from_input.click()
 
             from_date = wait.until(EC.element_to_be_clickable((By.XPATH, f"//td[@title='{past_date}']")))
@@ -63,14 +67,14 @@ def project_filter(driver, wait):
 
             print(f"✅ Selected From Date: {past_date}")
 
-            to_input = wait.until(EC.element_to_be_clickable((By.XPATH, "//input[@placeholder='To']")))
+            to_input = wait.until(EC.element_to_be_clickable((By.XPATH, to_date_input)))
             to_input.click()
 
             to_date = wait.until(EC.element_to_be_clickable((By.XPATH, f"//td[@title='{future_date}']")))
             to_date.click()
             print(f"✅ Selected To Date: {future_date}")
 
-            apply_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[.//span[text()='Apply']]")))
+            apply_btn = wait.until(EC.element_to_be_clickable((By.XPATH, date_apply_btn)))
             apply_btn.click()
             time.sleep(1)
         except Exception as e:
@@ -80,7 +84,7 @@ def project_filter(driver, wait):
     
     with allure.step("Click Project filter button"):
         try:
-            project_filter = wait.until(EC.element_to_be_clickable((By.XPATH, "//i[@class='dx-icon dx-icon-filter']")))
+            project_filter = wait.until(EC.element_to_be_clickable((By.XPATH, project_filter_btn)))
             highlight_element(driver, project_filter)
             driver.execute_script("arguments[0].click();", project_filter)
             time.sleep(1)
@@ -90,7 +94,7 @@ def project_filter(driver, wait):
            return False
 
         try:
-            reset_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "(//span[text()='Reset'])[2]")))
+            reset_btn = wait.until(EC.element_to_be_clickable((By.XPATH, filter_reset_btn)))
             reset_btn.click()
             time.sleep(0.5)
         except Exception as e:

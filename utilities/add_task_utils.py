@@ -39,7 +39,7 @@ from utilities.login_utils import login_check
 from load_test_config_excel_data import load_test_config_excel_data
 
 
-def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_due_date_is_on_holiday, end_frequency_date, weekday_name, repeat_day_and_month, end_time, internal_deadline, assign_to, approver, cc, risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name, circular_search, test_type, task_type=None, refresh=False, login_required=True, direct_task_creation = False):
+def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_due_date_is_on_holiday, end_frequency_date, weekday_name, repeat_day_and_month, end_time, internal_deadline, assign_to, approver, cc, risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name, circular_search, test_type, task_type=None, refresh=False, login_required=True, direct_task_creation = False, module="default"):
     # Get all arguments as a local variable dictionary
     args = locals()
 
@@ -333,7 +333,7 @@ def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if
             print()
             print(f"Setting approver: {approver}")
             allure.attach(f"Setting approver: {approver}", name="Approver", attachment_type=allure.attachment_type.TEXT)
-            approver_success = set_approver(driver, approver_dropdown, approver, wait)
+            approver_success = set_approver(driver, approver_dropdown, approver, wait, module)
             if approver_success == 'blank':
                 msg = "Approver input is blank."
                 print(msg)
@@ -484,7 +484,7 @@ def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if
             print()
             print(f"Setting approver: {approver}")
             allure.attach(f"Setting approver: {approver}", name="Approver", attachment_type=allure.attachment_type.TEXT)
-            approver_success = set_approver(driver, approver_dropdown, approver, wait)
+            approver_success = set_approver(driver, approver_dropdown, approver, wait, module)
             if approver_success == 'blank':
                 msg = "Approver input is blank."
                 print(msg)

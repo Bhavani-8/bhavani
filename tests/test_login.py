@@ -24,6 +24,8 @@ def test_login_flow(setup, test_case_id, test_case_description, username, passwo
     os.makedirs("videos", exist_ok=True)
     recorder = ScreenRecorder(filename=video_path, fps=10)
     recorder.start()
+    test_failed = False
+
     with allure.step(f"Login Flow"):
         try:
             success = login_check(driver, waittime=2, trial=3, username=username, password=password)
@@ -46,10 +48,10 @@ def test_login_flow(setup, test_case_id, test_case_description, username, passwo
                 #     )
                 assert not success, "Login succeeded with invalid credentials"
         except Exception as e:
+            test_failed = True
+            # recorder.stop()
 
-            recorder.stop()
-
-            time.sleep(1) 
+            time.sleep(0.5) 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
             os.makedirs("screenshots", exist_ok=True)
@@ -73,3 +75,15 @@ def test_login_flow(setup, test_case_id, test_case_description, username, passwo
 
             # 🔗 Attach final URL no matter success or failure
             allure.attach(driver.current_url, name="Final URL", attachment_type=allure.attachment_type.TEXT)
+            if test_failed:
+                if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
+                    allure.attach.file(
+                        video_path,
+                        name="Failure Video",
+                        attachment_type=allure.attachment_type.MP4
+                    )
+                else:
+                    print("❌ Video missing or empty")
+            else:
+                if os.path.exists(video_path):
+                    os.remove(video_path)

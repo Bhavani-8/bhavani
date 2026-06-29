@@ -27,6 +27,7 @@ def test_special_task_flow(setup, test_case_id, task_name, test_case_description
     recorder = ScreenRecorder(filename=video_path, fps=10)
     recorder.start()
     time.sleep(2)
+    test_failed = False
     with allure.step(f"Special Add Task Flow"):
         try:
             success = special_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_due_date_is_on_holiday, end_frequency_date, weekday_name, repeat_day_and_month, end_time, internal_deadline, assign_to, approver, cc, risk_rating, license_name, task_category, description, attach_file_name, impact_details, impact_file_name, circular_search, test_type)
@@ -38,6 +39,7 @@ def test_special_task_flow(setup, test_case_id, task_name, test_case_description
                 assert not success, "Dashboard Special Add Task succeeded with invalid scenario"
 
         except Exception as e:
+            test_failed = True
             time.sleep(2)
             recorder.stop()
 
@@ -69,3 +71,15 @@ def test_special_task_flow(setup, test_case_id, task_name, test_case_description
             # 🔗 Attach final URL no matter success or failure
             allure.attach(driver.current_url, name="Final URL", attachment_type=allure.attachment_type.TEXT)
 
+            if test_failed:
+                if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
+                    allure.attach.file(
+                        video_path,
+                        name="Failure Video",
+                        attachment_type=allure.attachment_type.MP4
+                    )
+                else:
+                    print("❌ Video missing or empty")
+            else:
+                if os.path.exists(video_path):
+                    os.remove(video_path)

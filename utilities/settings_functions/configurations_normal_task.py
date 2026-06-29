@@ -30,6 +30,9 @@ def configurations_normal_task(driver, wait, config_normal_task_name):
                 elements_details = json.load(f)
             settings_icon = elements_details["settings_icon"]
             toast_msg = elements_details["toast_msg"]
+            config_btn_elem = elements_details['config_btn_elem']
+            task_creation_label = elements_details['task_creation_label']
+            config_submit = elements_details['config_submit']
            
         except Exception as e:
             step_fail(driver, "Load locators.json", e)
@@ -44,7 +47,7 @@ def configurations_normal_task(driver, wait, config_normal_task_name):
 
     with allure.step("Click on configurations"):
         try:
-            configurations_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[normalize-space()='Configurations']")))
+            configurations_btn = wait.until(EC.element_to_be_clickable((By.XPATH, config_btn_elem)))
             highlight_element(driver, configurations_btn)
             configurations_btn.click()
         except Exception as e:
@@ -52,7 +55,7 @@ def configurations_normal_task(driver, wait, config_normal_task_name):
     
     with allure.step("Allow Task creation without Assignee and Approver"):
         try:
-            allow_task_creation_label = wait.until(EC.visibility_of_element_located((By.XPATH, "//label[@for='TASK_CREATE_ASSIGNEE_REQUIRED']")))
+            allow_task_creation_label = wait.until(EC.visibility_of_element_located((By.XPATH, task_creation_label)))
             highlight_element(driver, allow_task_creation_label)
             label_text = allow_task_creation_label.text.strip()
             print(f"✅ Label Name: {label_text}")
@@ -117,7 +120,7 @@ def configurations_normal_task(driver, wait, config_normal_task_name):
             allure.attach(str(e),name=f"{switch['label']} Error",attachment_type=allure.attachment_type.TEXT)
 
         try:
-            submit_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Submit']")))
+            submit_btn = wait.until(EC.presence_of_element_located((By.XPATH, config_submit)))
             highlight_element(driver, submit_btn)
             submit_btn.click()
         except Exception as e:

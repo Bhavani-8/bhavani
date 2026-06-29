@@ -31,6 +31,10 @@ def project_task_restore_delete(driver, wait):
             toast_msg = elements_details['toast_msg']
             trash_icon = elements_details['trash_icon']
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
+            add_new_task = elements_details['add_new_task']
+            project_next_btn = elements_details['project_next_btn']
+            task_delete_btn = elements_details['task_delete_btn']
+            all_tasks_tab = elements_details['all_tasks_tab']
 
             print("✅ locators.json loaded")
         except Exception as e:
@@ -59,7 +63,7 @@ def project_task_restore_delete(driver, wait):
             step_fail(driver, "Click Project Task", e)
     with allure.step("Click 'Add new task' button"):
         try:
-            add_new_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Add new task']")))
+            add_new_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_new_task)))
             highlight_element(driver, add_new_task_btn)
             add_new_task_btn.click()
             time.sleep(1)
@@ -67,7 +71,7 @@ def project_task_restore_delete(driver, wait):
             step_fail(driver, "Click 'Add new task' button", e)
     with allure.step("Click 'Next' button"):
         try:
-            next_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Next']")))
+            next_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_next_btn)))
             highlight_element(driver, next_btn)
             next_btn.click()
             print("✅ Project Submit clicked")
@@ -135,7 +139,7 @@ def project_task_restore_delete(driver, wait):
             step_fail(driver, "Click three dots menu", e)
     with allure.step("Click Delete Task"):
         try:
-            delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Delete']")))
+            delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_delete_btn)))
             highlight_element(driver, delete_btn)
             delete_btn.click()
             print("🗑️ Delete button clicked")
@@ -173,7 +177,7 @@ def project_task_restore_delete(driver, wait):
     with allure.step("Click Tasks Tab"):
         try:
             time.sleep(3)
-            tasks_tab = wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Tasks']")))
+            tasks_tab = wait.until(EC.presence_of_element_located((By.XPATH, all_tasks_tab)))
             highlight_element(driver, tasks_tab)
             tasks_tab.click()
             print("📌 Tasks tab clicked")
@@ -236,7 +240,7 @@ def project_task_restore_delete(driver, wait):
             step_fail(driver, "Click project task three dots menu", e)
     with allure.step("Click Delete Task"):
         try:
-            delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Delete']")))
+            delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_delete_btn)))
             highlight_element(driver, delete_btn)
             delete_btn.click()
             print("🗑️ Delete button clicked")

@@ -24,6 +24,7 @@ def export_all_data(driver, wait):
                 export_all_data_btn = elements_details['export_all_data_btn']
                 export_selected_rows_btn = elements_details['export_selected_rows_btn']
                 toast_msg = elements_details['toast_msg']
+                new_compliances_added_btn = elements_details['new_compliances_added_btn']
             print("✅ locators.json loaded successfully")
         except FileNotFoundError as e:
             print("❌ locators.json file not found")
@@ -34,30 +35,19 @@ def export_all_data(driver, wait):
             allure.attach(str(e), name="Invalid_JSON", attachment_type=allure.attachment_type.TEXT)
             pytest.fail("Invalid JSON in locators.json")
 
-    # ✅ Click Total Button
-    with allure.step("Click on Total Button"):
-        try:
-            wait.until(EC.invisibility_of_element_located((By.XPATH, toast_msg)))
-            dash_total_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_total_btn)))
-            highlight_element(driver, dash_total_btn_elem)
-            dash_total_btn_elem.click()
-            wait_for_loader_to_disappear(driver, wait)
-            print("✅ Clicked on Total Button")
-        except Exception as e:
-            print("❌ Failed to click on Total Button")
-            allure.attach(str(e), name="Total_Button_Error", attachment_type=allure.attachment_type.TEXT)
-            raise
-
+   
     # ✅ Export → All Data
     with allure.step("Export All Data from Dashboard"):
         try:
-            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, export_btn)))
+            time.sleep(3)
+            export_data_btn = wait.until(EC.presence_of_element_located((By.XPATH, export_btn)))
             export_data_btn.click()
-            export_all = wait_less.until(EC.presence_of_element_located((By.XPATH, export_all_data_btn)))
+            time.sleep(1)
+            export_all = wait.until(EC.presence_of_element_located((By.XPATH, export_all_data_btn)))
             export_all.click()
             print("✅ Exported All Data")
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(12)
+            time.sleep(2)
         except Exception as e:
             print("❌ Failed to export all data")
             allure.attach(str(e), name="Export_All_Error", attachment_type=allure.attachment_type.TEXT)
@@ -70,7 +60,7 @@ def export_all_data(driver, wait):
             highlight_element(driver, dash_col_all_selection_btn_elem)
             dash_col_all_selection_btn_elem.click()
             print("✅ Selected all rows in Dashboard")
-            time.sleep(15)
+            time.sleep(2)
             wait_for_loader_to_disappear(driver, wait)
         except Exception as e:
             print("❌ Failed to select all rows in Dashboard")
@@ -82,10 +72,10 @@ def export_all_data(driver, wait):
     with allure.step("Export Selected Rows after selecting rows"):
         try:
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(10)
-            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, export_btn)))
+            export_data_btn = wait.until(EC.presence_of_element_located((By.XPATH, export_btn)))
             export_data_btn.click()
-            export_selected_rows = wait_less.until(EC.presence_of_element_located((By.XPATH, export_selected_rows_btn)))
+            time.sleep(1)
+            export_selected_rows = wait.until(EC.presence_of_element_located((By.XPATH, export_selected_rows_btn)))
             export_selected_rows.click()
             print("✅ Exported Selected Rows (after selecting rows)")
             pg.press('esc')

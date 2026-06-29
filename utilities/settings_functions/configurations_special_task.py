@@ -30,6 +30,8 @@ def configurations_special_task(driver, wait):
                 elements_details = json.load(f)
             settings_icon = elements_details["settings_icon"]
             toast_msg = elements_details["toast_msg"]
+            config_btn_elem = elements_details['config_btn_elem']
+            config_submit = elements_details['config_submit']
            
         except Exception as e:
             step_fail(driver, "Load locators.json", e)
@@ -44,7 +46,7 @@ def configurations_special_task(driver, wait):
 
     with allure.step("Click on configurations"):
         try:
-            configurations_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[normalize-space()='Configurations']")))
+            configurations_btn = wait.until(EC.element_to_be_clickable((By.XPATH, config_btn_elem)))
             highlight_element(driver, configurations_btn)
             configurations_btn.click()
         except Exception as e:
@@ -101,7 +103,7 @@ def configurations_special_task(driver, wait):
 
     # Submit once after normal task switches
     try:
-        submit_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Submit']")))
+        submit_btn = wait.until(EC.element_to_be_clickable((By.XPATH, config_submit)))
         highlight_element(driver, submit_btn)
         submit_btn.click()
 
@@ -167,7 +169,7 @@ def configurations_special_task(driver, wait):
 
     # Submit once after special task switches
     try:
-        submit_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Submit']")))
+        submit_btn = wait.until(EC.element_to_be_clickable((By.XPATH, config_submit)))
         highlight_element(driver, submit_btn)
         submit_btn.click()
         print("✅ Special task configuration submitted successfully.")

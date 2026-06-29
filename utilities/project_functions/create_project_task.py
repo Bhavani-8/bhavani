@@ -37,6 +37,9 @@ def create_project_task(driver, wait, project_task_name=None):
             task_close_btn = elements_details['task_close_btn']
             task_search_close_btn = elements_details['task_search_close_btn']
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
+            add_new_task = elements_details['add_new_task']
+            project_next_btn = elements_details['project_next_btn']
+            fetch_task_name = elements_details['fetch_task_name']
             print("✅ locators.json loaded")
         except Exception as e:
             step_fail(driver, "Load locators.json", e)
@@ -65,7 +68,7 @@ def create_project_task(driver, wait, project_task_name=None):
     
     with allure.step("Click 'Add new task' button"):
         try:
-            add_new_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Add new task']")))
+            add_new_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_new_task)))
             highlight_element(driver, add_new_task_btn)
             add_new_task_btn.click()
         except Exception as e:
@@ -73,7 +76,7 @@ def create_project_task(driver, wait, project_task_name=None):
         
     with allure.step("Click 'Next' button"):
         try:
-            next_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Next']")))
+            next_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_next_btn)))
             highlight_element(driver, next_btn)
             next_btn.click()
             print("✅ Project Submit clicked")
@@ -135,7 +138,7 @@ def create_project_task(driver, wait, project_task_name=None):
     
     with allure.step("Fetch the task name from the opened task details panel"):
         try:
-            task_name_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(@class,'task-details-sub-title') and @title]")))
+            task_name_btn = wait.until(EC.presence_of_element_located((By.XPATH, fetch_task_name)))
             highlight_element(driver, task_name_btn)
             task_name = task_name_btn.text.strip()
             time.sleep(2)

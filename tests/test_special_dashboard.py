@@ -27,6 +27,7 @@ def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_desc
     recorder = ScreenRecorder(filename=video_path, fps=10)
     recorder.start()
     time.sleep(2)
+    test_failed = False
     with allure.step(f"Special Dashboard Flow"):
         try:
             success = dashboard_check(driver, dash_type='special', module_name=module_name, test_case_id=test_case_id, task_details=task_details)
@@ -36,6 +37,7 @@ def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_desc
             elif test_type == 'negative':
                 assert not success, "Special Dashboard succeeded with invalid scenario"
         except Exception as e:
+            test_failed = True
             time.sleep(2)
             recorder.stop()
 
@@ -49,10 +51,10 @@ def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_desc
 
             # ✅ Attach to Allure report
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
-            if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-                allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
-            else:
-                print("❌ Video missing or empty")
+            # if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
+            #     allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
+            # else:
+            #     print("❌ Video missing or empty")
             allure.attach(str(e), name="Failure Reason", attachment_type=allure.attachment_type.TEXT)
             pytest.fail(f"Failure reason: {e}")
             
@@ -64,3 +66,15 @@ def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_desc
 
             # 🔗 Attach final URL no matter success or failure
             allure.attach(driver.current_url, name="Final URL", attachment_type=allure.attachment_type.TEXT)
+            if test_failed:
+                if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
+                    allure.attach.file(
+                        video_path,
+                        name="Failure Video",
+                        attachment_type=allure.attachment_type.MP4
+                    )
+                else:
+                    print("❌ Video missing or empty")
+            else:
+                if os.path.exists(video_path):
+                    os.remove(video_path)

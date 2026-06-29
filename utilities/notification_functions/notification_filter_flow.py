@@ -9,9 +9,9 @@ from utilities.notification_functions.common_validators import verify_user_in_ro
 # ==============================================================================
 # THE MASTER WORKER: Handles ALL standard dropdown filters (With Smart Scanning)
 # ==============================================================================
-def execute_filter_and_validate(driver, wait, locators, logged_in_email, filter_key, filter_name, expected_inner_status=None, outer_keyword=None):
+def execute_filter_and_validate(driver, wait, locators, logged_in_email, filter_key, filter_name, expected_inner_status=None, notification_text=None):
     
-    with allure.step(f"Running Master Flow for: {filter_name}"):
+    with allure.step(f"Validating {filter_name} Notifications"):
         
         # 1. OPEN DROPDOWN
         with allure.step("Opening Filter Dropdown"):
@@ -45,19 +45,19 @@ def execute_filter_and_validate(driver, wait, locators, logged_in_email, filter_
 
             target_notification = None
 
-            if outer_keyword:
+            if notification_text:
                 for item in items:
-                    if outer_keyword.lower() in item.text.lower():
+                    if notification_text.lower() in item.text.lower():
                         target_notification = item
                         break
                 
                 if not target_notification:
-                    raise Exception(f"Fail: Scanned {len(items)} items, but none contained the text '{outer_keyword}'.")
+                    raise Exception(f"Fail: Scanned {len(items)} items, but none contained the text '{notification_text}'.")
             else:
                 target_notification = items[0]
 
         # 4. OPEN THE TASK
-        with allure.step("Deep Dive: Opening the task"):
+        with allure.step("Click the task"):
             highlight_element(driver, target_notification)
             driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", target_notification)
             time.sleep(0.5)

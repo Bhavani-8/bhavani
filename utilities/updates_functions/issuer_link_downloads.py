@@ -21,14 +21,32 @@ def issuer_link_downloads(driver, wait):
         try:
             with open(os.path.join("data", 'locators.json'), 'r') as f:
                 elements_details = json.load(f)
+            search_circ_elem = elements_details['search_circ_elem']
+            search_input_text = elements_details['search_input_text']
+            select_update_checkbox = elements_details['select_update_checkbox']
+            circ_issuer_link = elements_details['circ_issuer_link']
+            downloads_btn = elements_details['downloads_btn']
+
             print("✅ locators.json loaded successfully")
         except Exception as e:
             allure.attach(str(e), name="Locators Error", attachment_type=allure.attachment_type.TEXT)
             pytest.fail("Failed to load locators.json")
+    
+    with allure.step("Search Circular"):
+        try:
+            search_circ = wait.until(EC.presence_of_element_located((By.XPATH, search_circ_elem)))
+            highlight_element(driver, search_circ)
+            search_circ.click()
+            time.sleep(0.5)
+            search_input = wait.until(EC.presence_of_element_located((By.XPATH, search_input_text)))
+            search_input.send_keys("mock trading")
+            time.sleep(0.5)
+        except Exception as e:
+            print(f"Search failed: {e}")
 
     with allure.step("Select Update Checkbox"):
         try:
-            select_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//div[@class='flex flex-col min-w-0 flex-1 gap-1'])[5]")))
+            select_elem = wait.until(EC.presence_of_element_located((By.XPATH, select_update_checkbox)))
             highlight_element(driver, select_elem)
             select_elem.click()
             print("🟦 First checkbox clicked")
@@ -40,7 +58,7 @@ def issuer_link_downloads(driver, wait):
     with allure.step("Click on Issuer Link"):
         try:
             main_window = driver.current_window_handle
-            issuer_link = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[text()='Issuer Link']")))
+            issuer_link = wait.until(EC.element_to_be_clickable((By.XPATH, circ_issuer_link)))
             highlight_element(driver, issuer_link)
             issuer_link.click()
             time.sleep(2)
@@ -69,7 +87,7 @@ def issuer_link_downloads(driver, wait):
 
     with allure.step("Click on the Download File"):
         try:
-            downloads = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Download Files']")))
+            downloads = wait.until(EC.element_to_be_clickable((By.XPATH, downloads_btn)))
             highlight_element(driver, downloads)
             downloads.click()
             time.sleep(2)

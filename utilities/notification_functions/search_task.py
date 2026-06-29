@@ -20,12 +20,11 @@ def _search_task_flow(driver, wait, locators):
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", first_item)
         time.sleep(0.5)
         
-        bold_text_xpath = "(//strong[text()])[1]"
-        bold_element = wait.until(EC.visibility_of_element_located((By.XPATH, bold_text_xpath)))
-        highlight_element(driver, bold_element)
+        bold_text_task_name = wait.until(EC.visibility_of_element_located((By.XPATH, "(//strong[text()])[1]")))
+        highlight_element(driver, bold_text_task_name)
         time.sleep(1.5) 
         
-        fetched_search_term = bold_element.text.strip() 
+        fetched_search_term = bold_text_task_name.text.strip() 
 
     # 2. SHOWING FETCHED TEXT
     with allure.step("Data Fetched"):

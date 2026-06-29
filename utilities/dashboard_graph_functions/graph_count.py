@@ -8,9 +8,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import pyautogui as pg
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import StaleElementReferenceException
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.keys import Keys
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
 def dashboard_graph_count(driver, wait):
@@ -46,8 +43,8 @@ def dashboard_graph_count(driver, wait):
             highlight_element(driver, year_btn)
             year_btn.click()
             time.sleep(1)
-            year_btn.click()
-            time.sleep(1)
+            # year_btn.click()
+            # time.sleep(1)
 
             month_fetch_view = wait.until(EC.presence_of_element_located((By.XPATH, "((//*[name()='rect' and @fill='#7a73ff'])[5]/following::*[name()='text' and number(.)=number(.)])[1]")))
             highlight_element(driver, month_fetch_view)

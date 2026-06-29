@@ -35,6 +35,10 @@ def milestone_delete(driver, wait):
             toast_msg = elements_details['toast_msg']
             column_chooser_btn = elements_details['column_chooser_btn']
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
+            add_new_milestone = elements_details['add_new_milestone']
+            milestone_input_elem = elements_details['milestone_input_elem']
+            task_delete_btn = elements_details['task_delete_btn']
+            milestone_tab_btn = elements_details['milestone_tab_btn']
             print("✅ locators.json loaded")
         except Exception as e:
             step_fail(driver, "Load locators.json", e)
@@ -64,7 +68,7 @@ def milestone_delete(driver, wait):
     
     with allure.step("Click 'Add New Milestone' button"):
         try:
-            milestone_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Add new milestone']")))
+            milestone_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_new_milestone)))
             highlight_element(driver, milestone_btn)
             milestone_btn.click()
             time.sleep(1)
@@ -73,7 +77,7 @@ def milestone_delete(driver, wait):
     with allure.step("Enter Milestone Name"):
         # milestone = f"{milestone}_delete_check"
         try:
-            milestone_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='milestone-title']")))
+            milestone_input = wait.until(EC.presence_of_element_located((By.XPATH, milestone_input_elem)))
             highlight_element(driver, milestone_input)
             created_milestone = f"Milestone_delete_check"
 
@@ -122,7 +126,7 @@ def milestone_delete(driver, wait):
             step_fail(driver, "Click three dots menu", e)
     with allure.step("Click Delete Milestone"):
         try:
-            delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Delete']")))
+            delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_delete_btn)))
             highlight_element(driver, delete_btn)
             delete_btn.click()
             print("🗑️ Delete button clicked")
@@ -158,7 +162,7 @@ def milestone_delete(driver, wait):
     with allure.step("Click Milestone Tab"):
         try:
             time.sleep(3)
-            milestone_tab = wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Milestones']")))
+            milestone_tab = wait.until(EC.presence_of_element_located((By.XPATH, milestone_tab_btn)))
             highlight_element(driver, milestone_tab)
             milestone_tab.click()
             print("📌 Milestone tab clicked")
@@ -234,7 +238,7 @@ def milestone_delete(driver, wait):
     
     with allure.step("Click Delete Milestone"):
         try:
-            delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Delete']")))
+            delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_delete_btn)))
             highlight_element(driver, delete_btn)
             delete_btn.click()
             time.sleep(0.5)

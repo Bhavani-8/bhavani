@@ -74,9 +74,7 @@ def validate_column_chooser_flow(driver, wait):
         # ✅ STEP 3: VALIDATE ALL COLUMNS
         # ==============================
         with allure.step("Validate All Columns Visible"):
-            headers = wait.until(EC.presence_of_all_elements_located(
-                (By.XPATH, "//tr[contains(@class,'dx-header-row')]//td[@aria-label]")
-            ))
+            headers = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//tr[contains(@class,'dx-header-row')]//td[@aria-label]")))
             col_headers = [h.get_attribute("aria-label").strip() for h in headers]
 
             print(f"📊 All Columns: {col_headers}")
@@ -130,13 +128,7 @@ def validate_column_chooser_flow(driver, wait):
         # ✅ STEP 5: VALIDATE PARTIAL COLUMN
         # ==============================
         with allure.step("Validate table headers after partial selection"):
-            headers = wait.until(
-                EC.presence_of_all_elements_located((
-                    By.XPATH,
-                    "//tr[contains(@class,'dx-header-row')]//div[contains(@class,'dx-datagrid-text-content')]"
-                ))
-            )
-
+            headers = wait.until(EC.presence_of_all_elements_located((By.XPATH,"//tr[contains(@class,'dx-header-row')]//div[contains(@class,'dx-datagrid-text-content')]")))
             col_headers = [h.text.strip() for h in headers if h.text.strip()]
             normalized = [h.lower() for h in col_headers]
 
@@ -181,9 +173,7 @@ def validate_column_chooser_flow(driver, wait):
         # ✅ STEP 3: VALIDATE ALL COLUMNS
         # ==============================
         with allure.step("Validate All Columns Visible"):
-            headers = wait.until(EC.presence_of_all_elements_located(
-                (By.XPATH, "//tr[contains(@class,'dx-header-row')]//td[@aria-label]")
-            ))
+            headers = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//tr[contains(@class,'dx-header-row')]//td[@aria-label]")))
             col_headers = [h.get_attribute("aria-label").strip() for h in headers]
 
             print(f"📊 All Columns: {col_headers}")

@@ -28,6 +28,7 @@ def test_delete_task_flow(setup, test_case_id, module_name, test_case_descriptio
     recorder = ScreenRecorder(filename=video_path, fps=10)
     recorder.start()
     time.sleep(2)
+    test_failed = False
     with allure.step(f"Trying to validate UI of remove task"):
         try:
             success = remove_task_check(driver, module_name=module_name)
@@ -38,6 +39,7 @@ def test_delete_task_flow(setup, test_case_id, module_name, test_case_descriptio
                 assert not success, "Dashboard succeeded with invalid scenario"
 
         except Exception as e:
+            test_failed = True
             time.sleep(2)
             recorder.stop()
 
@@ -66,3 +68,15 @@ def test_delete_task_flow(setup, test_case_id, module_name, test_case_descriptio
                 pass
 
             allure.attach(driver.current_url, name="Final URL", attachment_type=allure.attachment_type.TEXT)
+            if test_failed:
+                if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
+                    allure.attach.file(
+                        video_path,
+                        name="Failure Video",
+                        attachment_type=allure.attachment_type.MP4
+                    )
+                else:
+                    print("❌ Video missing or empty")
+            else:
+                if os.path.exists(video_path):
+                    os.remove(video_path)

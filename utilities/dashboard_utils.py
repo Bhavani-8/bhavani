@@ -35,11 +35,10 @@ from utilities.dashboard_functions.search_task_by_existing_task_name import sear
 from utilities.dashboard_graph_functions.graph_count import dashboard_graph_count
 from utilities.dashboard_graph_functions.new_compliances_added_normal_task import new_compliances_normal_task
 from utilities.dashboard_graph_functions.new_compliances_added_special_task import new_compliances_special_task
+from utilities.dashboard_graph_functions.new_compliances_column_chooser import new_compliances_column_chooser
+from utilities.dashboard_graph_functions.new_compliances_export_data import new_compliances_export_all_data
 from utilities.search_utils import clear_search
 from load_test_config_excel_data import load_test_config_excel_data
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.action_chains import ActionChains
 
 
 def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None,task_details=None):
@@ -86,6 +85,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                 special_task_icon_elem = wait.until(EC.presence_of_element_located((By.XPATH, special_task_icon)))
                 highlight_element(driver, special_task_icon_elem)
                 special_task_icon_elem.click()
+                time.sleep(2)
                 print("✅ Special Task Dashboard icon clicked")
             except Exception as e:
                 allure.attach(str(e), name="Dashboard Open Error", attachment_type=allure.attachment_type.TEXT)
@@ -373,6 +373,31 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                     return False
             except Exception as e:
                 allure.attach(str(e), name="New compliances Special Task Error", attachment_type=allure.attachment_type.TEXT)
+    
+    if module_name == 'new_compliances_column_chooser':
+        with allure.step("New compliances Special Task"):
+            try:
+                if new_compliances_column_chooser(driver, wait):
+                    print("✅ New compliances Column chooser validation successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for New compliances Column chooser", name="New compliances Column chooser Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="New compliances Column Chooser Error", attachment_type=allure.attachment_type.TEXT)
+        
+    if module_name == 'new_compliances_export_all_data':
+        with allure.step("New compliances Export All Data"):
+            try:
+                if new_compliances_export_all_data(driver, wait):
+                    print("✅ New compliances Export All Data validation successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for New compliances Export All Data", name="New compliances Export All Data Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="New compliances Export all Data Error", attachment_type=allure.attachment_type.TEXT)
+
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)

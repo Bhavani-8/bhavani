@@ -26,6 +26,17 @@ def add_coowner(driver, wait, coowner_name):
 
             project_icon = elements_details["project_icon"]
             toast_msg = elements_details['toast_msg']
+            add_coowner_elem = elements_details['add_coowner_elem']
+            add_btn_elem = elements_details['add_btn_elem']
+            coowner_drop_down_btn = elements_details['coowner_drop_down_btn']
+            add_checkbox_btn = elements_details['add_checkbox_btn']
+            edit_checkbox_btn = elements_details['edit_checkbox_btn']
+            delete_checkbox_btn = elements_details['delete_checkbox_btn']
+            coowner_submit_btn = elements_details['coowner_submit_btn']
+            fetch_coowner_name = elements_details['fetch_coowner_name']
+            fetch_coowner_permissions = elements_details['fetch_coowner_permissions']
+            coowner_done_btn = elements_details['coowner_done_btn']
+
 
             print("✅ locators.json loaded")
         except Exception as e:
@@ -55,7 +66,7 @@ def add_coowner(driver, wait, coowner_name):
             step_fail(driver, "Click the three dots menu for the task", e)
     with allure.step("Click Add Co-owner or Add Button"):
         try:
-            add_coowner_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@title='Add Co-owner']")))
+            add_coowner_btn = wait.until(EC.element_to_be_clickable((By.XPATH, add_coowner_elem)))
             highlight_element(driver, add_coowner_btn)
             add_coowner_btn.click()
             print("👥 Add Co-owner clicked")
@@ -64,7 +75,7 @@ def add_coowner(driver, wait, coowner_name):
             print("Add Co-owner not found, trying Add button...")
 
             try:
-                add_btn = wait.until(EC.element_to_be_clickable((By.XPATH,"(//button[contains(@class,'project-management__small-icon-button')])[1]" )))
+                add_btn = wait.until(EC.element_to_be_clickable((By.XPATH, add_btn_elem)))
                 highlight_element(driver, add_btn)
                 add_btn.click()
                 print("➕ Add User clicked (fallback option)")
@@ -73,7 +84,7 @@ def add_coowner(driver, wait, coowner_name):
                 step_fail(driver, "Click Add Co-owner or Add Button", e2)
     with allure.step("Click Dropdown and Select Co-owner"):
         try:
-            dropdown_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'css-1xc3v61-indicatorContainer')]")))
+            dropdown_btn = wait.until(EC.presence_of_element_located((By.XPATH, coowner_drop_down_btn)))
             highlight_element(driver, dropdown_btn)
             dropdown_btn.click()
             
@@ -90,30 +101,28 @@ def add_coowner(driver, wait, coowner_name):
             step_fail(driver, "Click Dropdown and Select Co-owner", e)
     with allure.step("Click Add, Edit, Delete Checkbox"):
         try:
-            add_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='project-user-checkbox-add']")))
+            add_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, add_checkbox_btn)))
             highlight_element(driver, add_checkbox)
             add_checkbox.click()
             time.sleep(1)
             
-            edit_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='project-user-checkbox-edit']")))
+            edit_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, edit_checkbox_btn)))
             highlight_element(driver, edit_checkbox)
             edit_checkbox.click()
             time.sleep(1)
 
-            delete_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='project-user-checkbox-delete']")))
+            delete_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, delete_checkbox_btn)))
             highlight_element(driver, delete_checkbox)
             delete_checkbox.click()
             time.sleep(1)
 
-            submit_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button//span[text()='Submit']")))
+            submit_btn = wait.until(EC.presence_of_element_located((By.XPATH, coowner_submit_btn)))
             highlight_element(driver, submit_btn)
             submit_btn.click()
             print("✔️ Submit clicked")
             time.sleep(3)
 
-            # done_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[contains(@class,'project-management__button') and contains(@class,'primary')]")))
-            # highlight_element(driver, done_btn)
-            # done_btn.click()
+            
         except TimeoutException:
             print("⚠️ No options available — clicking Cancel")
 
@@ -122,7 +131,7 @@ def add_coowner(driver, wait, coowner_name):
             cancel_btn.click()
             print("❌ Selection cancelled because no options were found")
 
-            done_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button//span[text()='Done']")))
+            done_btn = wait.until(EC.presence_of_element_located((By.XPATH, coowner_done_btn)))
             highlight_element(driver, done_btn)
             done_btn.click()
     with allure.step("Click the three dots menu from the project"):
@@ -139,17 +148,17 @@ def add_coowner(driver, wait, coowner_name):
             step_fail(driver, "Click the three dots menu from the project", e)
     with allure.step("Validate Co-owner Name and Permissions"):
         try:
-            add_coowner_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Add Co-owner']")))
+            add_coowner_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_coowner_elem)))
             highlight_element(driver, add_coowner_btn)
             add_coowner_btn.click()
             print("👥 Add Co-owner clicked")
 
-            coowner_name = wait.until(EC.visibility_of_element_located((By.XPATH, "//div[@class='col-span-5 truncate']")))
+            coowner_name = wait.until(EC.visibility_of_element_located((By.XPATH, fetch_coowner_name)))
             highlight_element(driver, coowner_name, 0.2)
             fetched_coowner_name = coowner_name.text.strip() 
             print(f"Co-owner Name: {fetched_coowner_name}")
 
-            coowner_permissions =  wait.until(EC.visibility_of_element_located((By.XPATH, "//div[@class='col-span-4 capitalize']")))
+            coowner_permissions =  wait.until(EC.visibility_of_element_located((By.XPATH, fetch_coowner_permissions)))
             highlight_element(driver, coowner_permissions, 0.2)
             fetched_coowner_permissions = coowner_permissions.text.strip()
             print(f"Permissions: {fetched_coowner_permissions}")
@@ -165,7 +174,7 @@ def add_coowner(driver, wait, coowner_name):
             
     with allure.step("Click Done Button"):
         try:
-            done_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button//span[text()='Done']")))
+            done_btn = wait.until(EC.element_to_be_clickable((By.XPATH, coowner_done_btn)))
             highlight_element(driver, done_btn)
             done_btn.click()
             time.sleep(2)

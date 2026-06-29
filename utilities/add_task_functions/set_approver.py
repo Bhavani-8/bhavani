@@ -10,7 +10,7 @@ import re
 from utilities.add_task_functions.add_task_common import validate_email, task_value_store
 
 
-def set_approver(driver, approver_dropdown, approver, wait):
+def set_approver(driver, approver_dropdown, approver, wait, module):
     given_mail = approver
 
     # Step 1: Validate input
@@ -40,10 +40,20 @@ def set_approver(driver, approver_dropdown, approver, wait):
     # Step 2: Load locators
     try:
         # with allure.step("Loading locators..."):
-        with open(os.path.join("data", 'locators.json'), 'r') as f:
-            elements_details = json.load(f)
-            approver_value_check_xpath = elements_details['approver_value_check']
-        print("✅ Locators loaded successfully.")
+        # with open(os.path.join("data", 'locators.json'), 'r') as f:
+        #     elements_details = json.load(f)
+        #     approver_value_check_xpath = elements_details['approver_value_check']
+        # print("✅ Locators loaded successfully.")
+        with open(os.path.join("data", "locators.json"), "r") as f:
+            locators = json.load(f)
+        if module == "create_milestone_task":
+            approver_value_check_xpath = locators["approver_value_check"]["create_milestone_task"]
+
+        elif module == "create_task_list_task":
+            approver_value_check_xpath = locators["approver_value_check"]["create_task_list_task"]
+
+        else:
+            approver_value_check_xpath = locators["approver_value_check"]["default"]
     except (FileNotFoundError, json.JSONDecodeError) as e:
         msg = f"❌ Failed to load locators: {e}"
         print(msg)
@@ -131,13 +141,14 @@ def set_approver(driver, approver_dropdown, approver, wait):
 
     # Step 5: Validate selection
     try:
-        # with allure.step("Validating Approver selection..."):
-        approver_value_input = wait.until(EC.presence_of_element_located((By.XPATH, approver_value_check_xpath)))
-        highlight_element(driver, approver_value_input)
-        approver_value_text = approver_value_input.text.strip().lower()
-        given_mail_lower = given_mail.strip().lower()
-        print(f"🧪 Validation Debug — Given: {given_mail_lower}, UI Value: {approver_value_text}, Approver: {approver}")
-
+        with allure.step("Validating Approver selection..."):
+            approver_value_input = wait.until(EC.presence_of_element_located((By.XPATH, approver_value_check_xpath)))
+            highlight_element(driver, approver_value_input)
+            approver_value_text = approver_value_input.text.strip().lower()
+            given_mail_lower = given_mail.strip().lower()
+            print(f"🧪 Validation Debug — Given: {given_mail_lower}, UI Value: {approver_value_text}, Approver: {approver}")
+       
+       
         # Case 1: Direct match
         if approver_value_text == given_mail_lower:
             print(f"✅ Approver match successful.")

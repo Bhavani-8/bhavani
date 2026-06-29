@@ -39,7 +39,21 @@ def company_details(driver, wait, company_name):
             column_chooser_save_btn = elements_details['column_chooser_save_btn']
             column_filter_company_project = elements_details['column_filter_company_project']
             column_filter_ok_btn = elements_details['column_filter_ok_btn']
-
+            select_company_btn = elements_details['select_company_btn']
+            add_another_btn = elements_details['add_another_btn']
+            company_name_input = elements_details['company_name_input']
+            company_type_dropdown_btn = elements_details['company_type_dropdown_btn']
+            select_first_option = elements_details['select_first_option']
+            select_country_dropdown = elements_details['select_country_dropdown']
+            select_country_option = elements_details['select_country_option']
+            country_pincode_input = elements_details['country_pincode_input']
+            assign_co_officer_btn = elements_details['assign_co_officer_btn']
+            co_officer_label = elements_details['co_officer_label']
+            select_license_btn = elements_details['select_license_btn']
+            license_checkbox_btn = elements_details['license_checkbox_btn']
+            select_license = elements_details['select_license']
+            inside_add_licenses = elements_details['inside_add_licenses']
+            inside_add_company = elements_details['inside_add_company']
 
            
             print("✅ locators.json loaded successfully")
@@ -69,14 +83,14 @@ def company_details(driver, wait, company_name):
         time.sleep(2)
 
         # Click Company 
-        company_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//span[text()='Company']")))
+        company_btn = wait.until(EC.presence_of_element_located((By.XPATH, select_company_btn)))
         highlight_element(driver, company_btn)
         company_btn.click()
         print("✅ Company Button Clicked")
         time.sleep(2)
 
         # Click Add Another Company
-        add_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[contains(text(),'Add Company')]")))
+        add_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_another_btn)))
         highlight_element(driver, add_btn)
         add_btn.click()
         print("✅ Add Another Company Button Clicked")
@@ -84,7 +98,7 @@ def company_details(driver, wait, company_name):
         
     with allure.step("Enter Company Name"):
         # Click Add Company Name
-        company_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter company name']")))
+        company_input = wait.until(EC.presence_of_element_located((By.XPATH, company_name_input)))
         highlight_element(driver, company_input)
         company_input.click()
         unique_company_name = f"{company_name}_{random.randint(1000, 9999)}"
@@ -100,23 +114,23 @@ def company_details(driver, wait, company_name):
         print("✅ Company Name Entered")
 
     with allure.step("Select Company Type"):
-        company_type_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Select company type']")))
+        company_type_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, company_type_dropdown_btn)))
         highlight_element(driver, company_type_dropdown)
         company_type_dropdown.click()
         time.sleep(0.5)
-        first_option = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[text()='Limited']")))
+        first_option = wait.until(EC.element_to_be_clickable((By.XPATH, select_first_option)))
         highlight_element(driver, first_option)
         first_option.click()
         print("✅ Selected first option from Company Type dropdown")
 
     with allure.step("Select Country Name"):
         try:
-            select_country = wait.until(EC.presence_of_element_located((By.XPATH, "//span[text()='Select country']")))
+            select_country = wait.until(EC.presence_of_element_located((By.XPATH, select_country_dropdown)))
             highlight_element(driver, select_country)
             select_country.click()
             time.sleep(0.5)
             
-            country_option = wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='India']")))
+            country_option = wait.until(EC.presence_of_element_located((By.XPATH, select_country_option)))
             highlight_element(driver, country_option)
             country_option.click()
         except Exception as e:
@@ -124,7 +138,7 @@ def company_details(driver, wait, company_name):
 
     with allure.step("Enter Pincode Number"):
         try:
-            pincode_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter pincode']")))
+            pincode_input = wait.until(EC.presence_of_element_located((By.XPATH, country_pincode_input)))
             highlight_element(driver, pincode_input)
             pincode_input.send_keys("400092")
             wait_for_loader_to_disappear(driver, wait)
@@ -135,7 +149,7 @@ def company_details(driver, wait, company_name):
 
     with allure.step("Assign Compliance Officer"):
         try:
-            assign_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//span[text()='Select compliance officer']")))
+            assign_btn = wait.until(EC.presence_of_element_located((By.XPATH, assign_co_officer_btn)))
             highlight_element(driver, assign_btn)
             assign_btn.click()
             time.sleep(0.5)
@@ -144,7 +158,7 @@ def company_details(driver, wait, company_name):
             highlight_element(driver, assign_to_me_elem)
             assign_to_me_elem.click()
 
-            compliance_officer_label = wait.until(EC.presence_of_element_located((By.XPATH, "//label[text()='Compliance Officer']")))
+            compliance_officer_label = wait.until(EC.presence_of_element_located((By.XPATH, co_officer_label)))
             compliance_officer_label.click()
         except Exception as e:
             step_fail(driver, "Assign Compliance Officer", e)
@@ -152,23 +166,23 @@ def company_details(driver, wait, company_name):
     
     with allure.step("Add License"):
         try:
-            license_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Add Licenses']")))
+            license_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_license_btn)))
             highlight_element(driver, license_btn)
             license_btn.click()
 
-            choose_license_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//span[text()='BSE']")))
+            choose_license_btn = wait.until(EC.presence_of_element_located((By.XPATH, select_license_btn)))
             highlight_element(driver, choose_license_btn)
             choose_license_btn.click()
 
-            license_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, "//span[contains(@class,'truncate') and text()='BSE']")))
+            license_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, license_checkbox_btn)))
             highlight_element(driver, license_checkbox)
             license_checkbox.click()
 
-            choose_licenses = wait.until(EC.presence_of_element_located((By.XPATH, "//h2[text()='Choose Licenses']")))
+            choose_licenses = wait.until(EC.presence_of_element_located((By.XPATH, select_license)))
             choose_licenses.click()
             time.sleep(1)
 
-            add_license_btn = wait.until(EC.presence_of_element_located((By.XPATH, "(//button[contains(.,'Add License')])[2]")))
+            add_license_btn = wait.until(EC.presence_of_element_located((By.XPATH, inside_add_licenses)))
             highlight_element(driver, add_license_btn)
             add_license_btn.click()
             print("✅ License Added")
@@ -178,7 +192,7 @@ def company_details(driver, wait, company_name):
 
     with allure.step("Add Company"):
         try:
-            add_company_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "(//button[text()='Add Company'])[2]")))
+            add_company_btn = wait.until(EC.element_to_be_clickable((By.XPATH, inside_add_company)))
             highlight_element(driver, add_company_btn)
 
             driver.execute_script("arguments[0].scrollIntoView(true);", add_company_btn)
@@ -338,7 +352,7 @@ def company_details(driver, wait, company_name):
         company_project_filter_btn.click()
         wait_for_loader_to_disappear(driver, wait)
         
-        search_input = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@aria-label='Search' and contains(@class,'dx-texteditor-input')]")))
+        search_input = wait.until(EC.visibility_of_element_located((By.XPATH, search_input)))
         search_input.clear()
         search_input.send_keys(unique_company_name)
         wait_for_loader_to_disappear(driver, wait)

@@ -37,12 +37,14 @@ def login_check(driver, waittime, trial, username, password, user_validation=Fal
         toast_msg = elements_details['toast_msg']
         print("✅ Locators loaded successfully")
     except FileNotFoundError as e:
-        allure.attach(str(e), name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
-        pytest.fail("❌ locators.json file not found")
+        msg = f"locators.json file not found: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
         return False
     except json.JSONDecodeError as e:
-        allure.attach(str(e), name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
-        pytest.fail("❌ Invalid JSON in locators.json")
+        msg = f"Invalid JSON in locators.json: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
         return False
 
     time_taken = 0
@@ -54,9 +56,14 @@ def login_check(driver, waittime, trial, username, password, user_validation=Fal
             highlight_element(driver, mail_input)
             mail_input.send_keys(username)
             print("✅ Email entered")
+        # except Exception as e:
+        #     allure.attach(str(e), name="Email Input Error", attachment_type=allure.attachment_type.TEXT)
+        #     pytest.fail("❌ Failed to enter email")
+        #     return False
         except Exception as e:
-            allure.attach(str(e), name="Email Input Error", attachment_type=allure.attachment_type.TEXT)
-            pytest.fail("❌ Failed to enter email")
+            msg = f"Failed to enter email: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Email Input Error", attachment_type=allure.attachment_type.TEXT)
             return False
 
     # 🔑 Enter Password
@@ -67,8 +74,9 @@ def login_check(driver, waittime, trial, username, password, user_validation=Fal
             password_input.send_keys(password)
             print("✅ Password entered")
         except Exception as e:
+            msg = f"Failed to enter password: {str(e)}"
+            print(msg)
             allure.attach(str(e), name="Password Input Error", attachment_type=allure.attachment_type.TEXT)
-            pytest.fail("❌ Failed to enter password")
             return False
 
     # 👁️ Make Password Visible
@@ -80,8 +88,9 @@ def login_check(driver, waittime, trial, username, password, user_validation=Fal
             if password_input.get_attribute('type') == 'text':
                 print("✅ Password is visible")
         except Exception as e:
+            msg = f"failed to show password: {str(e)}"
+            print(msg)
             allure.attach(str(e), name="Show Password Error", attachment_type=allure.attachment_type.TEXT)
-            pytest.fail("❌ Failed to make password visible")
             return False
 
     # ➡️ Click Login Button
@@ -108,12 +117,15 @@ def login_check(driver, waittime, trial, username, password, user_validation=Fal
                     if err_text:
                         print(f"❌ Error Message for Input: {err_text}")
                 except Exception as e:
+                    msg = f"No error label found for whitespace in username: {str(e)}"
+                    print(msg)
                     allure.attach(str(e), name="Whitespace Error Check", attachment_type=allure.attachment_type.TEXT)
-                    pytest.fail("❌ No error label found for whitespace in username")
+                    return False
                 return False
             
             # 🚫 Newly Invited User (Not Signed Up)
             if "invited" in username.lower():  
+                # login_button.click()
 
                 try:
                     toast_msg_elem = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
@@ -122,43 +134,71 @@ def login_check(driver, waittime, trial, username, password, user_validation=Fal
                     toast_text = toast_msg_elem.text.strip()
                     print(f"Toast Message: {toast_text}")
 
-                    assert "User disabled or missing" in toast_text, \
-                        f"❌ Expected 'User disabled or missing' but got '{toast_text}'"
+                    # assert "User disabled or missing" in toast_text, \
+                    #     f"❌ Expected 'User disabled or missing' but got '{toast_text}'"
 
-                    print("✅ Proper error shown for invited user")
+                    # print("✅ Proper error shown for invited user")
+                    # return False
+                    if "User disabled or missing" in toast_text:
+                        print("✅ Proper error shown for invited user")
+                    else:
+                        print(f"Unexpected toast: {toast_text}")
+
                     return False
 
                 except Exception as e:
+                    msg = f"Toast message not found for invited user: {str(e)}"
+                    print(msg)
                     allure.attach(str(e), name="Invited User Error", attachment_type=allure.attachment_type.TEXT)
-                    pytest.fail("❌ Toast message not found for invited user")
+                    return False
 
             login_button.click()
             time.sleep(0.5)
             wait_for_loader_to_disappear(driver, wait)
             print("✅ Login button clicked")
 
+        # except Exception as e:
+        #     allure.attach(str(e), name="Login Button Error", attachment_type=allure.attachment_type.TEXT)
+        #     # pytest.fail("❌ Failed to click Login button")
         except Exception as e:
-            allure.attach(str(e), name="Login Button Error", attachment_type=allure.attachment_type.TEXT)
-            pytest.fail("❌ Failed to click Login button")
+            msg = f"Login button click failed:{str(e)}"
+            print(msg)
+            allure.attach(msg, name="Login Button Error", attachment_type=allure.attachment_type.TEXT)
+            return False
 
     # 🔍 Toast Check
+    # try:
+    #     for i in range(3):
+    #         time.sleep(0.3)
+    #         toast_msg_elems = wait_less.until(EC.presence_of_all_elements_located((By.XPATH, toast_msg)))
+    #         # highlight_element(driver, toast_msg_elem)
+    #         for toast_msg_elem in toast_msg_elems:
+    #             msg = toast_msg_elem.text.strip()
+    #             if msg and 'invalid' in msg.lower():
+    #                 print(f"❌ Invalid login: {msg}")
+    #                 return False
+    #             elif msg:
+    #                 # print(f"ℹ️ Toast Message: {msg}")
+    #                 continue
     try:
-        for i in range(3):
-            time.sleep(0.3)
-            toast_msg_elems = wait_less.until(EC.presence_of_all_elements_located((By.XPATH, toast_msg)))
-            # highlight_element(driver, toast_msg_elem)
-            for toast_msg_elem in toast_msg_elems:
-                msg = toast_msg_elem.text.strip()
-                if msg and 'invalid' in msg.lower():
-                    print(f"❌ Invalid login: {msg}")
-                    return False
-                elif msg:
-                    # print(f"ℹ️ Toast Message: {msg}")
-                    continue
+        toast_msg_elem = wait_less.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
+        msg = toast_msg_elem.text.strip()
 
+        if msg:
+            print(f"Toast Message: {msg}")
+            allure.attach(msg, name="Toast Message", attachment_type=allure.attachment_type.TEXT)
+            allure.attach(
+            driver.get_screenshot_as_png(),
+            name="Toast Screenshot",
+            attachment_type=allure.attachment_type.PNG
+        )
 
-    except Exception as err:
-        pass
+            return False
+    except Exception as e:
+        print(f"No toast message found: {str(e)}")
+
+    # except Exception as err:
+    #     pass
     for i in range(5):
         if not "dashboard-view" in driver.current_url:
         

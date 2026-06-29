@@ -28,6 +28,8 @@ def check_filters(driver, wait):
                 select_first_industry = elements_details['select_first_industry']
                 select_topic = elements_details['select_topic']
                 select_first_topic = elements_details['select_first_topic']
+                select_status = elements_details['select_status']
+                select_first_status = elements_details['select_first_status']
                 from_date = elements_details['from_date']
                 to_date = elements_details['to_date']
                 view_update = elements_details['view_update']
@@ -35,6 +37,8 @@ def check_filters(driver, wait):
                 fetch_applied_industry_elem = elements_details['fetch_applied_industry_elem']
                 fetch_applied_topic_elem = elements_details['fetch_applied_topic_elem'] 
                 rest_all_btn = elements_details['rest_all_btn'] 
+                fetch_applied_status_elem = elements_details['fetch_applied_status_elem']
+
 
             print("✅ locators.json loaded successfully")
         except Exception as e:
@@ -129,6 +133,32 @@ def check_filters(driver, wait):
         except Exception as e:
             allure.attach(str(e), name="Select First Topic Error", attachment_type=allure.attachment_type.TEXT)
             return False 
+    
+    with allure.step("Click on Select Status"):
+        try:
+            status_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, select_status)))
+            highlight_element(driver,  status_dropdown)
+            status_dropdown.click()
+            time.sleep(2)
+            print("🟦 Select Topic clicked")
+        except Exception as e:
+            allure.attach(str(e), name="Select Satus Error", attachment_type=allure.attachment_type.TEXT)
+            return False
+
+        try :
+            select_first_status = wait.until(EC.element_to_be_clickable((By.XPATH, select_first_status)))
+            highlight_element(driver, select_first_status)  
+            fetch_status_name = select_first_status.text
+            select_first_status.click()
+            time.sleep(1)
+            print(f"🟦 First status selected: {fetch_status_name}")
+            allure.attach(f"Status: {fetch_status_name}",name="Selected Status",attachment_type=allure.attachment_type.TEXT)
+            filters_label = wait.until(EC.element_to_be_clickable((By.XPATH, filter_label))) 
+            filters_label.click()
+            time.sleep(2)     
+        except Exception as e:
+            allure.attach(str(e), name="Select First Topic Error", attachment_type=allure.attachment_type.TEXT)
+            return False 
         
     with allure.step("Click on Select Date calendar"):
         try:
@@ -138,7 +168,7 @@ def check_filters(driver, wait):
             time.sleep(2)
 
             today = datetime.today()
-            today_str = today.strftime("%#m/%#d/%Y")  
+            today_str = today.strftime("%#d/%#m/%Y")  
 
             date_btn = wait.until(EC.element_to_be_clickable((By.XPATH, f"//button[@data-day='{today_str}']")))
 
@@ -158,7 +188,7 @@ def check_filters(driver, wait):
             time.sleep(2)
 
             today = datetime.today()
-            today_str = today.strftime("%#m/%#d/%Y")  # use %-m on Mac/Linux
+            today_str = today.strftime("%#d/%#m/%Y")  # use %-m on Mac/Linux
 
             date_btn = wait.until(EC.element_to_be_clickable((By.XPATH, f"//button[@data-day='{today_str}']")))
 
@@ -215,6 +245,17 @@ def check_filters(driver, wait):
         else:
             print(f"❌ Topic Mismatch!: {fetch_applied_topic}: {fetch_topic_name}")
             allure.attach(f"Grid: {fetch_applied_topic}: {fetch_topic_name}",name="Topic Mismatch",attachment_type=allure.attachment_type.TEXT)
+    
+    with allure.step("Validate Status filter applied correctly"):
+        applied_status = wait.until(EC.visibility_of_element_located((By.XPATH, fetch_applied_status_elem)))
+        highlight_element(driver, applied_status)
+        fetch_applied_status = applied_status.text
+        if fetch_applied_status == fetch_status_name:
+            print(f"✅ validated {fetch_applied_status} : {fetch_status_name}  ")
+            allure.attach(f"Status: {fetch_status_name}",name="Status Check",attachment_type=allure.attachment_type.TEXT)
+        else:
+            print(f"❌ Status Mismatch!: {fetch_applied_status}: {fetch_status_name}")
+            allure.attach(f"Grid: {fetch_applied_status}: {fetch_status_name}",name="Status Mismatch",attachment_type=allure.attachment_type.TEXT)
     
     with allure.step("Click on Reset Button"):
         try:

@@ -14,7 +14,7 @@ from load_test_config_excel_data import load_test_config_excel_data
 
 
 from utilities.notification_functions.search_task import _search_task_flow
-from utilities.notification_functions.base_filter_flow import execute_filter_and_validate
+from utilities.notification_functions.notification_filter_flow import execute_filter_and_validate
 
 
 def step_fail(driver, step_name, error):
@@ -26,7 +26,7 @@ def step_fail(driver, step_name, error):
 def notification_check(driver, module_name=None, test_case_id=None):
     wait = WebDriverWait(driver, 30)
 
-    
+    driver.get("https://preprodreact.compliancesutra.com/login")
     with allure.step("Login with valid credentials"):
         try:
             print("🔐 Logging in with valid credentials...")
@@ -52,34 +52,36 @@ def notification_check(driver, module_name=None, test_case_id=None):
     except Exception as e:
         step_fail(driver, "Locators Load Error", e)
 
-    
-    with allure.step("Open Notifications Panel"):
+    with allure.step("Open Notifications Icon"):
         try:
+            notification_btn = wait.until(EC.presence_of_element_located((By.XPATH, locators["notification_icon"])))
+            highlight_element(driver, notification_btn)
+            notification_btn.click()
             time.sleep(3)
-            bell = wait.until(EC.element_to_be_clickable((By.XPATH, locators["notification_icon"])))
-            highlight_element(driver, bell)
-            driver.execute_script("arguments[0].click();", bell)
-            time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Failed to open notifications", e)
+            msg = f"Failed to open notifications button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Notifications Error", attachment_type=allure.attachment_type.TEXT)
+            return False
+    
 
-    clean_module = str(module_name).strip().lower()
+    # module_name = str(module_name).strip().lower()
 
     
-    clean_module = str(module_name).strip().lower()
+    # module_name = str(module_name).strip().lower()
 
     
     filter_map = {
-        'assigned_task':     {'json_key': 'drop_down_assignd',   'inner_label': None,            'outer_keyword': None},
-        'tasks_filter':      {'json_key': 'drop_down_tsks',      'inner_label': None,            'outer_keyword': None},
-        'rejected_filter':   {'json_key': 'drop_down_rjtd',   'inner_label': None,            'outer_keyword': None},
-        'reassigned_filter': {'json_key': 'drop_down_rasignd', 'inner_label': None,            'outer_keyword': None},
-        'comment_filter':    {'json_key': 'drop_down_cmmt',   'inner_label': None,            'outer_keyword': None},
-        'approved_filter':   {'json_key': 'drop_down_apprvd',     'inner_label': 'Task Approved', 'outer_keyword': 'Task Approved by'}
+        'assigned_task':     {'locator_key': 'drop_down_assignd',   'inner_label': None,  'notification_text': None},
+        'tasks_filter':      {'locator_key': 'drop_down_tsks',      'inner_label': None,  'notification_text': None},
+        'rejected_filter':   {'locator_key': 'drop_down_rjtd',   'inner_label': None,  'notification_text': None},
+        'reassigned_filter': {'locator_key': 'drop_down_rasignd', 'inner_label': None,  'notification_text': None},
+        'comment_filter':    {'locator_key': 'drop_down_cmmt',   'inner_label': None,  'notification_text': None},
+        'approved_filter':   {'locator_key': 'drop_down_apprvd',  'inner_label': 'Task Approved', 'notification_text': 'Task Approved by'}
     }
 
     
-    if clean_module == 'search_task':
+    if module_name == 'search_task':
         with allure.step("Notification Search Task Validation"):
             try:
                 
@@ -88,26 +90,45 @@ def notification_check(driver, module_name=None, test_case_id=None):
                 step_fail(driver, "Search Task Error", e)
           
 
-    elif clean_module in filter_map:
-        config = filter_map[clean_module]
-        with allure.step(f"Notification Validation for: {clean_module}"):
+    # elif module_name in filter_map:
+    #     config = filter_map[module_name]
+    #     with allure.step(f"Notification Validation for: {module_name}"):
+    #         try:
+    #             return execute_filter_and_validate(
+    #                 driver=driver, 
+    #                 wait=wait, 
+    #                 locators=locators, 
+    #                 logged_in_email=user_email, 
+    #                 filter_key=config['locator_key'], 
+    #                 filter_name=module_name,
+    #                 expected_inner_status=config['inner_label'],
+    #                 outer_keyword=config['outer_keyword']
+    #             )
+    #         except Exception as e:
+    #             step_fail(driver, f"{module_name.capitalize()} Error", e)
+    if module_name in filter_map:
+        config = filter_map[module_name]
+
+        with allure.step(f"Notification Validation for: {module_name}"):
             try:
                 return execute_filter_and_validate(
-                    driver=driver, 
-                    wait=wait, 
-                    locators=locators, 
-                    logged_in_email=user_email, 
-                    filter_key=config['json_key'], 
-                    filter_name=clean_module,
+                    driver=driver,
+                    wait=wait,
+                    locators=locators,
+                    logged_in_email=user_email,
+                    filter_key=config['locator_key'],
+                    filter_name=module_name,
                     expected_inner_status=config['inner_label'],
-                    outer_keyword=config['outer_keyword']
+                    notification_text=config['notification_text']
                 )
             except Exception as e:
-                step_fail(driver, f"{clean_module.capitalize()} Error", e)
+                step_fail(driver, f"{module_name.capitalize()} Error", e)
+                return False
                 
     else:
-        step_fail(driver, "Unknown module name", f"Unknown module name: '{module_name}'")
-        return False
+        msg = f"❌ Unknown module name: {module_name}"
+        allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg) 
 
 def get_test_case_list(module=None):
     try:

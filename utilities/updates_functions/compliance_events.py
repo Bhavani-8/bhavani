@@ -11,7 +11,7 @@ import time
 
 
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, ElementNotInteractableException
 from utilities.add_task_utils import add_task_check
 from utilities.add_task_utils import get_test_case_list
 from utilities.add_task_utils import load_test_config_excel_data
@@ -58,12 +58,19 @@ def compliance_events(driver, wait):
             allure.attach(str(e), name="Updates Section Error", attachment_type=allure.attachment_type.TEXT)
             return False
 
-    with allure.step("Open Compliance Events"):
-        compliance_events = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Compliance Events']")))
-        highlight_element(driver, compliance_events)
-        compliance_events.click()
-        print("🟦 Compliance Events clicked")
-        time.sleep(3)
+    with allure.step("Click Compliance Events Button"):
+        try:
+            compliance_events = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Compliance Events']")))
+            highlight_element(driver, compliance_events)
+            compliance_events.click()
+            print("🟦 Compliance Events clicked")
+            time.sleep(3)
+        except TimeoutException:
+            msg = "❌ Compliance Events button is not present in UI"
+            print(msg)
+            allure.attach(msg, name="Compliance Events Error",
+                        attachment_type=allure.attachment_type.TEXT)
+            return False
 
     # Column header names (order must match filters)
     column_headers = [
@@ -160,14 +167,10 @@ def compliance_events(driver, wait):
             compliance_events_label = wait.until(EC.element_to_be_clickable((By.XPATH, "//h2[text()='Compliance Events']")))
             compliance_events_label.click()
             wait_for_loader_to_disappear(driver, wait)
-        except Exception as e:
-            print(f"❌ Impact button failed: {e}")
-
-            allure.attach(
-                str(e),
-                name="Impact Button Error",
-                attachment_type=allure.attachment_type.TEXT
-            )
+        except  ElementNotInteractableException:
+            msg = "❌ Impact button is not present in UI"
+            print(msg)
+            allure.attach(msg,name="Impact Button Error",attachment_type=allure.attachment_type.TEXT)
 
             failed_filters.append("Impact")
     # ✅ Fail after loop

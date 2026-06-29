@@ -38,6 +38,10 @@ def create_milestone_task(driver, wait, milestone_task_name=None):
             task_project_close_btn = elements_details['task_project_close_btn']
             task_search_close_btn = elements_details['task_search_close_btn']
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
+            add_new_task = elements_details['add_new_task']
+            milestone_dropdown_btn = elements_details['milestone_dropdown_btn']
+            project_next_btn = elements_details['project_next_btn']
+
             print("✅ locators.json loaded")
         except Exception as e:
             step_fail(driver, "Load locators.json", e)
@@ -65,7 +69,7 @@ def create_milestone_task(driver, wait, milestone_task_name=None):
     
     with allure.step("Click 'Add new task' button"):
         try:
-            add_new_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Add new task']")))
+            add_new_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_new_task)))
             highlight_element(driver, add_new_task_btn)
             add_new_task_btn.click()
             time.sleep(1)
@@ -80,7 +84,7 @@ def create_milestone_task(driver, wait, milestone_task_name=None):
                 created_milestone = f.read().strip()
 
             print(f"Using Milestone: {created_milestone}")  
-            milestone_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "(//div[@class='css-b62m3t-container'])[1]")))
+            milestone_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, milestone_dropdown_btn)))
             highlight_element(driver, milestone_dropdown)
             milestone_dropdown.click()
 
@@ -96,7 +100,7 @@ def create_milestone_task(driver, wait, milestone_task_name=None):
     
     with allure.step("Click 'Next' button"):
         try:
-            next_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Next']")))
+            next_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_next_btn)))
             highlight_element(driver, next_btn)
             next_btn.click()
             time.sleep(1)
@@ -137,7 +141,7 @@ def create_milestone_task(driver, wait, milestone_task_name=None):
             if add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_holiday, end_freq_date,
                 repeat_weekday, repeat_day_month, end_time, internal_deadline, assign_to, approver, cc,
                 risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name,
-                circular_search, test_type, task_type='mandatory', direct_task_creation=True):
+                circular_search, test_type, task_type='mandatory', direct_task_creation=True, module="create_milestone_task"):
                 print("✅ Task creation successful")
                 time.sleep(4)
                 # return True

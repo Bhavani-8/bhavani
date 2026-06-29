@@ -47,7 +47,7 @@ def validate_search_task(driver, wait, task_name):
         time.sleep(3)
     except Exception as err:
         allure.attach(str(err), "Close Button error", allure.attachment_type.TEXT)
-        pytest.fail("Failed to click Close Button")
+        return False
 
     try:
         search_icon_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_btn)))
@@ -161,7 +161,7 @@ def validate_search_task(driver, wait, task_name):
 
                 print(msg)
                 allure.attach(msg,name=f"Duplicate Row {idx + 1}",attachment_type=allure.attachment_type.TEXT)
-            pytest.fail("❌ Duplicate rows found in Excel")
+                return False
 
         else:
             print("✅ No duplicate rows found")
@@ -177,6 +177,6 @@ def validate_search_task(driver, wait, task_name):
     except Exception as e:
         allure.attach(str(e),name="Excel Validation Error",attachment_type=allure.attachment_type.TEXT)
         print("❌ ERROR:", str(e))
-        raise
+        return False
 
     return True

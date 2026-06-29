@@ -22,8 +22,15 @@ def export_circulars(driver, wait):
                 dash_total_btn = elements_details['dash_total_btn']
                 dash_col_all_selection_btn = elements_details['dash_col_all_selection_btn']
                 export_btn = elements_details['export_btn']
-                export_all_data_btn = elements_details['export_all_data_btn']
-                export_selected_rows_btn = elements_details['export_selected_rows_btn']
+                updates_export_btn = elements_details['updates_export_btn']
+                last_month = elements_details['last_month']
+                last_2_month = elements_details['last_2_month']
+                last_3_month = elements_details['last_3_month']
+                custom_option_btn = elements_details['custom_option_btn']
+                calender_btn = elements_details['calender_btn']
+                custom_export_btn = elements_details['custom_export_btn']
+                circular_check_box = elements_details['circular_check_box']
+                selected_circular = elements_details['selected_circular']
                 toast_msg = elements_details['toast_msg']
             print("✅ locators.json loaded successfully")
         except FileNotFoundError as e:
@@ -39,7 +46,7 @@ def export_circulars(driver, wait):
     # ✅ Export → All Data
     with allure.step("Export All Data from Dashboard"):
         try:
-            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Export']")))
+            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, updates_export_btn)))
             export_data_btn.click()
         except Exception as e:
             print("❌ Failed to export Button")
@@ -47,7 +54,7 @@ def export_circulars(driver, wait):
             return False
     with allure.step("Click Last Month Option"):
         try:
-            last_month_option = wait_less.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Last month']")))
+            last_month_option = wait_less.until(EC.presence_of_element_located((By.XPATH, last_month)))
             last_month_option.click()
         except Exception as e:
             print("❌ Failed to select Last Month option")
@@ -64,7 +71,7 @@ def export_circulars(driver, wait):
             return False
     with allure.step("Export All Data from Dashboard"):
         try:
-            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Export']")))
+            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, updates_export_btn)))
             export_data_btn.click()
         except Exception as e:
             print("❌ Failed to export Button")
@@ -73,7 +80,7 @@ def export_circulars(driver, wait):
 
     with allure.step("Click Last 2 Months Option"):
         try:
-            last_2_month_option = wait_less.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Last 2 months']")))
+            last_2_month_option = wait_less.until(EC.presence_of_element_located((By.XPATH, last_2_month)))
             last_2_month_option.click()
         except Exception as e:
             print("❌ Failed to select Last 2 Months option")
@@ -90,7 +97,7 @@ def export_circulars(driver, wait):
             return False
     with allure.step("Export All Data from Dashboard"):
         try:
-            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Export']")))
+            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, updates_export_btn)))
             export_data_btn.click()
         except Exception as e:
             print("❌ Failed to export Button")
@@ -98,7 +105,7 @@ def export_circulars(driver, wait):
             return False
     with allure.step("Click Last 3 Months Option"):
         try:
-            last_3_month_option = wait_less.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Last 3 months']")))
+            last_3_month_option = wait_less.until(EC.presence_of_element_located((By.XPATH, last_3_month)))
             last_3_month_option.click()
         except Exception as e:
             print("❌ Failed to select Last 3 Months option")
@@ -114,7 +121,7 @@ def export_circulars(driver, wait):
             return False
     with allure.step("Export All Data from Dashboard"):
         try:
-            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Export']")))
+            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, updates_export_btn)))
             export_data_btn.click()
         except Exception as e:
             print("❌ Failed to export Button")
@@ -122,7 +129,7 @@ def export_circulars(driver, wait):
             return False
     with allure.step("Click Custom Option"):
         try:
-            custom_option = wait_less.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Custom']")))
+            custom_option = wait_less.until(EC.presence_of_element_located((By.XPATH, custom_option_btn)))
             custom_option.click()
         except Exception as e:
             print("❌ Failed to select Custom option")
@@ -130,7 +137,7 @@ def export_circulars(driver, wait):
             return False
     
         try:
-            calendar_option = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@data-slot='popover-trigger']")))
+            calendar_option = wait.until(EC.presence_of_element_located((By.XPATH, calender_btn)))
             calendar_option.click()
             time.sleep(0.5)
         except Exception as e:
@@ -145,8 +152,8 @@ def export_circulars(driver, wait):
             start_date = today - timedelta(days=7)
 
             # Format → M/D/YYYY (IMPORTANT)
-            start_day = f"{start_date.month}/{start_date.day}/{start_date.year}"
-            end_day = f"{today.month}/{today.day}/{today.year}"
+            start_day = f"{start_date.day}/{start_date.month}/{start_date.year}"
+            end_day = f"{today.day}/{today.month}/{today.year}"
 
             print("Start:", start_day)
             print("End:", end_day)
@@ -165,7 +172,7 @@ def export_circulars(driver, wait):
             allure.attach(str(e), name="Custom_Date_Selection_Error", attachment_type=allure.attachment_type.TEXT)
             return False
         try:
-            export_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "(//button[text()='Export'])[2]")))
+            export_btn = wait.until(EC.element_to_be_clickable((By.XPATH, custom_export_btn)))
             export_btn.click()
         except Exception as e:
             print("❌ Failed to click Export button after selecting custom date range")
@@ -182,7 +189,7 @@ def export_circulars(driver, wait):
             return False
     with allure.step("Select Circular Checkbox"):
         try:
-            checkbox_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//span[@role='checkbox' and @aria-checked='false'])[2]")))
+            checkbox_elem = wait.until(EC.presence_of_element_located((By.XPATH, circular_check_box)))
             highlight_element(driver, checkbox_elem)
             checkbox_elem.click()
             print("✅ Circular checkbox selected")
@@ -194,7 +201,7 @@ def export_circulars(driver, wait):
     
     with allure.step("Export All Data from Dashboard"):
         try:
-            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Export']")))
+            export_data_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, updates_export_btn)))
             export_data_btn.click()
         except Exception as e:
             print("❌ Failed to export Button")
@@ -203,7 +210,7 @@ def export_circulars(driver, wait):
         
     with allure.step("Click Selected Circulars Option"):
         try:
-            selected_circulars_option = wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Selected circulars']")))
+            selected_circulars_option = wait.until(EC.presence_of_element_located((By.XPATH, selected_circular)))
             selected_circulars_option.click()
             time.sleep(3)
         except Exception as e:

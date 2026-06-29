@@ -30,6 +30,8 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.special_tp)
         elif 'test_notifications.py' in item.nodeid:
             item.add_marker(pytest.mark.notifications)
+        elif 'test_calendar.py' in item.nodeid:
+            item.add_marker(pytest.mark.calendar)
         elif 'test_compliance_history.py' in item.nodeid:
             item.add_marker(pytest.mark.compliance_history)
         elif 'test_normal_task_sections.py' in item.nodeid:

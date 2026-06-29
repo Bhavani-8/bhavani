@@ -27,11 +27,13 @@ def test_overall_happy_path_flow(setup, task_details):
     recorder = ScreenRecorder(filename=video_path, fps=10)
     recorder.start()
     time.sleep(2)
+    test_failed = False
     with allure.step(f"Overall Happy Path Flow"):
         try:
             success = overall_happy_path_check(driver, task_details)
             assert success is True, "Overall Happy Path Flow failed."
         except Exception as e:
+            test_failed = True
             time.sleep(2)
             recorder.stop()
 
@@ -60,3 +62,15 @@ def test_overall_happy_path_flow(setup, task_details):
 
             # 🔗 Attach final URL no matter success or failure
             allure.attach(driver.current_url, name="Final URL", attachment_type=allure.attachment_type.TEXT)
+            if test_failed:
+                if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
+                    allure.attach.file(
+                        video_path,
+                        name="Failure Video",
+                        attachment_type=allure.attachment_type.MP4
+                    )
+                else:
+                    print("❌ Video missing or empty")
+            else:
+                if os.path.exists(video_path):
+                    os.remove(video_path)

@@ -11,6 +11,7 @@ from utilities.other_utils_functions.highlight import highlight_element
 from utilities.login_utils import login_check
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.team_performance_functions.team_column_chooser_validation import validate_column_chooser_flow
+from utilities.team_performance_functions.special_column_chooser_validation import special_column_chooser_flow
 from utilities.team_performance_functions.team_column_filter_validation import column_filter_validation
 from utilities.team_performance_functions.team_export_data_validation import export_data_validation
 from utilities.team_performance_functions.team_count_validation import count_validation
@@ -22,7 +23,7 @@ from utilities.team_performance_functions.special_tm_date_validation import spec
 from utilities.team_performance_functions.project_validation import project_check
 from utilities.team_performance_functions.special_project_validation import special_project_check
 from utilities.search_utils import clear_search
-from utilities.team_performance_functions.team_special_column_filter_validation import special_column_filter_validation
+from utilities.team_performance_functions.special_team_column_filter_validation import special_column_filter_validation
 
 
 def team_performance_dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None):
@@ -188,6 +189,19 @@ def team_performance_dashboard_check(driver, dash_type='QCC', module_name=None, 
         with allure.step("Column Chooser Validation"):
             try:
                 if validate_column_chooser_flow(driver, wait):
+                    print("✅ Column Chooser validation successful")
+                    return True
+                else:
+                   allure.attach("Test case failed for Column Chooser", name="Column Chooser Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                   return False
+            except Exception as e:
+                allure.attach(str(e), name="Column Chooser Error", attachment_type=allure.attachment_type.TEXT)
+
+
+    if module_name == 'special_column_chooser':
+        with allure.step("Column Chooser Validation"):
+            try:
+                if special_column_chooser_flow(driver, wait):
                     print("✅ Column Chooser validation successful")
                     return True
                 else:

@@ -33,6 +33,9 @@ def mark_actionable(driver, wait):
                 select_circular = elements_details['select_circular']
                 toast_msg = elements_details['toast_msg']
                 task_circ_close_btn = elements_details['task_circ_close_btn']
+                mark_non_actionable = elements_details['mark_non_actionable']
+                not_actionable_label = elements_details['not_actionable_label']
+                mark_actionable_elem = elements_details['mark_actionable_elem']
 
             print("✅ locators.json loaded successfully")
         except Exception as e:
@@ -69,7 +72,7 @@ def mark_actionable(driver, wait):
 
     with allure.step("Click Mark Non Actionable"):
         try:
-            mark_non_actionable_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Mark Non-Actionable']")))
+            mark_non_actionable_btn = wait.until(EC.element_to_be_clickable((By.XPATH, mark_non_actionable)))
             highlight_element(driver, mark_non_actionable_btn)
             mark_non_actionable_btn.click()
             print("✅ 'click Mark Non Actionable")
@@ -99,7 +102,7 @@ def mark_actionable(driver, wait):
         except Exception:
             print("❌ Closed circular not found")
         try:
-            na_label = wait.until(EC.visibility_of_element_located((By.XPATH, "(//p[@class='text-xs leading-snug font-medium text-left'])[1]/following::span[normalize-space()='NA'][1]")))
+            na_label = wait.until(EC.visibility_of_element_located((By.XPATH, not_actionable_label)))
             driver.execute_script("arguments[0].scrollIntoView({block:'center'});", na_label)
             time.sleep(0.3)
             highlight_element(driver, na_label)  
@@ -134,7 +137,7 @@ def mark_actionable(driver, wait):
 
     with allure.step("Click Mark Actionable"):
         try:
-            mark_actionable_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Mark Actionable']")))
+            mark_actionable_btn = wait.until(EC.element_to_be_clickable((By.XPATH, mark_actionable_elem)))
             highlight_element(driver, mark_actionable_btn)
             mark_actionable_btn.click()
             print("✅ 'click Mark Actionable")

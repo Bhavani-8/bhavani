@@ -15,20 +15,20 @@ import pyautogui as pg
 from selenium.webdriver.common.keys import Keys
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-def attach_failure_artifacts(driver, test_name, error):
-    """Capture screenshot + attach error text to Allure"""
-    try:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        os.makedirs("screenshots", exist_ok=True)
-        screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
-        driver.save_screenshot(screenshot_path)
-        allure.attach.file(screenshot_path,name=f"Failure Screenshot - {test_name}",attachment_type=allure.attachment_type.PNG)
-    except Exception as e:
-        step_fail(driver, "Login failed", e)
+# def step_fail(driver, step_name, error):
+#     allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
+#     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
+#     pytest.fail(f"❌ {step_name} failed")
+# def attach_failure_artifacts(driver, test_name, error):
+#     """Capture screenshot + attach error text to Allure"""
+#     try:
+#         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+#         os.makedirs("screenshots", exist_ok=True)
+#         screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
+#         driver.save_screenshot(screenshot_path)
+#         allure.attach.file(screenshot_path,name=f"Failure Screenshot - {test_name}",attachment_type=allure.attachment_type.PNG)
+#     except Exception as e:
+#         step_fail(driver, "Login failed", e)
 
 def get_outer_element(current_elem, levels_up=1):
     outer_elem = current_elem
@@ -43,8 +43,11 @@ def column_filter_validation(driver, wait):
             with open(os.path.join("data", 'locators.json'), 'r') as f:
                 elements_details = json.load(f)
             print("✅ Locators loaded successfully")
-        except Exception as e:
-            step_fail(driver, "Loading locators failed", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
 
 
     dash_col_filter_button_template = elements_details['dash_col_filter_button_template']
@@ -178,8 +181,13 @@ def column_filter_validation(driver, wait):
                             continue
                         print()
                 except Exception as e:
-                    step_fail(driver, "Filtering column failed", e)
-                    continue
+                #     step_fail(driver, "Filtering column failed", e)
+                    msg = f"Filtering failed for column {col_name}: {str(e)}"
+                    print(msg)
+
+                    allure.attach(msg, name=f"{col_name} Error",attachment_type=allure.attachment_type.TEXT)
+                    # continue
+                    raise Exception(msg)
 
         driver.execute_script("arguments[0].scrollLeft += 400;", scroll_container)
         time.sleep(0.8)

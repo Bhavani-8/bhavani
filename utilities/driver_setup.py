@@ -49,7 +49,9 @@ def setup(request):
         elif "normal_tp" in calling_file:
             module_marker = "team_performance"
         elif "special_tp" in calling_file:
-            module_marker = "special_team_performance"   
+            module_marker = "special_team_performance"  
+        elif "calendar" in calling_file:
+            module_marker = "calendar_dashboard" 
         elif "notifications" in calling_file:
             module_marker = "notifications"
         elif "compliance_history" in calling_file:

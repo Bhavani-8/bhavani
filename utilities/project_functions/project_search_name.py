@@ -19,6 +19,10 @@ def project_search_name(driver, wait):
         with open(os.path.join("data", "locators.json"), "r") as f:
             locators = json.load(f)
             project_icon = locators["project_icon"]
+            first_task_name_text = locators['first_task_name_text']
+            seacrh_input_elem = locators['seacrh_input_elem']
+            verify_search_task = locators['verify_search_task']
+            search_reset_btn = locators['search_reset_btn']
 
     except Exception as e:
         print(f"❌ Failed to load locators.json: {e}")
@@ -36,7 +40,7 @@ def project_search_name(driver, wait):
     
     with allure.step("Fetch first task name from Projects"):
         try:
-            first_task_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//tr[contains(@class,'dx-data-row')])[1]//div[@title]")))
+            first_task_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, first_task_name_text)))
             highlight_element(driver, first_task_name_elem)
             first_task_name = first_task_name_elem.get_attribute("title").strip()
             print(f"✅ First task name fetched: {first_task_name}")
@@ -46,7 +50,7 @@ def project_search_name(driver, wait):
     with allure.step(f"Search using task name: {first_task_name}"):
         try:
 
-            search_input = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@aria-label='Search in the data grid']")))
+            search_input = wait.until(EC.visibility_of_element_located((By.XPATH, seacrh_input_elem)))
             highlight_element(driver, search_input)
             search_input.clear()
             search_input.send_keys(first_task_name)
@@ -58,7 +62,7 @@ def project_search_name(driver, wait):
              step_fail(driver, f"Search using task name: {first_task_name}", e)
     with allure.step("Verify search name after search"):
         try:
-            search_task_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//div[@class='w-full truncate' and @title])[1]")))
+            search_task_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, verify_search_task)))
             highlight_element(driver, search_task_name_elem)
             search_task_name_label = search_task_name_elem.get_attribute("title").strip()
             print(f"🔍 Task name label after search: {search_task_name_label}")
@@ -75,7 +79,7 @@ def project_search_name(driver, wait):
 
     with allure.step("Click Reset Button to clear search"):
         try:
-            reset_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='Reset']")))
+            reset_btn = wait.until(EC.element_to_be_clickable((By.XPATH, search_reset_btn)))
             highlight_element(driver, reset_btn)
             reset_btn.click()
             wait_for_loader_to_disappear(driver, wait)

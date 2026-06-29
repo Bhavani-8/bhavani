@@ -29,6 +29,7 @@ def create_project(driver, wait, project_name, project_description):
             project_input_elem = elements_details['project_input_elem']
             project_submit_btn = elements_details['project_submit_btn']
             project_cancel_btn = elements_details['project_cancel_btn']
+            project_description_text = elements_details['project_description_text']
 
 
             print("✅ locators.json loaded")
@@ -73,7 +74,7 @@ def create_project(driver, wait, project_name, project_description):
 
     with allure.step("Enter Project Description"):
         try:
-            desc_input = wait.until(EC.presence_of_element_located((By.XPATH, "//textarea[@name='project_overview']")))
+            desc_input = wait.until(EC.presence_of_element_located((By.XPATH, project_description_text)))
             highlight_element(driver, desc_input)
             desc_input.send_keys(project_description)
             time.sleep(1)
