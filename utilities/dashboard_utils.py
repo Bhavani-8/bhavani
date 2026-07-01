@@ -16,6 +16,7 @@ from utilities.other_utils_functions.highlight import highlight_element
 from utilities.login_utils import login_check
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.other_utils_functions.license_utils import validate_license_subscription
+from utilities.dashboard_functions.bulk_task_creation import bulk_task_creation_check
 from utilities.dashboard_functions.upper_dashboard_validation import upper_dashboard_validation
 from utilities.dashboard_functions.lower_dashboard_validation import lower_dashboard_validation
 from utilities.dashboard_functions.lower_sp_dashboard_validation import lower_sp_dashboard_validation
@@ -102,12 +103,11 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                 allure.attach(str(e), name="Dashboard Open Error", attachment_type=allure.attachment_type.TEXT)
                 return False
 
-
+    step_name = "Bulk Task Creation" if dash_type == 'QCC' else "Bulk Special Task Creation"
     if module_name == 'bulk_task_creation':
         # ✅ Step 4: Read Excel bulk task creation file
-        with allure.step("Read Bulk Task Creation Excel File"):
             try:
-                filename = 'bulk_task_creation_valid_preprod.xlsx' if dash_type == 'QCC' else 'bulk_special_task_creation_valid_preprod.xlsx'
+                filename = 'bulk_task_creation_valid.xlsx' if dash_type == 'QCC' else 'bulk_special_task_creation_valid.xlsx'
 
                 df = pd.read_excel(f'data/{filename}', skiprows=[1])
                 task_name = str(df['Task Name*'].iloc[0])
@@ -115,6 +115,18 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
             except Exception as e:
                 allure.attach(str(e), name="Excel Read Error", attachment_type=allure.attachment_type.TEXT)
                 task_name = None
+    
+    with allure.step(f"{step_name} Validation"):
+        bulk_task_name = task_details.get("bulk_task_name")
+        try:
+            if bulk_task_creation_check(driver, wait, bulk_task_name, filename, step_name):
+                print("✅ Bulk task created successfully")
+                return True
+            else:
+                allure.attach("Bulk task creation failed",name="Bulk Task Creation Failed",attachment_type=allure.attachment_type.TEXT)
+                return False
+        except Exception as e:
+            allure.attach(str(e), name="Bulk Task Creation Error", attachment_type=allure.attachment_type.TEXT)
 
     # ✅ Step 6: Upper Dashboard Validation
     if module_name == 'upper_dashboard_count':
@@ -328,11 +340,11 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
         with allure.step("Bulk Action Validation"):
             try:
                 if bulk_actions_module(driver, wait, module_name):
-                    print("✅ Bulk Action validation successful")
+                    allure.attach("Test case Failed for Bulk Action", name="Bulk Action Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return True
                 else:
                     # print("❌ Bulk Action validation failed")
-                    allure.attach("Test case failed for Bulk Action", name="Bulk Action Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case Passed for Bulk Action", name="Bulk Action Validation Passed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)

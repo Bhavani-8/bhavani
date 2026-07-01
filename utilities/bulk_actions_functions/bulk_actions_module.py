@@ -41,14 +41,14 @@ def bulk_actions_module(driver, wait, module_name=None):
         with allure.step("Verify 'Assign To' bulk action negative functionality"):
             try:
                 if assign_to_negative(driver, wait):
-                    print("✅ Negative scenario validated successfully")
+                    allure.attach("Test case failed for Bulk Action", name="assign_to_bulk_action_negative Failed", attachment_type=allure.attachment_type.TEXT)
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name=" assign_to_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case Passed for Bulk Action", name="assign_to_bulk_action_negative Passed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
-
+                raise
     if module_name == 'add_approver_bulk_action':
         with allure.step("Verify 'Approver' bulk action functionality"):
             try:
@@ -65,25 +65,27 @@ def bulk_actions_module(driver, wait, module_name=None):
         with allure.step("Verify 'Approver' bulk action Negative functionality"):
             try:
                 if approver_negative(driver, wait):
+                    
+                    allure.attach("Test case failed for Bulk Action", name=" approver_negative_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     print("✅ Negative scenario validated successfully")
                     return True
                 else:
                    
-                    allure.attach("Test case failed for Bulk Action", name=" approver_negative_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case Passed for Bulk Action", name=" approver_negative_bulk_action Passed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
-                
+                raise
 
     
     if module_name == 'add_cc_bulk_action':
         with allure.step("Verify 'CC' bulk action functionality"):
             try:
-                if  cc_bulk_action(driver, wait):
+                if cc_bulk_action(driver, wait):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="cc_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="add_cc_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
@@ -92,14 +94,14 @@ def bulk_actions_module(driver, wait, module_name=None):
         with allure.step("Verify 'CC' bulk action Negative functionality"):
             try:
                 if cc_negative(driver, wait):
-                    print("✅ Bulk Action validation successful")
+                    allure.attach("Test case failed for Bulk Action", name="add_cc_bulk_action_negative Failed", attachment_type=allure.attachment_type.TEXT)
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name=" approver_negative_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case Passed for Bulk Action", name="add_cc_bulk_action_negative Passed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)   
-    
+                raise
     if module_name == 'add_comment_bulk_action':
         with allure.step("Verify 'Comment' bulk action functionality"):
             try:
@@ -107,7 +109,7 @@ def bulk_actions_module(driver, wait, module_name=None):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="comment_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="add_comment_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
@@ -116,14 +118,14 @@ def bulk_actions_module(driver, wait, module_name=None):
         with allure.step("Verify 'Comment' bulk action Negative functionality"):
             try:
                 if comment_negative(driver, wait):
-                    print("✅ Bulk Action validation successful")
+                    allure.attach("Test case failed for Bulk Action", name="add_comment_bulk_action_negative Failed", attachment_type=allure.attachment_type.TEXT)
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name=" approver_negative_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case Passed for Bulk Action", name="add_comment_bulk_action_negative Passed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)          
-    
+                raise
     if module_name == 'upload_file_bulk_action':
         with allure.step("Verify 'Upload File' bulk action functionality"):
             try:
@@ -140,14 +142,14 @@ def bulk_actions_module(driver, wait, module_name=None):
         with allure.step("Verify 'Upload File' bulk action Negative functionality"):
             try:
                 if upload_file_negative(driver, wait):
-                    print("✅ Bulk Action validation successful")
+                    allure.attach("Test case failed for Bulk Action", name="upload_file_bulk_action_negative Failed", attachment_type=allure.attachment_type.TEXT)
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="upload_file_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case Passed for Bulk Action", name="upload_file_bulk_action_negative Passed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
-    
+                raise
 
     if module_name == 'update_due_date_bulk_action':
         with allure.step("Verify 'Update Due Date' bulk action functionality"):
@@ -165,14 +167,14 @@ def bulk_actions_module(driver, wait, module_name=None):
         with allure.step("Verify 'Update Due Date' bulk action Negative functionality"):
             try:
                 if update_due_date_negative(driver, wait):
-                    print("✅ Bulk Action validation successful")
+                    allure.attach("Test case failed for Bulk Action", name="update_due_date_bulk_action_negative Failed", attachment_type=allure.attachment_type.TEXT)
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="update_due_date_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case Passed for Bulk Action", name="update_due_date_bulk_action_negative Passed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
-    
+                raise
     if module_name == 'approval_complied_bulk_action':
         with allure.step("Verify 'Approval Complied' bulk action functionality"):
             try:
@@ -180,7 +182,7 @@ def bulk_actions_module(driver, wait, module_name=None):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="mark_complete_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="approval_complied_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
@@ -192,7 +194,7 @@ def bulk_actions_module(driver, wait, module_name=None):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="not_complied_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="approval_not_complied_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
@@ -204,7 +206,7 @@ def bulk_actions_module(driver, wait, module_name=None):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="mark_complete_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="rejected_complied_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
@@ -216,7 +218,7 @@ def bulk_actions_module(driver, wait, module_name=None):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="mark_complete_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="rejected_not_complied_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
@@ -237,14 +239,14 @@ def bulk_actions_module(driver, wait, module_name=None):
         with allure.step("Verify 'Mark Complete' bulk action Negative functionality"):
             try:
                 if mark_complete_negative(driver, wait):
-                    print("✅ Bulk Action validation successful")
+                    allure.attach("Test case failed for Bulk Action", name="mark_complete_bulk_action_negative Failed", attachment_type=allure.attachment_type.TEXT)
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="mark_complete_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case Passed for Bulk Action", name="mark_complete_bulk_action_negative Passed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
-
+                raise
     if module_name == 'approve_task_bulk_action':
         with allure.step("Verify 'Approve Task' bulk action functionality"):
             try:
@@ -252,7 +254,7 @@ def bulk_actions_module(driver, wait, module_name=None):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="Bulk Action Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="approve_task_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
@@ -264,7 +266,7 @@ def bulk_actions_module(driver, wait, module_name=None):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="Bulk Action Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="reject_task_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
@@ -276,7 +278,7 @@ def bulk_actions_module(driver, wait, module_name=None):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="Bulk Action Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="rejected_tasks_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
@@ -288,7 +290,7 @@ def bulk_actions_module(driver, wait, module_name=None):
                     print("✅ Bulk Action validation successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Bulk Action", name="Bulk Action Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Bulk Action", name="completed_tasks_bulk_action Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)

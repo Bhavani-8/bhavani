@@ -38,70 +38,7 @@ def test_tp_flow(setup, test_case_id, module_name, test_case_description, test_t
             elif test_type == 'negative':
                 assert not success, "Normal Team Performance Dashboard succeeded with invalid scenario"
 
-        # except Exception as e:
-        #     error_msg = str(e)
-    # try:
-    #     recorder.stop()
-    # except:
-    #     pass
-
-    # time.sleep(5)  # ✅ important: allow video to finalize
-
-    # # ✅ Handle failure AFTER stopping recorder
-    # if error_msg:
-
-    #     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    #     screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
-
-    #     os.makedirs("screenshots", exist_ok=True)
-
-    #     screenshot = pg.screenshot()
-    #     screenshot.save(screenshot_path)
-
-    #     # 📸 Attach screenshot
-    #     allure.attach.file(
-    #         screenshot_path,
-    #         name="Failure Screenshot",
-    #         attachment_type=allure.attachment_type.PNG
-    #     )
-
-    #     # 🎥 Attach video
-    #     if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-    #         allure.attach.file(
-    #             video_path,
-    #             name="Failure Video",
-    #             attachment_type=allure.attachment_type.MP4
-    #         )
-    #     else:
-    #         print("❌ Video missing or empty")
-
-    #     # 📝 Attach error
-    #     allure.attach(
-    #         error_msg,
-    #         name="Failure Reason",
-    #         attachment_type=allure.attachment_type.TEXT
-    #     )
-
-    #     pytest.fail(f"Failure reason: {error_msg}")
-
-    # # 🔗 Always attach final URL
-    # allure.attach(
-    #     driver.current_url,
-    #     name="Final URL",
-    #     attachment_type=allure.attachment_type.TEXT
-    # )
-    # if test_failed:
-    #             if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-    #                 allure.attach.file(
-    #                     video_path,
-    #                     name="Failure Video",
-    #                     attachment_type=allure.attachment_type.MP4
-    #                 )
-    #             else:
-    #                 print("❌ Video missing or empty")
-    #         else:
-    #             if os.path.exists(video_path):
-    #                 os.remove(video_path)
+      
         except Exception as e:
             test_failed = True
             # recorder.stop()
@@ -115,10 +52,10 @@ def test_tp_flow(setup, test_case_id, module_name, test_case_description, test_t
 
             # ✅ Attach to Allure report
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
-            if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-                allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
-            else:
-                print("❌ Video missing or empty")
+            # if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
+            #     allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
+            # else:
+            #     print("❌ Video missing or empty")
             allure.attach(str(e), name="Failure Reason", attachment_type=allure.attachment_type.TEXT)
             pytest.fail(f"Failure reason: {e}")
         finally:

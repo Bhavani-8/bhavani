@@ -46,17 +46,15 @@ def dashboard_graph_count(driver, wait):
             # year_btn.click()
             # time.sleep(1)
 
-            month_fetch_view = wait.until(EC.presence_of_element_located((By.XPATH, "((//*[name()='rect' and @fill='#7a73ff'])[5]/following::*[name()='text' and number(.)=number(.)])[1]")))
+            month_fetch_view = wait.until(EC.presence_of_element_located((By.XPATH, "((//*[name()='rect' and @fill='#7a73ff'])[6]/following::*[name()='text' and number(.)=number(.)])[1]")))
             highlight_element(driver, month_fetch_view)
             time.sleep(1)
             month_fetch = month_fetch_view.text.strip()
             print(f"Fetched: {month_fetch}")
 
-            all_month_view = wait.until(EC.presence_of_element_located((By.XPATH,"(//*[name()='rect' and @stroke-width='0'])[1]")))
-            highlight_element(driver, all_month_view)
-            # fetch_month_view = all_month_view.get_attribute("fill")
-            all_month_view.click()
-            # print(f"🔹 Month View: {fetch_month_view}")
+            month_task = wait.until(EC.presence_of_element_located((By.XPATH,"(//*[name()='rect' and @stroke-width='0'])[6]")))
+            highlight_element(driver, month_task)
+            month_task.click()
             time.sleep(2)
 
         except Exception as e:

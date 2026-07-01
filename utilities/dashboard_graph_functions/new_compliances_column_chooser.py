@@ -38,7 +38,7 @@ def new_compliances_column_chooser(driver, wait):
             new_compliances_added = wait.until(EC.presence_of_element_located((By.XPATH, new_compliances_added_btn)))
             highlight_element(driver, new_compliances_added)
             new_compliances_added.click()
-            time.sleep(2)
+            time.sleep(3)
         except Exception as e:
             allure.attach(str(e), name="New Compliances added Error", attachment_type=allure.attachment_type.TEXT)    
 

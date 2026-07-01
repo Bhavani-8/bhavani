@@ -175,7 +175,7 @@
     "dash_bulk_task_dropdown_comment_cancel_btn": "//button[text()='Cancel']",
     "toast_msg": "//div[contains(@class,'Toastify__toast') and @role='alert']",
     "error_toast_msg": "//div[contains(@class,'Toastify__toast--error')]",
-    "dash_bulk_task_dropdown_file_input": "//div[@role='button']//input[@type='file']",
+    "dash_bulk_task_dropdown_file_input": "//div[@role='presentation']//input[@type='file']",
     "dash_bulk_task_dropdown_close_btn": "//div[@class='modal-top']//button[@class='MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1yxmbwk']",
     "dash_bulk_task_dropdown_confirm_btn": "//button[text()='Confirm']",
     "toast_close_btn": "//button[@class='Toastify__close-button Toastify__close-button--error' and @aria-label='close']",

@@ -13,39 +13,31 @@ from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from selenium.common.exceptions import StaleElementReferenceException
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-
-try:
-    with open(os.path.join("data", 'locators.json'), 'r') as f:
-        elements_details = json.load(f)
-        dash_col_all_selection_btn = elements_details['dash_col_all_selection_btn']
-        dash_bulk_task_dropdown_btn = elements_details['dash_bulk_task_dropdown_btn']
-        dash_total_btn = elements_details['dash_total_btn']
-        dash_col_selected_label = elements_details['dash_col_selected_label']
-        dash_bulk_task_dropdown_form_label = elements_details['dash_bulk_task_dropdown_form_label']
-        dash_bulk_task_dropdown_form_input = elements_details['dash_bulk_task_dropdown_form_input']
-        dash_bulk_task_dropdown_form_member_confirmation = elements_details['dash_bulk_task_dropdown_form_member_confirmation']
-        dash_not_assigned_tab = elements_details['dash_not_assigned_tab']
-        column_chooser_btn = elements_details['column_chooser_btn']
-        column_chooser_save_btn = elements_details['column_chooser_save_btn']
-        file_input = elements_details['file_input']
-        scroller = elements_details['scroller']
-        toast_msg = elements_details['toast_msg']
-        error_toast_msg = elements_details['error_toast_msg']
-        dash_bulk_options_upload_file = elements_details['dash_bulk_options_upload_file']
-        column_chooser_company_project = elements_details['column_chooser_company_project']
-        column_filter_company_project = elements_details['column_filter_company_project']
-
-except FileNotFoundError:
-    pytest.fail("❌ locators.json file not found")
-except json.JSONDecodeError:
-    pytest.fail("❌ Invalid JSON in locators.json")
-
 
 def upload_file_negative(driver, wait, task_name='Internal Task'):
+    try:
+        with open(os.path.join("data", 'locators.json'), 'r') as f:
+            elements_details = json.load(f)
+            dash_bulk_task_dropdown_btn = elements_details['dash_bulk_task_dropdown_btn']
+            dash_total_btn = elements_details['dash_total_btn']
+            column_chooser_btn = elements_details['column_chooser_btn']
+            column_chooser_save_btn = elements_details['column_chooser_save_btn']
+            toast_msg = elements_details['toast_msg']
+            error_toast_msg = elements_details['error_toast_msg']
+            dash_bulk_options_upload_file = elements_details['dash_bulk_options_upload_file']
+            column_chooser_company_project = elements_details['column_chooser_company_project']
+            column_filter_company_project = elements_details['column_filter_company_project']
+
+    except FileNotFoundError as e:
+        msg = f"locators.json file not found: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+        return False
+    except json.JSONDecodeError as e:
+        msg = f"Invalid JSON in locators.json: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+        return False
     wait_less = WebDriverWait(driver, 5)
     with allure.step("Clicking Dashboard Total button"):
         try:
@@ -55,7 +47,10 @@ def upload_file_negative(driver, wait, task_name='Internal Task'):
             wait_for_loader_to_disappear(driver, wait)
             print("✅ Clicked Total tab")
         except Exception as e:
-            step_fail(driver, "Clicking Total tab failed", e)
+            msg = f"Failed to Click Total tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Total tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Open Column Chooser from task list"):
         column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
         highlight_element(driver, column_chooser_btn_elem)
@@ -108,7 +103,10 @@ def upload_file_negative(driver, wait, task_name='Internal Task'):
             print("✅ 'Select All' normalized successfully")
 
         except Exception as e:
-            step_fail(driver, "Column normalization failed", e)
+            msg = f"Failed to Selecting all: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Selecting all Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Select 'Company / Project' from Column Chooser"):   
         try:
             company_project_option_elm = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_company_project)))
@@ -122,7 +120,10 @@ def upload_file_negative(driver, wait, task_name='Internal Task'):
             highlight_element(driver, save_btn)
             save_btn.click()
         except Exception as e:
-            step_fail(driver, "Column chooser save failed", e)
+            msg = f"Failed to Clicking Company Project option: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Company Project Option Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
         try:
             toast = wait.until(EC.presence_of_element_located((By.XPATH,f"{toast_msg} | {error_toast_msg}")))
@@ -134,27 +135,41 @@ def upload_file_negative(driver, wait, task_name='Internal Task'):
             elif "Toastify__toast--error" in toast_class:
                 print(f"❌ Error Toast: {toast.text.strip()}")
         except Exception as e:
-            step_fail(driver, "Toast validation failed", e)
+            msg = f"Toast message not found: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         wait_for_loader_to_disappear(driver, wait)
 
     with allure.step(f"Open Company/Project filter and search for '{task_name}'"):
-        company_filter = wait.until(EC.element_to_be_clickable((By.XPATH, column_filter_company_project)))
-        driver.execute_script("arguments[0].scrollIntoView({block:'center'});", company_filter)
-        time.sleep(0.5)
-        driver.execute_script("arguments[0].click();", company_filter)
-        time.sleep(2)
-        
-        search_input = wait.until(EC.presence_of_element_located((By.XPATH,"//input[contains(@class,'dx-texteditor-input') and @role='textbox']")))
-        search_input.clear()
-        search_input.send_keys(task_name)
-        time.sleep(2)
+        try:
+            company_filter = wait.until(EC.element_to_be_clickable((By.XPATH, column_filter_company_project)))
+            driver.execute_script("arguments[0].scrollIntoView({block:'center'});", company_filter)
+            time.sleep(0.5)
+            driver.execute_script("arguments[0].click();", company_filter)
+            time.sleep(2)
+            
+            search_input = wait.until(EC.presence_of_element_located((By.XPATH,"//input[contains(@class,'dx-texteditor-input') and @role='textbox']")))
+            search_input.clear()
+            search_input.send_keys(task_name)
+            time.sleep(2)
+        except Exception as e:
+            msg = f"Failed to Open Company filter: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Comapany filter Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
         try:
             search_task = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'dx-list-item-content') and normalize-space()='Internal Task']")))
             search_task.click()
             time.sleep(4)
             print("✅ Clicked 'Internal Task'")
-
+        except Exception as e:
+            msg = f"Failed to Search Task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Search Task Error", attachment_type=allure.attachment_type.TEXT)
+            return False
+        try:
             ok_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@aria-label='OK']")))
             highlight_element(driver, ok_btn)
             ok_btn.click()
@@ -162,16 +177,20 @@ def upload_file_negative(driver, wait, task_name='Internal Task'):
             wait_for_loader_to_disappear(driver, wait)
            
         except Exception as e:
-            step_fail(driver, "Failed to click Internal Task", e)
-
+            msg = f"Failed to Click Column Filter OK Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Column Filter OK Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Select first task from task list"):
         try:
             first_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, "(//td[@aria-colindex='1']//span[contains(@class,'dx-checkbox-icon')])[2]")))
             first_checkbox.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Failed to select first task", e)
-
+            msg = f"Failed to Selecting first task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Selecting first task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Open Bulk Action and select 'Upload File'"): 
         try:
             bulk_dd = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_task_dropdown_btn)))
@@ -182,8 +201,10 @@ def upload_file_negative(driver, wait, task_name='Internal Task'):
             highlight_element(driver, uppload_btn)
             uppload_btn.click()
         except Exception as e:
-            step_fail(driver, "Upload File failed", e)
-
+            msg = f"Failed to Click Bulk action Dropdown: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Bulk action Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         try:
             file_input_elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='file']")))
             driver.execute_script("""
@@ -197,8 +218,10 @@ def upload_file_negative(driver, wait, task_name='Internal Task'):
             file_input_elem.send_keys(large_file_path)
             print(f"📤 File selected: {large_file_path}")
         except Exception as e:
-            step_fail(driver, "File selection failed", e)
-
+            msg = f"Failed File Selection: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="File Selection Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         try:
             toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
             highlight_element(driver, toast)

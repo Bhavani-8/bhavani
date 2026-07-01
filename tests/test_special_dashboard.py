@@ -38,8 +38,6 @@ def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_desc
                 assert not success, "Special Dashboard succeeded with invalid scenario"
         except Exception as e:
             test_failed = True
-            time.sleep(2)
-            recorder.stop()
 
             time.sleep(7)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -51,10 +49,7 @@ def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_desc
 
             # ✅ Attach to Allure report
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
-            # if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-            #     allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
-            # else:
-            #     print("❌ Video missing or empty")
+            
             allure.attach(str(e), name="Failure Reason", attachment_type=allure.attachment_type.TEXT)
             pytest.fail(f"Failure reason: {e}")
             

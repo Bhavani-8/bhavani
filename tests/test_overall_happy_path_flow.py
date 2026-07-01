@@ -45,10 +45,10 @@ def test_overall_happy_path_flow(setup, task_details):
             screenshot.save(screenshot_path)
 
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
-            if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-                allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
-            else:
-                print("❌ Video missing or empty")
+            # if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
+            #     allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
+            # else:
+            #     print("❌ Video missing or empty")
     
             allure.attach(str(e), name="Failure Reason", attachment_type=allure.attachment_type.TEXT)
             # pytest.fail('Failure')

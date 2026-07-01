@@ -14,7 +14,7 @@ from utilities.highlight import highlight_element
 from utilities.search_utils import perform_search, clear_search
 
 
-def bulk_task_creation_check(driver, wait, filename='bulk_task_creation_valid.xlsx', task_name='trial'):
+def bulk_task_creation_check(driver, wait, bulk_task_name, filename, step_name):
     wait_less = WebDriverWait(driver, 5)
 
     # -------------------------
@@ -36,6 +36,8 @@ def bulk_task_creation_check(driver, wait, filename='bulk_task_creation_valid.xl
                 form_cancel_btn = elements_details['form_cancel_btn']
                 create_tasks_btn = elements_details['create_tasks_btn']
                 task_open_btn = elements_details['task_open_btn']
+                task_search_btn = elements_details['task_search_btn']
+                task_search_input = elements_details['task_search_input']
             print("✅ Loaded locators from locators.json")
     except FileNotFoundError as err:
         allure.attach(str(err), name="locators.json not found", attachment_type=allure.attachment_type.TEXT)
@@ -93,17 +95,17 @@ def bulk_task_creation_check(driver, wait, filename='bulk_task_creation_valid.xl
     # Bulk Task Creation
     # -------------------------
     try:
-        with allure.step("➡️ Opening Bulk Task Creation form"):
+        with allure.step(f"➡️ Opening {step_name} form"):
             create_bulk_task_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, create_bulk_task_btn)))
             create_bulk_task_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, create_bulk_task_btn)))
             highlight_element(driver, create_bulk_task_btn_elem)
             create_bulk_task_btn_elem.click()
             wait_for_loader_to_disappear(driver, wait)
-            print("✅ Bulk Task Creation form opened")
+            print(f"✅ {step_name} form opened")
     except Exception as err:
         allure.attach(str(err), name="Bulk Task Form Error", attachment_type=allure.attachment_type.TEXT)
         print(f"❌ Error opening Bulk Task Creation form: {err}")
-
+        return False
     try:
         with allure.step("➡️ Verifying Bulk Task Creation form title"):
             create_bulk_task_label_elem = wait.until(EC.presence_of_element_located((By.XPATH, create_bulk_task_label)))
@@ -118,16 +120,18 @@ def bulk_task_creation_check(driver, wait, filename='bulk_task_creation_valid.xl
         print(f"❌ Error verifying Bulk Task Creation form: {err}")
 
     try:
-        with allure.step("➡️ Uploading bulk task file"):
+        with allure.step(f"➡️ Uploading file for {step_name}"):
             file_input_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_bulk_task_dropdown_file_input)))
             highlight_element(driver, file_input_elem)
             file_path = os.path.abspath(os.path.join('data', filename))
             file_input_elem.send_keys(file_path)
+            time.sleep(2)
             wait_for_loader_to_disappear(driver, wait)
             print(f"✅ Uploaded file: {file_path}")
     except Exception as err:
         allure.attach(str(err), name="File Upload Error", attachment_type=allure.attachment_type.TEXT)
         print(f"❌ Error uploading file: {err}")
+        return False
 
     try:
         with allure.step("➡️ Handling validation results"):
@@ -177,23 +181,29 @@ def bulk_task_creation_check(driver, wait, filename='bulk_task_creation_valid.xl
         allure.attach(str(err), name="Toast Handling Error", attachment_type=allure.attachment_type.TEXT)
         print(f"❌ Unexpected error while handling toast: {err}")
 
-    # --------------------------
-    # Search Task
-    # --------------------------
+   
     try:
-        with allure.step("➡️ Searching Task"):
-            perform_search(driver, wait, task_name)
-            wait_for_loader_to_disappear(driver, wait)
-            print("✅ Search executed")
-    except Exception as err:
-        allure.attach(str(err), name="Search Error", attachment_type=allure.attachment_type.TEXT)
-        print(f"❌ Error performing search: {err}")
+        with allure.step("➡️ Click Task Search button"):
+            search_icon_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_btn)))
+            highlight_element(driver, search_icon_btn)
+            search_icon_btn.click()
 
+        with allure.step("➡️ Enter search value into input"):
+            search_input = wait.until(EC.visibility_of_element_located((By.XPATH, task_search_input)))
+            highlight_element(driver, search_input)
+            search_input.clear()
+            search_input.send_keys(bulk_task_name)
+
+            wait_for_loader_to_disappear(driver, wait)
+            time.sleep(4)
+    except Exception as e:
+        msg = f"🔥 Error Searching Task: {e}"
+        print(msg)
+        allure.attach(msg, name="Search Task Failure", attachment_type=allure.attachment_type.TEXT)
+        return False
     try:
         with allure.step("➡️ Opening task from table"):
-            task_open_btn_elem = wait.until(
-                EC.element_to_be_clickable((By.XPATH, task_open_btn))
-            )
+            task_open_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, task_open_btn)))
             highlight_element(driver, task_open_btn_elem)
             try:
                 task_open_btn_elem.click()
@@ -206,6 +216,7 @@ def bulk_task_creation_check(driver, wait, filename='bulk_task_creation_valid.xl
     except Exception as err:
         allure.attach(str(err), name="Task Open Error", attachment_type=allure.attachment_type.TEXT)
         print(f"❌ Error opening task: {err}")
+        return False
 
     try:
         with allure.step("➡️ Closing task window"):
@@ -217,15 +228,16 @@ def bulk_task_creation_check(driver, wait, filename='bulk_task_creation_valid.xl
     except Exception as err:
         allure.attach(str(err), name="Task Close Error", attachment_type=allure.attachment_type.TEXT)
         print(f"❌ Error closing task: {err}")
+        return False
 
-    try:
-        with allure.step("➡️ Clearing search input"):
-            clear_search(driver, wait)
-            time.sleep(2)
-            wait_for_loader_to_disappear(driver, wait)
-            print("✅ Search cleared")
-    except Exception as err:
-        allure.attach(str(err), name="Clear Search Error", attachment_type=allure.attachment_type.TEXT)
-        print(f"❌ Error clearing search: {err}")
+    # try:
+    #     with allure.step("➡️ Clearing search input"):
+    #         clear_search(driver, wait)
+    #         time.sleep(2)
+    #         wait_for_loader_to_disappear(driver, wait)
+    #         print("✅ Search cleared")
+    # except Exception as err:
+    #     allure.attach(str(err), name="Clear Search Error", attachment_type=allure.attachment_type.TEXT)
+    #     print(f"❌ Error clearing search: {err}")
 
     return True
