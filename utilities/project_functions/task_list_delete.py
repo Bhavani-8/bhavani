@@ -49,7 +49,7 @@ def task_list_delete(driver, wait):
     # ✅ FETCH TASK NAME BEFORE DELETE
     with allure.step("Click Project Task"):
         try:
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
@@ -73,7 +73,7 @@ def task_list_delete(driver, wait):
             highlight_element(driver, milestone_input)
             created_milestone = f"milestone_restore_check"
             milestone_input.send_keys(created_milestone)
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
             with open(milestone_file, "w") as f:
                 f.write(created_milestone)
 
@@ -92,7 +92,7 @@ def task_list_delete(driver, wait):
     with allure.step("Click three dots menu"):
         time.sleep(2)
         try:
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()
@@ -120,7 +120,7 @@ def task_list_delete(driver, wait):
         
             created_task_list = f"task_list_delete_check"
             task_list_input.send_keys(created_task_list)
-            task_list_file = os.path.join("data", "latest_task_list.txt")
+            task_list_file = os.path.join("latest_data", "latest_task_list.txt")
             with open(task_list_file, "w") as f:
                 f.write(created_task_list)
            
@@ -137,7 +137,7 @@ def task_list_delete(driver, wait):
             step_fail(driver, "Submit Task List", e)
     with allure.step("Click Dropdown Tasklist"):
         try:
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()
@@ -149,7 +149,7 @@ def task_list_delete(driver, wait):
             step_fail(driver, "Click Dropdown Tasklist", e)
     with allure.step("Verify Task List Creation"):
         try:
-            task_list_file = os.path.join("data", "latest_task_list.txt")
+            task_list_file = os.path.join("latest_data", "latest_task_list.txt")
 
             with open(task_list_file, "r") as f:
                 created_task_list = f.read().strip()
@@ -161,7 +161,7 @@ def task_list_delete(driver, wait):
             step_fail(driver, "Verify Task List Creation", e)
     with allure.step("Click Task List three dots menu"):
         try:
-            task_list_file = os.path.join("data", "latest_task_list.txt")
+            task_list_file = os.path.join("latest_data", "latest_task_list.txt")
 
             with open(task_list_file, "r") as f:
                 created_task_list = f.read().strip()
@@ -214,7 +214,7 @@ def task_list_delete(driver, wait):
             step_fail(driver, "Click Task List Tab", e)
     with allure.step("Verify Deleted Task List in Trash"):
         try:
-            task_list_file = os.path.join("data", "latest_task_list.txt")
+            task_list_file = os.path.join("latest_data", "latest_task_list.txt")
 
             with open(task_list_file, "r") as f:
                 created_task_list = f.read().strip()
@@ -229,7 +229,7 @@ def task_list_delete(driver, wait):
     with allure.step("Restore Deleted Task List"):
         try:
             time.sleep(3)
-            task_list_file = os.path.join("data", "latest_task_list.txt")
+            task_list_file = os.path.join("latest_data", "latest_task_list.txt")
 
             with open(task_list_file, "r") as f:
                 created_task_list = f.read().strip()
@@ -255,7 +255,7 @@ def task_list_delete(driver, wait):
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
@@ -267,7 +267,7 @@ def task_list_delete(driver, wait):
             step_fail(driver, "Click Project Task", e)
     with allure.step("Click Dropdown Tasklist"):
         try:
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()
@@ -280,7 +280,7 @@ def task_list_delete(driver, wait):
     
     with allure.step("Click Task List three dots menu"):
         try:
-            task_list_file = os.path.join("data", "latest_task_list.txt")
+            task_list_file = os.path.join("latest_data", "latest_task_list.txt")
 
             with open(task_list_file, "r") as f:
                 created_task_list = f.read().strip()

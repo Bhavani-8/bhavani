@@ -13,10 +13,11 @@ from utilities.screen_recorder import ScreenRecorder
 
 # at_test_case_list = get_test_case_list()
 at_test_case_list = get_test_case_list(module='delete_task')
+
 @allure.suite("Remove Task Test Suite")
 @allure.sub_suite("Remove Task Validation")
-@pytest.mark.parametrize("test_case_id,module_name,test_case_description, test_type", at_test_case_list)
-def test_delete_task_flow(setup, test_case_id, module_name, test_case_description, test_type):
+@pytest.mark.parametrize("test_case_id,module_name,test_case_description, test_type, test_case_execution", at_test_case_list)
+def test_delete_task_flow(setup, test_case_id, module_name, test_case_description, test_type, test_case_execution):
     # allure.dynamic.title(f"Dashboard Validation")
     allure.dynamic.title(f"{test_case_id}_{module_name}")
     allure.dynamic.description(f'{test_case_description}')

@@ -14,8 +14,8 @@ from utilities.screen_recorder import ScreenRecorder
 at_test_case_list = get_test_case_list(module='updates')
 @allure.suite("Updates Test Suite")
 @allure.sub_suite("Updates Validation")
-@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details", at_test_case_list)
-def test_updates_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details):
+@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details,test_case_execution", at_test_case_list)
+def test_updates_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details, test_case_execution):
     allure.dynamic.title(f"{test_case_id}_{module_name}")
     allure.dynamic.description(f'{test_case_description}')
     driver = setup
@@ -51,10 +51,7 @@ def test_updates_flow(setup, test_case_id, module_name, test_case_description, t
 
             # ✅ Attach to Allure report
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
-            # if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-            #     allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
-            # else:
-            #     print("❌ Video missing or empty")
+            
     
             allure.attach(str(e), name="Failure Reason", attachment_type=allure.attachment_type.TEXT)
             # pytest.fail('Failure')

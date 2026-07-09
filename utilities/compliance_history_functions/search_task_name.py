@@ -23,7 +23,7 @@ def search_task_name(driver, wait):
         return False
     with allure.step("Fetch the task name from the task list"):
         try:
-            task_elem = wait.until(EC.presence_of_element_located((By.XPATH,"(//button[@data-slot='tooltip-trigger'])[1]")))
+            task_elem = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='text-primary cursor-pointer'])[1]")))
             highlight_element(driver, task_elem)
             first_task_name = task_elem.text.strip()
             if not first_task_name:
@@ -51,7 +51,7 @@ def search_task_name(driver, wait):
     
     with allure.step("Verify task name"):
         try:
-            task_elem_after_search = wait.until(EC.presence_of_element_located((By.XPATH,"(//button[@data-slot='tooltip-trigger'])[1]")))
+            task_elem_after_search = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='text-primary cursor-pointer'])[1]")))
             highlight_element(driver, task_elem_after_search)
             task_elem_after_search.click()
             time.sleep(2)

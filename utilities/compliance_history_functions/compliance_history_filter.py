@@ -50,7 +50,7 @@ def compliance_history_filter(driver, wait):
             allure.attach(str(e), name="Select Company Error", attachment_type=allure.attachment_type.TEXT)
             return False
         try :
-            select_first_company = wait.until(EC.element_to_be_clickable((By.XPATH, "(//div[@class='flex flex-1 gap-2 shrink-0 whitespace-nowrap'])[1]")))
+            select_first_company = wait.until(EC.element_to_be_clickable((By.XPATH, "(//div[@class='flex flex-1 gap-2 shrink-0 whitespace-normal'])[1]")))
             highlight_element(driver, select_first_company)  
             fetch_company_name = select_first_company.text
             select_first_company.click()

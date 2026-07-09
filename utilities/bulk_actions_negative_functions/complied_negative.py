@@ -22,6 +22,7 @@ def complied_negative(driver, wait, dropdown_selection_val_data, dropdown_select
             dash_total_btn = elements_details['dash_total_btn']
             dash_col_selected_label = elements_details['dash_col_selected_label']
             toast_msg = elements_details['toast_msg']  
+            dash_bulk_options_complied = elements_details['dash_bulk_options_complied']
     except FileNotFoundError as e:
         msg = f"locators.json file not found: {str(e)}"
         print(msg)
@@ -78,7 +79,7 @@ def complied_negative(driver, wait, dropdown_selection_val_data, dropdown_select
                 highlight_element(driver, bulk_dd)
                 bulk_dd.click()
 
-                complied = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and text()='Complied']")))
+                complied = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_options_complied)))
                 highlight_element(driver, complied)
                 complied.click()
             except Exception as e:

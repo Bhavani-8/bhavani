@@ -6,6 +6,9 @@ import time
 import pytest
 import pyautogui as pg
 import pandas as pd
+import random
+from utilities.add_task_functions.add_task_common import task_value_store
+from utilities.add_task_functions.add_task_common import task_value_get
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
@@ -51,7 +54,7 @@ def project_task_restore_delete(driver, wait):
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
@@ -81,7 +84,7 @@ def project_task_restore_delete(driver, wait):
     test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx"), sheet_name=f"add_task_test_cases").fillna("")
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
-    task_name = first_row.get('task_name')
+    task_name = f"{first_row.get('task_name')}_delete"
     # task_name = project_task_name if project_task_name else "task_name"
     start_date = format_date_if_valid(first_row.get('start_date'))
     due_date = format_date_if_valid(first_row.get('due_date'))
@@ -106,13 +109,14 @@ def project_task_restore_delete(driver, wait):
     test_type = first_row.get('test_type')
 
     with allure.step("Create Task"):
-        task_name = f"{task_name}_delete_check"
         try:
             if add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_holiday, end_freq_date,
                 repeat_weekday, repeat_day_month, end_time, internal_deadline, assign_to, approver, cc,
                 risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name,
                 circular_search, test_type, task_type='mandatory', direct_task_creation=True):
                 print("✅ Task creation successful")
+                task_name = task_value_get("task_name")
+                print(f"Generated Unique Task Name: {task_name}")
                 # return True
             else:
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)
@@ -218,7 +222,7 @@ def project_task_restore_delete(driver, wait):
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))

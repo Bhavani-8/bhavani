@@ -25,11 +25,9 @@ def create_milestone(driver, wait, milestone):
                 elements_details = json.load(f)
 
             project_icon = elements_details["project_icon"]
-            toast_msg = elements_details['toast_msg']
             add_new_milestone = elements_details['add_new_milestone']
             milestone_input_elem = elements_details['milestone_input_elem']
             milestone_confirm_btn = elements_details['milestone_confirm_btn']
-            milestone_add_cancel_btn = elements_details['milestone_add_cancel_btn']
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
 
             print("✅ locators.json loaded")
@@ -48,7 +46,7 @@ def create_milestone(driver, wait, milestone):
     with allure.step("Select the latest project task"):
         try:
              # Read the project name created in create_project.py
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and @title='{created_project_name}']")))
@@ -73,7 +71,7 @@ def create_milestone(driver, wait, milestone):
             unique_milestone = f"{milestone}_{random.randint(1000, 9999)}"
             # unique_milestone = f"{milestone}_{datetime.now().strftime('%H%M')}"
             milestone_input.send_keys(unique_milestone)
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
             with open(milestone_file, "w") as f:
                 f.write(unique_milestone)
 

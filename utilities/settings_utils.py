@@ -275,9 +275,10 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
                 allure.attach(str(e), name="Configurations Normal Task Button Error", attachment_type=allure.attachment_type.TEXT)
     
     if module_name == 'configurations_special_task':
+        config_special_task_name = task_details.get("config_special_task_name")
         with allure.step("Configurations Special Task"):
             try:
-                if configurations_special_task(driver, wait):
+                if configurations_special_task(driver, wait, config_special_task_name):
                     print("✅ Configurations  Special Special Detials successful")
                     return True
                 else:
@@ -342,6 +343,14 @@ def get_test_case_list(module=None):
         test_case_list = []
 
         for _, row in test_case_details.iterrows():
+             # ----------------------------
+            # 1. Testcase execution check
+            # ----------------------------
+            test_case_execution = str(row.get("test_case_execution", "n")).strip().lower()
+
+            if test_case_execution != "y":
+                print(f"Skipping {row.get('test_case_id')} -> test_case_execution = n")
+                continue
             row_test_type = str(row.get("test_type", "")).strip().lower()
 
             if row_test_type not in selected_test_types:
@@ -370,6 +379,7 @@ def get_test_case_list(module=None):
                         row.get('test_case_description'),
                         row_test_type,
                         task_details,   # ✅ send dictionary
+                        row.get('test_case_execution'),
                         marks=marks
                     )
                 )

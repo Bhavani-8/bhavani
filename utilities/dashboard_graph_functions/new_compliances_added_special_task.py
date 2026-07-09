@@ -10,7 +10,8 @@ from datetime import datetime
 import pandas as pd
 import pyautogui as pg
 import glob
-
+from utilities.add_task_functions.add_task_common import task_value_store
+from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.special_add_task_utils import special_task_check
@@ -18,7 +19,7 @@ from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
 
-def new_compliances_special_task(driver, wait, new_compliance_task):
+def new_compliances_special_task(driver, wait, new_compliance_sp_task):
     with allure.step("Loading locators from JSON"):
         try:
             with open(os.path.join("data", 'locators.json'), 'r') as f:
@@ -42,7 +43,10 @@ def new_compliances_special_task(driver, wait, new_compliance_task):
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
     # task_name = first_row.get('task_name')
-    task_name = str(first_row.get('task_name', '')).strip()
+    # task_name = str(first_row.get('task_name', '')).strip()
+    current_task_name = new_compliance_sp_task.strip() if new_compliance_sp_task else "task_name"
+    task_name = current_task_name
+    task_value_store("task_name", task_name)
     start_date = format_date_if_valid(first_row.get('start_date'))
     due_date = format_date_if_valid(first_row.get('due_date'))
     frequency = first_row.get('frequency')
@@ -67,13 +71,13 @@ def new_compliances_special_task(driver, wait, new_compliance_task):
     test_type = first_row.get('test_type')
 
     with allure.step("Create Task"):
-        task_name = f"{task_name}_sp"
         try:
             if special_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_holiday, end_freq_date,
                 repeat_weekday, repeat_day_month, end_time, internal_deadline, assign_to, approver, cc,
                 risk_rating, license_name, task_category, description, attach_file_name, impact_details, impact_file_name,
                 circular_search, test_type, task_type='mandatory', login_required=False):
                 print("✅ Task creation successful")
+                created_task = task_value_get("task_name")
             else:
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)
                 return False
@@ -190,12 +194,12 @@ def new_compliances_special_task(driver, wait, new_compliance_task):
             # Find Newly Created Task
             # -----------------------------
             final_df = excel_df[
-                excel_df["Task Name"].astype(str).str.strip() == task_name.strip()
+                excel_df["Task Name"].astype(str).str.strip() == created_task.strip()
             ][required_cols].copy()
 
             if final_df.empty:
                 msg = (
-                    f"❌ Newly created task '{task_name}' "
+                    f"❌ Newly created task '{created_task}' "
                     f"not found in exported Excel."
                 )
 

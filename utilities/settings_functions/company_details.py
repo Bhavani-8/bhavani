@@ -54,6 +54,8 @@ def company_details(driver, wait, company_name):
             select_license = elements_details['select_license']
             inside_add_licenses = elements_details['inside_add_licenses']
             inside_add_company = elements_details['inside_add_company']
+            add_license = elements_details['add_license']
+            search_input = elements_details['search_input']
 
            
             print("✅ locators.json loaded successfully")
@@ -104,7 +106,7 @@ def company_details(driver, wait, company_name):
         unique_company_name = f"{company_name}_{random.randint(1000, 9999)}"
         company_input.send_keys(unique_company_name)
         # Save latest company name
-        company_file = os.path.join("data", "latest_company.txt")
+        company_file = os.path.join("latest_data", "latest_company.txt")
         with open(company_file, "w") as f:
             f.write(unique_company_name)
 
@@ -166,7 +168,7 @@ def company_details(driver, wait, company_name):
     
     with allure.step("Add License"):
         try:
-            license_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_license_btn)))
+            license_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_license)))
             highlight_element(driver, license_btn)
             license_btn.click()
 

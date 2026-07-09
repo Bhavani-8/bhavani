@@ -63,7 +63,7 @@ def create_project(driver, wait, project_name, project_description):
 
             project_input.send_keys(unique_project_name)
             
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "w") as f:
                 f.write(unique_project_name)
 

@@ -55,7 +55,7 @@ def add_coowner(driver, wait, coowner_name):
     with allure.step("Click the three dots menu for the task"):
         try:
               # Read the project name created in create_project.py
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             three_dots_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[@title='{created_project_name}']]//button")))
@@ -137,7 +137,7 @@ def add_coowner(driver, wait, coowner_name):
     with allure.step("Click the three dots menu from the project"):
         try:
               # Read the project name created in create_project.py
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             three_dots_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[@title='{created_project_name}']]//button")))

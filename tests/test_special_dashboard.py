@@ -14,8 +14,8 @@ at_test_case_list = get_test_case_list(module='special_dashboard')
 
 @allure.suite("Special Dashboard Test Suite")
 @allure.sub_suite("Special Dashboard Validation")
-@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details", at_test_case_list)
-def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details):
+@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details, test_case_execution", at_test_case_list)
+def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details, test_case_execution):
     # allure.dynamic.title(f"Dashboard Validation")
     # allure.dynamic.description(f"This test checks dashboard functionality.")
     allure.dynamic.title(f"{test_case_id}_{module_name}")

@@ -15,9 +15,12 @@ def load_test_config_excel_data():
         if not module:
             continue
         test_types = []
-        if row['positive_execution'] == 'y':
+        positive_execution = str(row.get('positive_execution', 'n')).strip().lower()
+        negative_execution = str(row.get('negative_execution', 'n')).strip().lower()
+        if positive_execution == 'y':
             test_types.append('positive')
-        if row['negative_execution'] == 'y':
+
+        if negative_execution == 'y':
             test_types.append('negative')
         module_to_test.setdefault(module, [])
         for t in test_types:

@@ -21,13 +21,8 @@ def not_complied_negative(driver, wait, dropdown_selection_val_data, dropdown_se
             dash_bulk_task_dropdown_btn = elements_details['dash_bulk_task_dropdown_btn']
             dash_total_btn = elements_details['dash_total_btn']
             dash_col_selected_label = elements_details['dash_col_selected_label']
-            dash_bulk_task_dropdown_form_label = elements_details['dash_bulk_task_dropdown_form_label']
-            dash_bulk_task_dropdown_form_input = elements_details['dash_bulk_task_dropdown_form_input']
-            dash_bulk_task_dropdown_form_member_confirmation = elements_details['dash_bulk_task_dropdown_form_member_confirmation']
-            dash_assign_to_me_tab = elements_details['dash_assign_to_me_tab']
-            scroller = elements_details['scroller']
             toast_msg = elements_details['toast_msg']
-            error_toast_msg = elements_details['error_toast_msg']
+            dash_bulk_options_not_complied = elements_details['dash_bulk_options_not_complied']
     except FileNotFoundError as e:
         msg = f"locators.json file not found: {str(e)}"
         print(msg)
@@ -85,7 +80,7 @@ def not_complied_negative(driver, wait, dropdown_selection_val_data, dropdown_se
             highlight_element(driver, bulk_dd)
             bulk_dd.click()
 
-            not_complied = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and text()='Not Complied']")))
+            not_complied = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_options_not_complied)))
             highlight_element(driver, not_complied)
             not_complied.click()
         try:

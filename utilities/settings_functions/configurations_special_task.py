@@ -6,7 +6,8 @@ import pyautogui as pg
 import pytest
 import random
 import pandas as pd
-
+from utilities.add_task_functions.add_task_common import task_value_store
+from utilities.add_task_functions.add_task_common import task_value_get
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.special_add_task_utils import special_task_check
@@ -22,7 +23,7 @@ def step_fail(driver, step_name, error):
     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
     pytest.fail(f"❌ {step_name} failed")
 
-def configurations_special_task(driver, wait):
+def configurations_special_task(driver, wait, config_special_task_name):
 
     with allure.step("Load locators.json"):
         try:
@@ -191,6 +192,9 @@ def configurations_special_task(driver, wait):
     first_row = test_case_details.iloc[0]
     # task_name = first_row.get('task_name')
     task_name = str(first_row.get('task_name', '')).strip()
+    current_task_name = config_special_task_name.strip() if config_special_task_name else "task_name"
+    task_name = current_task_name
+    task_value_store("task_name", task_name)
     start_date = format_date_if_valid(first_row.get('start_date'))
     due_date = format_date_if_valid(first_row.get('due_date'))
     frequency = first_row.get('frequency')
@@ -215,13 +219,14 @@ def configurations_special_task(driver, wait):
     test_type = first_row.get('test_type')
 
     with allure.step("Create Task"):
-        task_name = f"{task_name}_config_task"
         try:
             if special_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_holiday, end_freq_date,
                 repeat_weekday, repeat_day_month, end_time, internal_deadline, assign_to, approver, cc,
                 risk_rating, license_name, task_category, description, attach_file_name, impact_details, impact_file_name,
                 circular_search, test_type, task_type='mandatory', direct_task_creation=False):
                 print("✅ Task creation successful")
+                created_task = task_value_get("task_name")
+                print(f"Created Task: {created_task}")
             else:
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)
                 return False

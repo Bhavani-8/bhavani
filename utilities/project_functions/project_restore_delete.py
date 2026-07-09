@@ -48,7 +48,7 @@ def project_restore_delete(driver, wait):
    
     with allure.step("Verify Project Task"):
         try:
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(text(),'{created_project_name}')]")))
@@ -106,7 +106,7 @@ def project_restore_delete(driver, wait):
             step_fail(driver, "Click Projects Tab", e)
     with allure.step("Verify Project Task"):
         try:
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//span[@title='{created_project_name}']")))

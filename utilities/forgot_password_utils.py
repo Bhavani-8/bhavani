@@ -16,6 +16,7 @@ def forgot_password_check(driver, email, test_type):
     if pd.isna(email):
         email = ""
     wait = WebDriverWait(driver, 30)
+    # driver.get("https://preprodreact.compliancesutra.com/forgot-password")
 
     # --- Load locators ---
     # with allure.step("Loading locators from JSON"):
@@ -132,38 +133,6 @@ def forgot_password_check(driver, email, test_type):
             return True
 
 
-# def load_test_config_excel_data():
-#     df = pd.read_excel(os.path.join('data', 'test_case_selector.xlsx'), sheet_name='test_details')
-#     print(f'Excel data loaded:\n{df}')
-
-#     browser = str(df.iloc[0]['browser']).strip()
-#     website = str(df.iloc[0]['website']).strip()
-
-#     # detect if Excel is marker-driven (like smoke/regression only)
-#     if "module_to_test" in df.columns and df["module_to_test"].str.strip().iloc[0].lower() in ["smoke", "regression"]:
-#         return {
-#             "browser": browser,
-#             "website": website,
-#             "module_to_test": df["module_to_test"].str.strip().iloc[0].lower()
-#         }
-    
-#     # Build module_to_test dict
-#     module_to_test = {}
-#     for _, row in df.iterrows():
-#         module = str(row['module_to_test']).strip()
-#         test_types = [t.strip() for t in str(row['test_type']).split(",") if t.strip()]
-#         if not module:
-#             continue
-#         module_to_test.setdefault(module, [])
-#         for t in test_types:
-#             if t not in module_to_test[module]:
-#                 module_to_test[module].append(t)
-    
-#     return {
-#         "browser": browser,
-#         "website": website,
-#         "module_to_test": module_to_test
-#     }
 
 def get_test_case_list(module=None):
     try:
@@ -187,6 +156,14 @@ def get_test_case_list(module=None):
 
         test_case_list = []
         for _, row in test_case_details.iterrows():
+              # ----------------------------
+            # 1. Testcase execution check
+            # ----------------------------
+            test_case_execution = str(row.get("test_case_execution", "n")).strip().lower()
+
+            if test_case_execution != "y":
+                print(f"Skipping {row.get('test_case_id')} -> test_case_execution = n")
+                continue
             row_test_type = str(row.get("test_type", "")).strip().lower()
 
             if row_test_type not in selected_test_types:
@@ -203,6 +180,7 @@ def get_test_case_list(module=None):
                 row['test_case_description'],
                 row['email'],
                 row['test_type'],
+                row['test_case_execution'],
                 marks=marks
             ))
         if not test_case_list:

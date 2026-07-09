@@ -90,22 +90,7 @@ def notification_check(driver, module_name=None, test_case_id=None):
                 step_fail(driver, "Search Task Error", e)
           
 
-    # elif module_name in filter_map:
-    #     config = filter_map[module_name]
-    #     with allure.step(f"Notification Validation for: {module_name}"):
-    #         try:
-    #             return execute_filter_and_validate(
-    #                 driver=driver, 
-    #                 wait=wait, 
-    #                 locators=locators, 
-    #                 logged_in_email=user_email, 
-    #                 filter_key=config['locator_key'], 
-    #                 filter_name=module_name,
-    #                 expected_inner_status=config['inner_label'],
-    #                 outer_keyword=config['outer_keyword']
-    #             )
-    #         except Exception as e:
-    #             step_fail(driver, f"{module_name.capitalize()} Error", e)
+   
     if module_name in filter_map:
         config = filter_map[module_name]
 
@@ -155,6 +140,14 @@ def get_test_case_list(module=None):
         test_case_list = []
 
         for _, row in test_case_details.iterrows():
+              # ----------------------------
+            # 1. Testcase execution check
+            # ----------------------------
+            test_case_execution = str(row.get("test_case_execution", "n")).strip().lower()
+
+            if test_case_execution != "y":
+                print(f"Skipping {row.get('test_case_id')} -> test_case_execution = n")
+                continue
             
             row_test_type = str(row.get("test_type", "")).strip().lower()
 
@@ -171,6 +164,7 @@ def get_test_case_list(module=None):
                     row.get("module_name"),
                     row.get("test_case_description"),
                     row_test_type,
+                    row.get("test_case_execution"),
                     marks=marks
                 )
             )

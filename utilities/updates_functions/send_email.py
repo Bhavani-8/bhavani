@@ -30,12 +30,12 @@ def send_circular_to_user(driver, wait, user_name):
             circ_checkbox = elements_details['circ_checkbox']
             circ_checkbox_label = elements_details['circ_checkbox_label']
             send_email = elements_details['send_email']
+            send_mail = elements_details['send_mail']
             email_log = elements_details['email_log']
             calender_btn = elements_details['calender_btn']
             email_log_header = elements_details['email_log_header']
             fetch_subject = elements_details['fetch_subject']
             email_log_close_btn = elements_details['email_log_close_btn']
-
 
             print("✅ locators.json loaded successfully")
         except Exception as e:
@@ -86,7 +86,7 @@ def send_circular_to_user(driver, wait, user_name):
     # STEP 5: CLICK SEND MAIL BUTTON
     # ------------------------------------------
     with allure.step("Click Send Mail"):
-        send_mail_button = wait.until(EC.presence_of_element_located((By.XPATH, send_email)))
+        send_mail_button = wait.until(EC.presence_of_element_located((By.XPATH, send_mail)))
         highlight_element(driver, send_mail_button)
         send_mail_button.click()
         print("📨 Email sent successfully!")

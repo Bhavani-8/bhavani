@@ -24,13 +24,8 @@ def mark_complete_negative(driver, wait):
             dash_bulk_task_dropdown_btn = elements_details['dash_bulk_task_dropdown_btn']
             dash_total_btn = elements_details['dash_total_btn']
             dash_col_selected_label = elements_details['dash_col_selected_label']
-            dash_bulk_task_dropdown_form_label = elements_details['dash_bulk_task_dropdown_form_label']
-            dash_bulk_task_dropdown_form_input = elements_details['dash_bulk_task_dropdown_form_input']
-            dash_bulk_task_dropdown_form_member_confirmation = elements_details['dash_bulk_task_dropdown_form_member_confirmation']
-            dash_assign_to_me_tab = elements_details['dash_assign_to_me_tab']
-            scroller = elements_details['scroller']
             toast_msg = elements_details['toast_msg']
-            error_toast_msg = elements_details['error_toast_msg']
+            dash_bulk_options_mark_complete = elements_details['dash_bulk_options_mark_complete']
 
     except FileNotFoundError as e:
         msg = f"locators.json file not found: {str(e)}"
@@ -87,7 +82,7 @@ def mark_complete_negative(driver, wait):
             highlight_element(driver, bulk_dd)
             bulk_dd.click()
 
-            mark_complete = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'dx-list-item-content') and text()='Mark Complete']")))
+            mark_complete = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_options_mark_complete)))
             highlight_element(driver, mark_complete)
             mark_complete.click()
         try:

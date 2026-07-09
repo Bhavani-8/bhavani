@@ -8,19 +8,15 @@ import os
 import json
 import pytest
 import time
-
-
+import random
+from utilities.add_task_functions.add_task_common import task_value_store
+from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.add_task_utils import add_task_check
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
 
 def updates_add_task(driver, wait, updates_task_name):
     wait_less = WebDriverWait(driver, 5)
@@ -45,8 +41,16 @@ def updates_add_task(driver, wait, updates_task_name):
                 task_circ_close_btn = elements_details['task_circ_close_btn']
 
             print("✅ locators.json loaded successfully")
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
     with allure.step("Open Updates Section"):
         try:
             time.sleep(2)
@@ -57,8 +61,10 @@ def updates_add_task(driver, wait, updates_task_name):
             time.sleep(1)
             print("✅ Updates icon clicked")
         except Exception as e:
+            msg = f"Failed to Click Updates Section: {str(e)}"
+            print(msg)
             allure.attach(str(e), name="Updates Section Error", attachment_type=allure.attachment_type.TEXT)
-            return False
+            raise Exception(msg)
 
     with allure.step("Select Update Checkbox"):
         try:
@@ -75,7 +81,10 @@ def updates_add_task(driver, wait, updates_task_name):
             print("🟦 First checkbox clicked")
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+            msg = f"Failed to Click Updates Checkbox: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Updates Checkbox Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Click Create Your Own Task"):
         try:
@@ -84,13 +93,18 @@ def updates_add_task(driver, wait, updates_task_name):
             create_task_btn.click()
             print("✅ 'Create your own task' clicked")
         except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+            msg = f"Failed to Click Create Your Own Task: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Create Your Own Task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx"), sheet_name=f"add_task_test_cases").fillna("")
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
     # task_name = updates_task_name if updates_task_name else "task_name"
-    task_name = updates_task_name.strip() if updates_task_name else "task_name"
+    current_task_name = updates_task_name.strip() if updates_task_name else "task_name"
+    task_name = current_task_name
+    task_value_store("task_name", task_name)
 
     # task_name = first_row.get('updates_task')
     start_date = format_date_if_valid(first_row.get('start_date'))
@@ -122,12 +136,18 @@ def updates_add_task(driver, wait, updates_task_name):
                 risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name,
                 circular_search, test_type, task_type='mandatory', direct_task_creation=True):
                 print("✅ Task creation successful")
+                created_task = task_value_get("task_name")
+                print(f"Generated Unique Task Name: {task_name}")
+
                 # return True
             else:
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)
                 return False
         except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+            msg = f"Failed to Click Add Task: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Add Task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Validate Update Task in Dashboard"):
         try:
@@ -145,10 +165,10 @@ def updates_add_task(driver, wait, updates_task_name):
             search_input = wait.until(EC.visibility_of_element_located((By.XPATH, task_search_input)))
             highlight_element(driver, search_input)
             search_input.clear()
-            search_input.send_keys(task_name)
+            search_input.send_keys(created_task)
 
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(4)  # Extra wait to ensure results load
+            time.sleep(5)  
     
             task_open_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, task_open_btn)))
             highlight_element(driver, task_open_btn_elem)
@@ -156,9 +176,11 @@ def updates_add_task(driver, wait, updates_task_name):
             time.sleep(4)
             wait_for_loader_to_disappear(driver, wait)
            
-        except Exception as err:
-            allure.attach(str(err), "Total tab error", allure.attachment_type.TEXT)
-            pytest.fail("Failed to click Total tab")
+        except Exception as e:
+            msg = f"Failed to Click Total tab: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Total Tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Click on Update Tab"):
         try:
@@ -169,7 +191,10 @@ def updates_add_task(driver, wait, updates_task_name):
             time.sleep(2)
             print("✅ Update tab clicked successfully.")
         except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+            msg = f"Failed to Click on Update Tab: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Update Tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Validate Update Circular"):
         try:
@@ -186,7 +211,10 @@ def updates_add_task(driver, wait, updates_task_name):
             time.sleep(2)
             print("Update Circular Opened successfully.")
         except Exception as e:
-            step_fail(driver, "Validate Update Circular Failed", e)   
+            msg = f"Failed to Click Update Circular: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Update Circular Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)   
     with allure.step("Verify Circular"):
         if fetched_circular == fetched_update_circ:
             print("✅ Circular Verified successfully!")
@@ -221,7 +249,10 @@ def updates_add_task(driver, wait, updates_task_name):
             time.sleep(3)
         
         except Exception as e:
-            step_fail(driver, "Close button Failed", e)  
+            msg = f"Failed to Click Close Button: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Close Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg) 
 
 
    

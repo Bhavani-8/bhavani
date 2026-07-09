@@ -361,7 +361,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                 allure.attach(str(e), name="Dashboard Graph Count Error", attachment_type=allure.attachment_type.TEXT)
     
     if module_name == 'new_compliances_added'and task_details:
-        new_compliance_task = task_details.get("newly_compliance_task")
+        new_compliance_task = task_details.get("new_compliance_task")
         with allure.step("New Compliances Normal Task"):
             try:
                 if new_compliances_normal_task(driver, wait, new_compliance_task):
@@ -374,10 +374,10 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                 allure.attach(str(e), name="New Compliances Normal Task Error", attachment_type=allure.attachment_type.TEXT)
     
     if module_name == 'new_compliances_special_task'and task_details:
-        new_compliance_task = task_details.get("newly_compliance_task")
+        new_compliance_sp_task = task_details.get("new_compliance_sp_task")
         with allure.step("New compliances Special Task"):
             try:
-                if new_compliances_special_task(driver, wait, new_compliance_task):
+                if new_compliances_special_task(driver, wait, new_compliance_sp_task):
                     print("✅ New compliances Special Task validation successful")
                     return True
                 else:
@@ -437,6 +437,15 @@ def get_test_case_list(module=None):
         test_case_list = []
 
         for _, row in test_case_details.iterrows():
+
+             # ----------------------------
+            # 1. Testcase execution check
+            # ----------------------------
+            test_case_execution = str(row.get("test_case_execution", "n")).strip().lower()
+
+            if test_case_execution != "y":
+                print(f"Skipping {row.get('test_case_id')} -> test_case_execution = n")
+                continue
             row_test_type = str(row.get("test_type", "")).strip().lower()
 
             if row_test_type not in selected_test_types:
@@ -462,6 +471,7 @@ def get_test_case_list(module=None):
                     row.get("test_case_description"),
                     row_test_type,
                     task_details,
+                    row.get("test_case_execution"),
                     marks=marks
                 )
             )

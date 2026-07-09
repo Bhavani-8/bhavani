@@ -38,63 +38,51 @@ def project_check(driver, wait, dash_type='QCC'):
                 time.sleep(2)
                 print("✅ Project icon clicked")
             except Exception as e:
-                print(f"❌ Failed to open project dropdown: {e}")
-                return False
+                msg = f"Failed to Click Project Icon: {str(e)}"
+                print(msg)
+                allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+            
             
             with allure.step("Fetch the first task name from the task list"):
                 try:
                     first_project_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//tr[contains(@class,'dx-data-row')])[2]//td[1]//div[@title]")))
                     highlight_element(driver, first_project_name_elem)
                     time.sleep(1)
-                    first_project_name = first_project_name_elem.text.strip()
-                    if not first_project_name:
-                        first_project_name= first_project_name_elem.get_attribute("title").strip()
-                    if not first_project_name:
-                        raise Exception("Task name text is empty")
+                    first_project_name= first_project_name_elem.get_attribute("title").strip()
+                    # if not first_project_name:
+                    #     first_project_name= first_project_name_elem.get_attribute("title").strip()
+                    # if not first_project_name:
+                    #     raise Exception("Task name text is empty")
 
                     print(f"📋 Copied First Project Name: {first_project_name}")
                 except Exception as e:
-                    print(f"❌ Could not retrieve first task name: {e}")
-                    return False
-            if dash_type == 'special':
-                with allure.step("Open Special Task Dashboard → Special Team Performance"):
-                    try:
-                        print("📍 Opening Special Task Dashboard...")
-                        special_task_icon_elem = wait.until(EC.element_to_be_clickable((By.XPATH, special_task_icon)))
-                        highlight_element(driver, special_task_icon_elem)
-                        special_task_icon_elem.click()
-                        print("✅ Special Task Dashboard icon clicked")
-
-                        wait_for_loader_to_disappear(driver, wait)
-                        special_team_perf_elem = wait.until(EC.element_to_be_clickable((By.XPATH, team_performance_btn)))
-                        highlight_element(driver, special_team_perf_elem)
-                        special_team_perf_elem.click()
-                        print("✅ Special Team Performance clicked")
-                        wait_for_loader_to_disappear(driver, wait)
-                    except Exception as e:
-                        allure.attach(str(e), name="Dashboard Open Error", attachment_type=allure.attachment_type.TEXT)
-                        return False
-            else:
-                with allure.step("Open Dashboard → Team Performance"):
-                    try:
-                        print("📍 Opening Normal Dashboard...")
-                        dashboard_icon_elem = wait.until(EC.element_to_be_clickable((By.XPATH, dashboard_icon)))
-                        highlight_element(driver, dashboard_icon_elem)
-                        dashboard_icon_elem.click()
-                        print("✅ Dashboard icon clicked")
-
-                        wait_for_loader_to_disappear(driver, wait)
-                        print("⏳ Clicking Team Performance...")
-                        team_perf_elem = wait.until(EC.element_to_be_clickable((By.XPATH, team_performance_btn)))
-                        highlight_element(driver, team_perf_elem)
-                        team_perf_elem.click()
-                        print("✅ Team Performance clicked")
-                        wait_for_loader_to_disappear(driver, wait)
-                    except Exception as e:
-                        print(f"❌ Failed in dashboard navigation: {e}")
-                        allure.attach(str(e), name="Dashboard Navigation Error", attachment_type=allure.attachment_type.TEXT)
-                        return False
+                    msg = f"Failed to Fetch Project name: {str(e)}"
+                    print(msg)
+                    allure.attach(msg, name="Project Name Error", attachment_type=allure.attachment_type.TEXT)
+                    raise Exception(msg)
             
+            with allure.step("Open Dashboard → Team Performance"):
+                try:
+                    print("📍 Opening Normal Dashboard...")
+                    dashboard_icon_elem = wait.until(EC.element_to_be_clickable((By.XPATH, dashboard_icon)))
+                    highlight_element(driver, dashboard_icon_elem)
+                    dashboard_icon_elem.click()
+                    print("✅ Dashboard icon clicked")
+
+                    wait_for_loader_to_disappear(driver, wait)
+                    print("⏳ Clicking Team Performance...")
+                    team_perf_elem = wait.until(EC.element_to_be_clickable((By.XPATH, team_performance_btn)))
+                    highlight_element(driver, team_perf_elem)
+                    team_perf_elem.click()
+                    print("✅ Team Performance clicked")
+                    wait_for_loader_to_disappear(driver, wait)
+                except Exception as e:
+                    msg = f"Failed to Click Dashboard Icon: {str(e)}"
+                    print(msg)
+                    allure.attach(msg, name="Dashboard Icon Error", attachment_type=allure.attachment_type.TEXT)
+                    raise Exception(msg)
+        
             with allure.step("Open Project Filter"):
                 try:
                     filter_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "(//div[contains(@class,'dx-toolbar-item-content')]//button[contains(@class,'ant-btn-icon-only')])[2]")))
@@ -102,9 +90,10 @@ def project_check(driver, wait, dash_type='QCC'):
                     filter_btn.click()
                     print("✅ Filter button clicked")
                 except Exception as e:
-                    print(f"❌ Filter button not clickable: {e}")
-                    return False
-
+                    msg = f"Failed to Click Project Filter: {str(e)}"
+                    print(msg)
+                    allure.attach(msg, name="Project Filter Error", attachment_type=allure.attachment_type.TEXT)
+                    raise Exception(msg)
             with allure.step("Click select project and enter project name"):
                 try:
                     # 1️⃣ Click the Select Project dropdown (the control box)
@@ -121,13 +110,17 @@ def project_check(driver, wait, dash_type='QCC'):
 
                     print(f"✅ Selected project: {first_project_name}")
 
+                    filter_label_text = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='ant-popover-title']")))
+                    highlight_element(driver, filter_label_text)
+                    filter_label_text.click()
+
+
                 except Exception as e:
-                    allure.attach(str(e), name="Project Button Error", attachment_type=allure.attachment_type.TEXT)
-                    pytest.fail("❌ Failed to click Project button")
-
-                filter_label_text = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='ant-popover-title']")))
-                filter_label_text.click()
-
+                    msg = f"Failed to Click Project Dropdown: {str(e)}"
+                    print(msg)
+                    allure.attach(msg, name="Project Dropdown Error", attachment_type=allure.attachment_type.TEXT)
+                    raise Exception(msg)
+                
             # ---------------------------
             with allure.step("Apply Date Range"):
                 try:
@@ -135,8 +128,11 @@ def project_check(driver, wait, dash_type='QCC'):
                     highlight_element(driver, apply_btn)
                     apply_btn.click()
                     time.sleep(4)
-                except Exception:
-                    print("⚠️ Apply button not found — skipping")
+                except Exception as e:
+                    msg = f"Failed to Click Apply Date: {str(e)}"
+                    print(msg)
+                    allure.attach(msg, name="Apply Date Error", attachment_type=allure.attachment_type.TEXT)
+                    raise Exception(msg)
                     
             try:
                 filter_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH,"(//div[contains(@class,'dx-toolbar-item-content')]//button[contains(@class,'ant-btn-icon-only')])[2]")))
@@ -145,7 +141,10 @@ def project_check(driver, wait, dash_type='QCC'):
                 driver.execute_script("arguments[0].click();", filter_btn_elem)
                 print("✅ Date filter toolbar reopened")
             except Exception as e:
-                print(f"⚠️ Could not reopen toolbar: {e}")
+                msg = f"Failed to Click Filter label: {str(e)}"
+                print(msg)
+                allure.attach(msg, name="Filter label Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
 
             # ---------------------------
             # Click Reset
@@ -157,7 +156,10 @@ def project_check(driver, wait, dash_type='QCC'):
                 reset_btn.click()
                 print("✅ Date filter reset successfully")
                 time.sleep(4)
-            except Exception:
-                print("⚠️ Reset button not found — skipping")
+            except Exception as e:
+                msg = f"Failed to Click Reset Button: {str(e)}"
+                print(msg)
+                allure.attach(msg, name="Reset Button Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
 
     return True

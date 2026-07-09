@@ -5,15 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.webdriver import ActionChains
-import pyautogui as pg
 import time
 import allure
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
-
-
-
 
 
 def comment_negative(driver, wait):
@@ -24,10 +18,9 @@ def comment_negative(driver, wait):
             dash_col_all_selection_btn = elements_details['dash_col_all_selection_btn']
             dash_col_selected_label = elements_details['dash_col_selected_label']
             toast_msg = elements_details['toast_msg']
-            toast_close_btn = elements_details['toast_close_btn']
             dash_total_btn = elements_details['dash_total_btn']
-            error_toast_msg = elements_details['error_toast_msg']
             toast_msg = elements_details['toast_msg']
+            dash_bulk_options_comment = elements_details['dash_bulk_options_comment']
 
     except FileNotFoundError as e:
         msg = f"locators.json file not found: {str(e)}"
@@ -86,9 +79,9 @@ def comment_negative(driver, wait):
                 highlight_element(driver, bulk_dd)
                 bulk_dd.click()
 
-                comment = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'dx-list-item-content') and text()='Comment']")))
-                highlight_element(driver, comment)
-                comment.click()
+                comment_option = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_options_comment)))
+                highlight_element(driver, comment_option)
+                comment_option.click()
             except Exception as e:
                 msg = f"Failed to Click Bulk action Dropdown: {str(e)}"
                 print(msg)

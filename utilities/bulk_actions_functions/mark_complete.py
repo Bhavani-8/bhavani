@@ -14,41 +14,42 @@ from selenium.common.exceptions import StaleElementReferenceException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
 
-try:
-    with open(os.path.join("data", 'locators.json'), 'r') as f:
-        elements_details = json.load(f)
-        dash_total_btn = elements_details['dash_total_btn']
-        dash_col_all_selection_btn = elements_details['dash_col_all_selection_btn']
-        dash_col_selected_label = elements_details['dash_col_selected_label']
-        dash_bulk_task_dropdown_btn = elements_details['dash_bulk_task_dropdown_btn']
-        task_search_btn = elements_details['task_search_btn']
-        task_search_input = elements_details['task_search_input']
-        dash_not_assigned_tab = elements_details['dash_not_assigned_tab']
-        dash_bulk_task_dropdown_form_label = elements_details['dash_bulk_task_dropdown_form_label']
-        dash_bulk_task_dropdown_form_input = elements_details['dash_bulk_task_dropdown_form_input']
-        column_chooser_btn = elements_details['column_chooser_btn']
-        column_chooser_save_btn = elements_details['column_chooser_save_btn']
-        column_filter_search_input = elements_details['column_filter_search_input']
-        dash_bulk_task_dropdown_form_member_confirmation = elements_details['dash_bulk_task_dropdown_form_member_confirmation']
-        notification_icon = elements_details['notification_icon']
-        column_chooser_company_project = elements_details['column_chooser_company_project']
-        toast_msg = elements_details['toast_msg']
-        error_toast_msg = elements_details['error_toast_msg']   
-        task_open_btn = elements_details['task_open_btn']
-        task_action_log_section = elements_details['task_action_log_section']
-        notification_all_items = elements_details['notification_all_items']
-        select_first_checkbox = elements_details['select_first_checkbox']
-        dash_bulk_options_confirm_btn = elements_details['dash_bulk_options_confirm_btn']
-        dash_bulk_options_cancel_btn = elements_details['dash_bulk_options_cancel_btn']
-        column_filter_company_project = elements_details['column_filter_company_project']
 
-except FileNotFoundError:
-    pytest.fail("❌ locators.json file not found")
-except json.JSONDecodeError:
-    pytest.fail("❌ Invalid JSON in locators.json")
 
 def mark_complete_bulk_action(driver, wait, task_name='Internal Task'):
     wait_less = WebDriverWait(driver, 5)
+    try:
+        with open(os.path.join("data", 'locators.json'), 'r') as f:
+            elements_details = json.load(f)
+            dash_total_btn = elements_details['dash_total_btn']
+            dash_bulk_task_dropdown_btn = elements_details['dash_bulk_task_dropdown_btn']
+            dash_not_assigned_tab = elements_details['dash_not_assigned_tab']
+            column_chooser_btn = elements_details['column_chooser_btn']
+            column_chooser_save_btn = elements_details['column_chooser_save_btn']
+            column_filter_search_input = elements_details['column_filter_search_input']
+            notification_icon = elements_details['notification_icon']
+            column_chooser_company_project = elements_details['column_chooser_company_project']
+            toast_msg = elements_details['toast_msg']  
+            task_action_log_section = elements_details['task_action_log_section']
+            notification_all_items = elements_details['notification_all_items']
+            select_first_checkbox = elements_details['select_first_checkbox']
+            dash_bulk_options_confirm_btn = elements_details['dash_bulk_options_confirm_btn']
+            dash_bulk_options_mark_complete = elements_details['dash_bulk_options_mark_complete']
+            column_filter_company_project = elements_details['column_filter_company_project']
+            column_filter_company_project_internal_task = elements_details['column_filter_company_project_internal_task']
+            column_filter_ok_btn = elements_details['column_filter_ok_btn']
+            task_log_tab = elements_details['task_log_tab']
+
+    except FileNotFoundError as e:
+        msg = f"locators.json file not found: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+        return False
+    except json.JSONDecodeError as e:
+        msg = f"Invalid JSON in locators.json: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+        return False
     with allure.step("Clicking Dashboard Total button"):
         try:
             wait_for_loader_to_disappear(driver, wait)
@@ -57,20 +58,34 @@ def mark_complete_bulk_action(driver, wait, task_name='Internal Task'):
             total_tab.click()
             wait_for_loader_to_disappear(driver, wait)
             print("✅ Clicked Total tab")
-        except Exception as err:
-            allure.attach(str(err), "Total tab error", allure.attachment_type.TEXT)
-            pytest.fail("Failed to click Total tab")
+        except Exception as e:
+            msg = f"Failed to Click Total tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Total tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Clicking Not Assigned Tab"):
-        not_assigned_tab = wait.until(EC.element_to_be_clickable((By.XPATH, dash_not_assigned_tab)))
-        not_assigned_tab.click()
-        time.sleep(1)
-        wait_for_loader_to_disappear(driver, wait)
+        try:
+            not_assigned_tab = wait.until(EC.element_to_be_clickable((By.XPATH, dash_not_assigned_tab)))
+            not_assigned_tab.click()
+            time.sleep(1)
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            msg = f"Failed to Click Not Assigned Tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Not Assigned Tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Open Column Chooser from task list"):
-        column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
-        highlight_element(driver, column_chooser_btn_elem)
-        driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
-        print("Clicked Column Chooser button")
-        wait_for_loader_to_disappear(driver, wait)
+        try:     
+            column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
+            highlight_element(driver, column_chooser_btn_elem)
+            driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
+            print("Clicked Column Chooser button")
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            msg = f"Failed to Click Column chooser button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Column chooser Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
         def get_state(elem):
             """
@@ -113,8 +128,11 @@ def mark_complete_bulk_action(driver, wait, task_name='Internal Task'):
 
             if final_state != "deselected":
                 pytest.fail(f"❌ Select All normalization failed, state: {final_state}")
-        except StaleElementReferenceException:
-            pytest.fail("❌ Stale element while normalizing Select All")
+        except Exception as e:
+            msg = f"Failed to Selecting all: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Selecting all Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Select 'Company / Project' from Column Chooser"): 
         try:
             company_project_option_elm = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_company_project)))
@@ -122,70 +140,99 @@ def mark_complete_bulk_action(driver, wait, task_name='Internal Task'):
             actions.move_to_element(company_project_option_elm).perform()
             time.sleep(0.5)
             company_project_option_elm.click()   
-            save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_save_btn)))
-            highlight_element(driver, save_btn)
-            save_btn.click()
-            print("✅ Column Chooser saved")
-        except TimeoutException:
-            print("❌ 'Company / Project' not found in filter list")
-
+            
+        except Exception as e:
+            msg = f"Failed to Clicking Approver option: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Approver Option Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    try:
+        save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_save_btn)))
+        highlight_element(driver, save_btn)
+        save_btn.click()
+        print("✅ Column Chooser saved")
+    except Exception as e:
+        msg = f"Failed to Save Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Save Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
+   
     try:
         toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
         highlight_element(driver, toast)
         print(f"📢 Toast message: {toast.text.strip()}")
-    except Exception:
-        print("❌ No toast message found")
+    except Exception as e:
+        msg = f"Toast message not found: {str(e)}"
+        print(msg)
+        allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     wait_for_loader_to_disappear(driver, wait)
     with allure.step(f"Open Company/Project filter and search for '{task_name}'"):
-        company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
-        company_project_filter_btn.click()
-        highlight_element(driver, company_project_filter_btn)
-        time.sleep(2)
+        try:
+            company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
+            company_project_filter_btn.click()
+            highlight_element(driver, company_project_filter_btn)
+            time.sleep(2)
 
-        search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
-        search_input.clear()
-        search_input.send_keys(task_name)
-        time.sleep(4)
+            search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
+            search_input.clear()
+            search_input.send_keys(task_name)
+            time.sleep(4)
+        except Exception as e:
+            msg = f"Failed to Open Company Project filter: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Company Project filter Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     try:
-        search_task = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'dx-list-item-content') and normalize-space()='Internal Task']")))
+        search_task = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project_internal_task)))
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", search_task)
         time.sleep(1)
         search_task.click()
         time.sleep(2)
         print("✅ Clicked 'Internal Task'")
-
-    except TimeoutException:
-        print("❌ 'Internal Task' not found in filter list")
-    button_clicked = False
+    except Exception as e:
+        msg = f"Failed to Search Task: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Search Task Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
 
     try:
-        ok_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@aria-label='OK']")))
-        ok_btn.click()
-        time.sleep(2)
-        button_clicked = True
-    except TimeoutException:
-        print("ℹ️ Ok button not available / not clickable")
-    if not button_clicked:
-        try:
-            cancel_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@aria-label='Cancel']")))
-            cancel_btn.click()
-        except TimeoutException:
-            print("ℹ️ Close/Cancel button not present")
+        column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
+        column_filter_ok.click()
+        time.sleep(3)
+    except Exception as e:
+        msg = f"Failed to Click Column Filter OK Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Column Filter OK Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
         
     wait_for_loader_to_disappear(driver, wait)
 
     with allure.step("Select first task from task list"):
-        first_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, select_first_checkbox)))
-        first_checkbox.click()
+        try:
+            first_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, select_first_checkbox)))
+            first_checkbox.click()
+            time.sleep(2)
+        except Exception as e:
+            msg = f"Failed to Selecting first task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Selecting first task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Open Bulk Action and select 'Mark Complete'"): 
-        bulk_dd = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_task_dropdown_btn)))
-        highlight_element(driver, bulk_dd)
-        bulk_dd.click()
+        try:
+            bulk_dd = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_task_dropdown_btn)))
+            highlight_element(driver, bulk_dd)
+            bulk_dd.click()
 
-        mark_complete_option = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and text()='Mark Complete']")))
-        highlight_element(driver, mark_complete_option)
-        mark_complete_option.click()
+            mark_complete_option = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_options_mark_complete)))
+            highlight_element(driver, mark_complete_option)
+            mark_complete_option.click()
+        except Exception as e:
+            msg = f"Failed to Click Bulk action Dropdown: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Bulk action Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Confirm button"):
         try:
             confirm_btn = wait.until(EC.presence_of_element_located((By.XPATH, dash_bulk_options_confirm_btn)))
@@ -194,23 +241,19 @@ def mark_complete_bulk_action(driver, wait, task_name='Internal Task'):
             print("✅ Confirm button clicked")
 
         except Exception as e:
-            print("ℹ️ Confirm button not available / not clickable")
-            cancel_btn = wait.until(EC.presence_of_element_located((By.XPATH, dash_bulk_options_cancel_btn)))
-            highlight_element(driver, cancel_btn)
-            cancel_btn.click()
-            print("✅ Cancel button clicked")
-    with allure.step("Verify toast notifications"):
-        try:
-            toast = wait.until(EC.presence_of_element_located((By.XPATH,f"{toast_msg} | {error_toast_msg}")))
-            highlight_element(driver, toast)
-            toast_class = toast.get_attribute("class")
-
-            if "Toastify__toast--success" in toast_class:
-                print(f"📢 Success Toast: {toast.text.strip()}")
-            elif "Toastify__toast--error" in toast_class:
-                print(f"❌ Error Toast: {toast.text.strip()}")
-        except TimeoutException:
-            print("ℹ️ No toast found")
+            msg = f"Failed to Click Confirm Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Confirm Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    try:
+        toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
+        highlight_element(driver, toast)
+        print(f"📢 Toast message: {toast.text.strip()}")
+    except Exception as e:
+        msg = f"Toast message not found: {str(e)}"
+        print(msg)
+        allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     
 
     with allure.step("Validate Normal Notification - Mark Complete"):
@@ -239,16 +282,17 @@ def mark_complete_bulk_action(driver, wait, task_name='Internal Task'):
             msg = f"❌ Normal Notification Error (Created Task): {e}"
             print(msg)
             allure.attach(msg, "Normal Notification Error", allure.attachment_type.TEXT)
-            return False
+            raise Exception(msg)
     with allure.step("Open Task Log tab to verify assignment actions"):
         try:
-            task_log_tab_elem = wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Log']")))
+            task_log_tab_elem = wait.until(EC.presence_of_element_located((By.XPATH, task_log_tab)))
             task_log_tab_elem.click()
             print("✅ Log tab clicked")
             time.sleep(3)
         except Exception as e:
-            print(f"❌ Error clicking Log tab: {e}")
-            allure.attach(str(e), "Error clicking Log tab", allure.attachment_type.TEXT)
+            msg = f"❌ Error clicking Log tab: {e}"
+            allure.attach(msg, "Error clicking Log tab", allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Fetch action text and member name from log entry"):
         try:
             p_elem = driver.find_element(By.XPATH, task_action_log_section)
@@ -262,9 +306,9 @@ def mark_complete_bulk_action(driver, wait, task_name='Internal Task'):
 
             allure.attach(log_details,name="Log Entry Details",attachment_type=allure.attachment_type.TEXT)
         except Exception as e:
-            print(f"❌ Error fetching log details: {e}")
-            allure.attach(str(e), "Error fetching log details", allure.attachment_type.TEXT)
-            return False
+            msg = f"❌ Error fetching log details: {e}"
+            allure.attach(msg, "Error fetching log details", allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     return True
 

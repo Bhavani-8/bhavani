@@ -4,15 +4,11 @@ import json
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-# from utilities.dashboard_utils import step_fail
 from utilities.other_utils_functions.highlight import highlight_element
 from selenium.webdriver import ActionChains
-import pyautogui as pg
 import time
 import allure
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
-from selenium.common.exceptions import StaleElementReferenceException
 
 
 def cc_negative(driver, wait):
@@ -31,11 +27,12 @@ def cc_negative(driver, wait):
             error_toast_msg = elements_details['error_toast_msg']
             column_filter_search_input = elements_details['column_filter_search_input']
             column_filter_ok_btn = elements_details['column_filter_ok_btn']
-            column_filter_cancel_btn = elements_details['column_filter_cancel_btn']
+            select_first_checkbox = elements_details['select_first_checkbox']
             dash_bulk_options_first_member = elements_details['dash_bulk_options_first_member']
             column_chooser_company_project = elements_details['column_chooser_company_project']
             column_chooser_creator = elements_details['column_chooser_creator']
             column_filter_creator = elements_details['column_filter_creator']
+            dash_bulk_options_add_cc = elements_details['dash_bulk_options_add_cc']
 
     except FileNotFoundError as e:
         msg = f"locators.json file not found: {str(e)}"
@@ -62,10 +59,17 @@ def cc_negative(driver, wait):
             allure.attach(msg, name="Total tab Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
     with allure.step("Open Column Chooser from task list"):
-        column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
-        highlight_element(driver, column_chooser_btn_elem)
-        driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
-        wait_for_loader_to_disappear(driver, wait)
+        try:
+            column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
+            highlight_element(driver, column_chooser_btn_elem)
+            driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
+            print("Clicked Column Chooser button")
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            msg = f"Failed to Click Column chooser button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Column chooser Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
         def get_state(elem):
             """
@@ -211,7 +215,7 @@ def cc_negative(driver, wait):
     
     with allure.step("Select first task from task list"):
         try:
-            first_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, "(//td[@aria-colindex='1']//span[contains(@class,'dx-checkbox-icon')])[2]")))
+            first_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, select_first_checkbox)))
             first_checkbox.click()
             time.sleep(2)
         except Exception as e:
@@ -225,7 +229,7 @@ def cc_negative(driver, wait):
             highlight_element(driver, bulk_dd)
             bulk_dd.click()
 
-            cc_option = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and text()='Add CC']")))
+            cc_option = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_options_add_cc)))
             highlight_element(driver, cc_option)
             cc_option.click()
 

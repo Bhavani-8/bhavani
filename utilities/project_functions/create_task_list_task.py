@@ -4,6 +4,9 @@ import os
 import time
 import pytest
 import pandas as pd
+import random
+from utilities.add_task_functions.add_task_common import task_value_store
+from utilities.add_task_functions.add_task_common import task_value_get
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
@@ -12,12 +15,6 @@ from utilities.add_task_functions.format_time_if_valid import format_time_if_val
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.add_task_utils import add_task_check
 
-
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-   
 def create_task_list_task(driver, wait, task_list_task_name=None):
 
     with allure.step("Load locators.json"):
@@ -40,8 +37,16 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             milestone_dropdown_btn = elements_details['milestone_dropdown_btn']
             task_list_dropdown_btn = elements_details['task_list_dropdown_btn']
             print("✅ locators.json loaded")
-        except Exception as e:
-            step_fail(driver, "Select HOD", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
         
     with allure.step("Click project icon"):
         try:
@@ -50,11 +55,14 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             project_btn.click()
             time.sleep(3)
         except Exception as e:
-            step_fail(driver, "Click project icon", e)
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
@@ -63,7 +71,10 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             project_task.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click Project Task", e)
+            msg = f"Failed to Click Project Task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click 'Add new task' button"):
         try:
             add_new_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_new_task)))
@@ -71,10 +82,14 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             add_new_task_btn.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click 'Add new task' button", e)
+            msg = f"Failed to Click Add new task button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Add new task button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+        
     with allure.step("Open milestone dropdown, enter milestone name, select option"):
         try:
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()
@@ -92,10 +107,13 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             highlight_element(driver, milestone_option)
             milestone_option.click()
         except Exception as e:
-            step_fail(driver, "Open milestone dropdown, enter milestone name, select option", e)
-    with allure.step("Open milestone dropdown, enter milestone name, select option"):
+            msg = f"Failed to Click milestone dropdown: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone dropdown Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    with allure.step("Open task list dropdown, enter task list name, select option"):
         try:
-            task_list_file = os.path.join("data", "latest_task_list.txt")
+            task_list_file = os.path.join("latest_data", "latest_task_list.txt")
 
             with open(task_list_file, "r") as f:
                 created_task_list = f.read().strip()
@@ -111,8 +129,10 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             highlight_element(driver, task_list_option)
             task_list_option.click()
         except Exception as e:
-            step_fail(driver, "Open milestone dropdown, enter milestone name, select option", e)
-    
+            msg = f"Failed to Click task list dropdown: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Task list dropdown Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click 'Next' button"):
         try:
             next_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_next_btn)))
@@ -120,11 +140,18 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             next_btn.click()
             print("✅ Project Submit clicked")
         except Exception as e:
-            step_fail(driver, "Click 'Next' button", e)
+            msg = f"Failed to Click 'Next' button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="'Next' button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+
     test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx"), sheet_name=f"add_task_test_cases").fillna("")
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
-    task_name = task_list_task_name if task_list_task_name else "task_name"
+    # task_name = task_list_task_name if task_list_task_name else "task_name"
+    current_task_name = task_list_task_name.strip() if task_list_task_name else "task_name"
+    task_name = current_task_name
+    task_value_store("task_name", task_name)
     start_date = format_date_if_valid(first_row.get('start_date'))
     due_date = format_date_if_valid(first_row.get('due_date'))
     frequency = first_row.get('frequency')
@@ -159,17 +186,23 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)
                 return False
         except Exception as e:
-            step_fail(driver, "Task Creation", e)
+            allure.attach(str(e), name="Add Task Error", attachment_type=allure.attachment_type.TEXT)
     with allure.step("Click the newly created milestone task"):
         try:
             time.sleep(6)
-            task_list_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@title='{task_list_task_name}']")))
+            created_task = task_value_get("task_name")
+            task_list_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@title='{created_task}']")))
             highlight_element(driver, task_list_task_btn)
             task_list_task_fetch = task_list_task_btn.text.strip()
+            time.sleep(1)
             task_list_task_btn.click()
+            time.sleep(2)
             print(f"{task_list_task_fetch} created")
         except Exception as e:
-            step_fail(driver, "Click the newly created milestone task", e)
+            msg = f"Failed to Click newly created Project task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="newly created Project task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click close button on task details panel"):
         try:
             close_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_project_close_btn)))
@@ -177,7 +210,10 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             close_btn.click()
             print("✅ Close Submit clicked")
         except Exception as e:
-            step_fail(driver, "Click close button on task details panel", e)
+            msg = f"Failed to Click close button on task details page: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="close button on task details page Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Milestone close button on task details panel"):
         try:
             milestone_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, milestone_cancel_btn)))
@@ -185,7 +221,10 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             milestone_close_btn.click()
             print("✅ Milestone Submit clicked")
         except Exception as e:
-            step_fail(driver, "Click Milestone close button on task details panel", e)
+            msg = f"Failed to Click Milestone close button on task details page: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone close button on task details page Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Verify created task by searching and validating data"):
         try:
             dashboard_icon_elem = wait.until(EC.presence_of_element_located((By.XPATH, dashboard_icon)))
@@ -206,7 +245,7 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             search_input = wait.until(EC.visibility_of_element_located((By.XPATH, task_search_input)))
             highlight_element(driver, search_input)
             search_input.clear()
-            search_input.send_keys(task_name)
+            search_input.send_keys(created_task)
 
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(4)  # Extra wait to ensure results load
@@ -217,20 +256,22 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             time.sleep(2)
             wait_for_loader_to_disappear(driver, wait)
         except Exception as e:
-            step_fail(driver, "Step 5: Verify created task by searching", e)
-    
+            msg = f"Failed to Click dashboard: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Dashboard Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         # ✅ Fetch task name from dashboard after opening
 
 
 # ✅ Validation
         with allure.step("Validate Project Task vs Dashboard Search Task"):
 
-            validation_msg = f"Actual Project Task ='{task_list_task_fetch}', Expected Dashboard Search Task='{task_name}'"
+            validation_msg = f"Actual Project Task ='{task_list_task_fetch}', Expected Dashboard Search Task='{created_task}'"
             
             print(validation_msg)
             allure.attach(validation_msg, name="Task Validation", attachment_type=allure.attachment_type.TEXT)
 
-            if task_list_task_fetch != task_name:
+            if task_list_task_fetch != created_task:
                 print(f"❌ Mismatch: {validation_msg}")
                 allure.attach("❌ FAILED", name="Status", attachment_type=allure.attachment_type.TEXT)
                 pytest.fail(validation_msg)
@@ -246,8 +287,10 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(3)
         except Exception as e:
-            step_fail(driver, "Click close button on task details", e)
-    
+            msg = f"Failed to Click Task close button : {str(e)}"
+            print(msg)
+            allure.attach(msg, name=" Task close button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Search close button on task details"):
         try:
             search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH,  task_search_close_btn)))
@@ -257,8 +300,10 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             time.sleep(3)
             print("✅ Search Close button clicked")
         except Exception as e:
-            step_fail(driver, "Click Search close button on task details", e)
-    
+            msg = f"Failed to Click search close button : {str(e)}"
+            print(msg)
+            allure.attach(msg, name="search close button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     return True 
 
 

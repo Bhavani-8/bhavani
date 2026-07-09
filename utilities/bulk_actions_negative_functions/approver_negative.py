@@ -28,7 +28,12 @@ def approver_negative(driver, wait):
             column_filter_search_input = elements_details['column_filter_search_input']
             column_filter_ok_btn = elements_details['column_filter_ok_btn']
             dash_bulk_options_first_member = elements_details['dash_bulk_options_first_member']
-
+            dash_bulk_options_approver = elements_details['dash_bulk_options_approver']
+            column_chooser_btn = elements_details['column_chooser_btn']
+            column_chooser_approver = elements_details['column_chooser_approver']
+            column_chooser_save_btn = elements_details['column_chooser_save_btn']
+            column_filter_approver = elements_details['column_filter_approver']
+            select_first_checkbox = elements_details['select_first_checkbox']
     except FileNotFoundError as e:
         msg = f"locators.json file not found: {str(e)}"
         print(msg)
@@ -54,10 +59,17 @@ def approver_negative(driver, wait):
             allure.attach(msg, name="Total tab Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
     with allure.step("Open Column Chooser"):
-        column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@role='button' and @aria-label='columnchooser']")))
-        highlight_element(driver, column_chooser_btn_elem)
-        driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
-        wait_for_loader_to_disappear(driver, wait)
+        try:     
+            column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
+            highlight_element(driver, column_chooser_btn_elem)
+            driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
+            print("Clicked Column Chooser button")
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            msg = f"Failed to Click Column chooser button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Column chooser Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
         def get_state(elem):
             """
@@ -106,22 +118,28 @@ def approver_negative(driver, wait):
     
     with allure.step("Select 'Approver' from Column Chooser"):
         try:
-            approver_option = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and normalize-space()='Approver']")))
+            approver_option = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_approver)))
             actions = ActionChains(driver)
             actions.move_to_element(approver_option).perform()
             time.sleep(0.5)
-            wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and normalize-space()='Approver']")))
+            wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_approver)))
             approver_option.click()
 
-            save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@role='button' and contains(@aria-label,'Save')]")))
-            highlight_element(driver, save_btn)
-            save_btn.click()
-           
         except Exception as e:
             msg = f"Failed to Clicking Approver option: {str(e)}"
             print(msg)
             allure.attach(msg, name="Approver Option Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
+    try:
+        save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_save_btn)))
+        highlight_element(driver, save_btn)
+        save_btn.click()
+        print("✅ Column Chooser saved")
+    except Exception as e:
+        msg = f"Failed to Save Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Save Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     try:
         toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
         highlight_element(driver, toast)
@@ -150,8 +168,10 @@ def approver_negative(driver, wait):
             raise Exception(msg)
     with allure.step("Open Approver column filter and search for User"):  
         try:
-            approver_column_filter = wait.until(EC.element_to_be_clickable((By.XPATH, "//td[@role='columnheader'][.//text()[normalize-space()='Approver']]//span[contains(@class,'dx-header-filter')]")))   
-            approver_column_filter.click()
+            approver_filter = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_approver)))
+            approver_filter.click()
+            highlight_element(driver,  approver_filter)
+            time.sleep(2)
             search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
             highlight_element(driver, search_input)
             search_input.clear()
@@ -190,7 +210,7 @@ def approver_negative(driver, wait):
     time.sleep(10)
     with allure.step("Select first task from task list"):
         try:
-            first_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, "(//td[@aria-colindex='1']//span[contains(@class,'dx-checkbox-icon')])[2]")))
+            first_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, select_first_checkbox)))
             first_checkbox.click()
             time.sleep(2)
         except Exception as e:
@@ -205,7 +225,7 @@ def approver_negative(driver, wait):
             highlight_element(driver, bulk_dd)
             bulk_dd.click()
 
-            approver_option = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and text()='Add Approver']")))
+            approver_option = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_options_approver)))
             highlight_element(driver, approver_option)
             approver_option.click()
 

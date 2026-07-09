@@ -223,7 +223,7 @@ def not_applicable_tasks(driver, wait, company_name, license_name):
             wait_for_loader_to_disappear(driver, wait)
         except Exception as e:
              step_fail(driver, "Click Task Open Button", e)
-    with allure.step("Fetch the task name from the opened task details panel"):
+    with allure.step("Fetch the task name from the opened task details page"):
         try:
             time.sleep(4)
             license_task_name_btn = wait.until(EC.visibility_of_element_located((By.XPATH, "//p[contains(@class,'task-details-sub-title') and @title]")))

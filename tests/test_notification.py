@@ -13,8 +13,8 @@ at_test_case_list = get_test_case_list(module='notification')
 
 @allure.suite("Notification Test Suite")
 @allure.sub_suite("Notification Validation")
-@pytest.mark.parametrize("test_case_id, module_name, test_case_description, test_type", at_test_case_list)
-def test_notifications_flow(setup, test_case_id, module_name, test_case_description, test_type):
+@pytest.mark.parametrize("test_case_id, module_name, test_case_description, test_type, test_case_execution", at_test_case_list)
+def test_notifications_flow(setup, test_case_id, module_name, test_case_description, test_type, test_case_execution):
     
     allure.dynamic.title(f"{test_case_id}_{module_name}")
     allure.dynamic.description(f"{test_case_description}")

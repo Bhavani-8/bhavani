@@ -11,6 +11,7 @@ import json
 import os
 
 from utilities.add_task_functions.show_toast import show_toast
+from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
@@ -108,10 +109,6 @@ def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if
             regulatory_cancel_btn = elements_details['regulatory_cancel_btn']
             submit_button = elements_details['task_submit_btn']
             toast_msg = elements_details['toast_msg']
-            task_close_btn = elements_details['task_close_btn']
-            dash_total_btn = elements_details['dash_total_btn']
-            task_search_btn = elements_details['task_search_btn']
-            task_search_input = elements_details['task_search_input']
 
 
 
@@ -700,7 +697,10 @@ def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if
         
         with allure.step("Verify created task is displayed in the task list using the search functionality"):
             print(f"Verify created task is displayed in the task list using the search functionality")
-            search_task_success = validate_search_task(driver, wait, task_name)
+            created_task_name = task_value_get("task_name")
+
+            search_task_success = validate_search_task(driver, wait, created_task_name)
+            # search_task_success = validate_search_task(driver, wait, task_name)
             if search_task_success:
                 print("✅ Verify created task is displayed in the task list using the search functionality successfull")
                 return True
@@ -742,6 +742,14 @@ def get_test_case_list(module=None):
         for _, row in test_case_details.iterrows():
             end_time_val = row.get("end_time")
             end_time = format_time_if_valid(end_time_val) if pd.notna(end_time_val) else None
+            # ----------------------------
+            # 1. Testcase execution check
+            # ----------------------------
+            test_case_execution = str(row.get("test_case_execution", "n")).strip().lower()
+
+            if test_case_execution != "y":
+                print(f"Skipping {row.get('test_case_id')} -> test_case_execution = n")
+                continue
             row_test_type = str(row.get("test_type", "")).strip().lower()
 
             if row_test_type not in selected_test_types:
@@ -780,6 +788,7 @@ def get_test_case_list(module=None):
                     row['impact_file_name'],
                     row['circular_search'],
                     row['test_type'],
+                    row['test_case_execution'],
                     marks=marks
                 )
             )

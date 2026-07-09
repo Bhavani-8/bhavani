@@ -42,8 +42,6 @@ def update_due_date_negative(driver, wait):
         return False
 
     wait_less = WebDriverWait(driver, 5)
-    # date_selected = False
-    # retry_required = False
     selected_date_text = ""
     with allure.step("Clicking Dashboard Total button"):
         try:
@@ -57,9 +55,17 @@ def update_due_date_negative(driver, wait):
             allure.attach(str(err), "Total tab error", allure.attachment_type.TEXT)
             pytest.fail("Failed to click Total tab")
     with allure.step("Open Column Chooser from task list"):
-        column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
-        highlight_element(driver, column_chooser_btn_elem)
-        driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
+        try:     
+            column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
+            highlight_element(driver, column_chooser_btn_elem)
+            driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
+            print("Clicked Column Chooser button")
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            msg = f"Failed to Click Column chooser button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Column chooser Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
         def get_state(elem):
             """
@@ -111,7 +117,7 @@ def update_due_date_negative(driver, wait):
             actions = ActionChains(driver)
             actions.move_to_element(due_date_option).perform()
             time.sleep(0.5)
-            wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and normalize-space()='Due Date']")))
+            wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_due_date)))
             due_date_option.click()
 
             save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_save_btn)))

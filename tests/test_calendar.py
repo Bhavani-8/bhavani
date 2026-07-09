@@ -13,8 +13,8 @@ from utilities.screen_recorder import ScreenRecorder
 at_test_case_list = get_test_case_list(module='calendar')
 @allure.suite("Calendar Test Suite")
 @allure.sub_suite("Calendar Validation")
-@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details", at_test_case_list)
-def test_project_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details):
+@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details,test_case_execution", at_test_case_list)
+def test_project_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details, test_case_execution):
     # allure.dynamic.title(f"Dashboard Validation")
     allure.dynamic.title(f"{test_case_id}_{module_name}")
     allure.dynamic.description(f'{test_case_description}')

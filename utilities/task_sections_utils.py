@@ -185,6 +185,11 @@ def get_test_case_list(module=None):
         test_case_list = []
 
         for _, row in test_case_details.iterrows():
+            test_case_execution = str(row.get("test_case_execution", "n")).strip().lower()
+
+            if test_case_execution != "y":
+                print(f"Skipping {row.get('test_case_id')} -> test_case_execution = n")
+                continue
             row_test_type = str(row.get("test_type", "")).strip().lower()
 
             if row_test_type not in selected_test_types:
@@ -202,6 +207,7 @@ def get_test_case_list(module=None):
                     row.get("module_name"),
                     row.get("test_case_description"),
                     row_test_type,
+                    row.get("test_case_execution"),
                     marks=marks
                 )
             )

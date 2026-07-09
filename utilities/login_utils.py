@@ -19,7 +19,7 @@ from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_l
 def login_check(driver, waittime, trial, username, password, user_validation=False, dash_icon_validation=False):
     wait_less = WebDriverWait(driver, 10)
     wait = WebDriverWait(driver, 30)
-
+    # driver.get("https://preprodreact.compliancesutra.com/login")
     if pd.isna(password):
         password = ""
 
@@ -181,7 +181,7 @@ def login_check(driver, waittime, trial, username, password, user_validation=Fal
     #                 # print(f"ℹ️ Toast Message: {msg}")
     #                 continue
     try:
-        toast_msg_elem = wait_less.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
+        toast_msg_elem = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
         msg = toast_msg_elem.text.strip()
 
         if msg:
@@ -194,8 +194,11 @@ def login_check(driver, waittime, trial, username, password, user_validation=Fal
         )
 
             return False
+    except TimeoutException:
+        pass   # No toast found = successful login flow continues
+
     except Exception as e:
-        print(f"No toast message found: {str(e)}")
+        print(f"Error while checking toast: {e}")
 
     # except Exception as err:
     #     pass
@@ -281,6 +284,14 @@ def get_test_case_list(module=None):
         test_case_list = []
 
         for _, row in test_case_details.iterrows():
+               # ----------------------------
+            # 1. Testcase execution check
+            # ----------------------------
+            test_case_execution = str(row.get("test_case_execution", "n")).strip().lower()
+
+            if test_case_execution != "y":
+                print(f"Skipping {row.get('test_case_id')} -> test_case_execution = n")
+                continue
             row_test_type = str(row.get("test_type", "")).strip().lower()
 
             if row_test_type not in selected_test_types:
@@ -292,13 +303,13 @@ def get_test_case_list(module=None):
             if row_test_type in ["positive", "negative"]:
                 marks.append(getattr(pytest.mark, row_test_type))
 
-
             test_case_list.append(pytest.param(
                 row['test_case_id'],
                 row['test_case_description'],
                 row['username'],
                 row['password'],
                 row['test_type'],
+                row['test_case_execution'],
                 marks=marks
             ))
         if not test_case_list:

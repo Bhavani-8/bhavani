@@ -74,7 +74,7 @@ def export_all_data(driver, wait):
             wait_for_loader_to_disappear(driver, wait)
             export_data_btn = wait.until(EC.presence_of_element_located((By.XPATH, export_btn)))
             export_data_btn.click()
-            time.sleep(2)
+            time.sleep(3)
             export_selected_rows = wait.until(EC.presence_of_element_located((By.XPATH, export_selected_rows_btn)))
             export_selected_rows.click()
             print("✅ Exported Selected Rows (after selecting rows)")

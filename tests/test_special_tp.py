@@ -14,8 +14,8 @@ at_test_case_list = get_test_case_list(module='special_tp')
 
 @allure.suite("Special Team Performance Test Suite")
 @allure.sub_suite("Special Team Performance Validation")
-@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type", at_test_case_list)
-def test_special_tp_flow(setup, test_case_id, module_name, test_case_description, test_type):
+@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,test_case_execution", at_test_case_list)
+def test_special_tp_flow(setup, test_case_id, module_name, test_case_description, test_type, test_case_execution):
     # allure.dynamic.title(f"Dashboard Validation")
     # allure.dynamic.description(f"This test checks dashboard functionality.")
     allure.dynamic.title(f"{test_case_id}_{module_name}")
@@ -51,10 +51,7 @@ def test_special_tp_flow(setup, test_case_id, module_name, test_case_description
 
             # ✅ Attach to Allure report
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
-            # if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-            #     allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
-            # else:
-            #     print("❌ Video missing or empty")
+            
             allure.attach(str(e), name="Failure Reason", attachment_type=allure.attachment_type.TEXT)
             pytest.fail(f"Failure reason: {e}")
             

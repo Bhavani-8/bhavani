@@ -46,7 +46,7 @@ def create_task_list(driver, wait, task_list):
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and @title='{created_project_name}']")))
@@ -59,7 +59,7 @@ def create_task_list(driver, wait, task_list):
 
     with allure.step("Click three dots menu"):
         try:
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()
@@ -90,7 +90,7 @@ def create_task_list(driver, wait, task_list):
             unique_task_list = f"{task_list}_{random.randint(1000, 9999)}"
             # unique_task_list = f"{task_list}_{datetime.now().strftime('%H%M')}"
             task_list_input.send_keys(unique_task_list)
-            task_list_file = os.path.join("data", "latest_task_list.txt")
+            task_list_file = os.path.join("latest_data", "latest_task_list.txt")
 
             with open(task_list_file, "w") as f:
                 f.write(unique_task_list)
@@ -119,7 +119,7 @@ def create_task_list(driver, wait, task_list):
             print("❌ No toast message found")
     with allure.step("Click Dropdown Tasklist"):
         try:
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()

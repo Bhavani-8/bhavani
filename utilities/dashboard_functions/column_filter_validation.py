@@ -148,19 +148,33 @@ def column_filter_validation(driver, wait):
                             date_filters(driver, wait, col_name)
                     else:
                         with allure.step(f"Select first option in filter dropdown for {col_name}"):
-                            options = wait.until(EC.presence_of_all_elements_located((By.XPATH, filter_dropdown_list)))
+                            try:
+                                no_data = driver.find_elements(By.XPATH, "//div[text()='No data to display']")
 
-                            if options:
+                                if no_data:
+                                    msg = f"No data found for column '{col_name}'."
+                                    print(msg)
+                                    allure.attach(msg,name=f"{col_name} Result",attachment_type=allure.attachment_type.TEXT)
+                                    raise Exception(msg)
+                                options = wait.until(EC.presence_of_all_elements_located((By.XPATH, filter_dropdown_list)))
+                                if not options:
+                                    msg = f"No filter values available for column '{col_name}'."
+                                    print(msg)
+                                    allure.attach(msg,name=f"{col_name} Result",attachment_type=allure.attachment_type.TEXT)
+                                    raise Exception(msg)
+
                                 highlight_element(driver, options[0])
                                 options[0].click()
-                                print(f"☑️ Selected first filter option for {col_name}")
-                                time.sleep(2)
 
-                                ok_btn = wait.until(EC.element_to_be_clickable((By.XPATH, dash_col_filter_ok_btn)))
-                                highlight_element(driver, ok_btn)
-                                ok_btn.click()
-                                print(f"✅ Applied filter for {col_name}")
-                                time.sleep(4)
+                            except Exception as e:
+                                msg = str(e)
+                                print(msg)
+                                allure.attach(
+                                    msg,
+                                    name=f"{col_name} Error",
+                                    attachment_type=allure.attachment_type.TEXT
+                                )
+                                raise Exception(msg)
 
                     # wait_for_loader_to_disappear(driver, wait)
                     with allure.step(f"Check if results found for {col_name}"):

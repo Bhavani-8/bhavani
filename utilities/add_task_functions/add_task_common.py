@@ -6,6 +6,10 @@ def task_value_store(field, value):
     global task_field_dictionary
     task_field_dictionary[field] = value
 
+def task_value_get(field):
+    global task_field_dictionary
+    return task_field_dictionary.get(field)
+
 def task_value_validation_store(field, value):
     global task_field_dictionary
     task_field_validation_dictionary[field] = value

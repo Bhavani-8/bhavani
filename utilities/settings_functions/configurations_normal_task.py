@@ -6,7 +6,8 @@ import pyautogui as pg
 import pytest
 import random
 import pandas as pd
-
+from utilities.add_task_functions.add_task_common import task_value_store
+from utilities.add_task_functions.add_task_common import task_value_get
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.add_task_utils import add_task_check
@@ -138,7 +139,10 @@ def configurations_normal_task(driver, wait, config_normal_task_name):
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
     # task_name = updates_task_name if updates_task_name else "task_name"
-    task_name = config_normal_task_name.strip() if config_normal_task_name else "task_name"
+    current_task_name = config_normal_task_name.strip() if config_normal_task_name else "task_name"
+    task_name = current_task_name
+    task_value_store("task_name", task_name)
+
 
     # task_name = first_row.get('updates_task')
     start_date = format_date_if_valid(first_row.get('start_date'))
@@ -170,6 +174,8 @@ def configurations_normal_task(driver, wait, config_normal_task_name):
                 risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name,
                 circular_search, test_type, task_type='mandatory', direct_task_creation=False):
                 print("✅ Task creation successful")
+                created_task = task_value_get("task_name")
+                print(f"Created Task: {created_task}")
                 # return True
             else:
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)

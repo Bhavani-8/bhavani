@@ -16,6 +16,7 @@ def signup_check(driver, email, check_selection, test_type):
     if pd.isna(email):
         email = ""
     wait = WebDriverWait(driver, 20)
+    driver.get("https://preprodreact.compliancesutra.com/sign-up")
 
     # --- Load locators ---
     # with allure.step("Loading locators from JSON"):
@@ -134,6 +135,11 @@ def get_test_case_list(module=None):
 
         test_case_list = []
         for _, row in test_case_details.iterrows():
+            test_case_execution = str(row.get("test_case_execution", "n")).strip().lower()
+
+            if test_case_execution != "y":
+                print(f"Skipping {row.get('test_case_id')} -> test_case_execution = n")
+                continue
             row_test_type = str(row.get("test_type", "")).strip().lower()
 
             if row_test_type not in selected_test_types:
@@ -151,6 +157,7 @@ def get_test_case_list(module=None):
                 row['email'],
                 row['check_selection'],
                 row['test_type'],
+                row['test_case_execution'],
                 marks=marks
             ))
         if not test_case_list:

@@ -143,7 +143,7 @@ def setup(request):
         print(f"❌ Unsupported browser: {browser}")
         sys.exit(1)
 
-    # driver.get(target_url)
+    driver.get(target_url)
     allure.attach(browser, name="🖥️ Browser Used", attachment_type=allure.attachment_type.TEXT)
     time.sleep(1)
     

@@ -10,7 +10,8 @@ from datetime import datetime
 import pandas as pd
 import pyautogui as pg
 import glob
-
+from utilities.add_task_functions.add_task_common import task_value_store
+from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.add_task_utils import add_task_check
@@ -40,8 +41,11 @@ def new_compliances_normal_task(driver, wait, new_compliance_task):
     test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx"), sheet_name=f"add_task_test_cases").fillna("")
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
-    task_name = (new_compliance_task if new_compliance_task else f"task_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    # task_name = (new_compliance_task if new_compliance_task else f"task_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
     # task_name = project_task_name or first_row.get('task_name')
+    current_task_name = new_compliance_task.strip() if new_compliance_task else "task_name"
+    task_name = current_task_name
+    task_value_store("task_name", task_name)
     start_date = format_date_if_valid(first_row.get('start_date'))
     due_date = format_date_if_valid(first_row.get('due_date'))
     frequency = first_row.get('frequency')
@@ -72,6 +76,7 @@ def new_compliances_normal_task(driver, wait, new_compliance_task):
                 circular_search, test_type, task_type='mandatory', direct_task_creation=False):
                 print("✅ Task creation successful")
                 time.sleep(6)
+                created_task = task_value_get("task_name")
                 # return True
             else:
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)
@@ -178,12 +183,12 @@ def new_compliances_normal_task(driver, wait, new_compliance_task):
             # Find Newly Created Task
             # -----------------------------
             final_df = excel_df[
-                excel_df["Task Name"].astype(str).str.strip() == task_name.strip()
+                excel_df["Task Name"].astype(str).str.strip() == created_task.strip()
             ][required_cols].copy()
 
             if final_df.empty:
                 msg = (
-                    f"❌ Newly created task '{task_name}' "
+                    f"❌ Newly created task '{created_task}' "
                     f"not found in exported Excel."
                 )
 

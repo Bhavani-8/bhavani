@@ -55,7 +55,7 @@ def milestone_delete(driver, wait):
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
@@ -82,7 +82,7 @@ def milestone_delete(driver, wait):
             created_milestone = f"Milestone_delete_check"
 
             milestone_input.send_keys(created_milestone)
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
             with open(milestone_file, "w") as f:
                 f.write(created_milestone)
 
@@ -105,7 +105,7 @@ def milestone_delete(driver, wait):
             highlight_element(driver, milestone_elem)
             fetch_milestone_elem = milestone_elem.text.strip()
             print(f"✅ Milestone '{fetch_milestone_elem}' created successfully")
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "w") as f:
                 f.write(created_milestone)
@@ -114,7 +114,7 @@ def milestone_delete(driver, wait):
     with allure.step("Click three dots menu"):
         time.sleep(7)
         try:
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()
@@ -170,7 +170,7 @@ def milestone_delete(driver, wait):
             step_fail(driver, "Click Milestone Tab", e)
     with allure.step("Verify Deleted Milestone in Trash"):
         try:
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()
@@ -184,7 +184,7 @@ def milestone_delete(driver, wait):
     with allure.step("Restore Deleted Milestone"):
         try:
             time.sleep(3)
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()
@@ -210,7 +210,7 @@ def milestone_delete(driver, wait):
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
-            project_file = os.path.join("data", "latest_project.txt")
+            project_file = os.path.join("latest_data", "latest_project.txt")
             with open(project_file, "r") as f:
                 created_project_name = f.read().strip()
             project_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@class='w-full truncate' and contains(@title,'{created_project_name}')]")))
@@ -224,7 +224,7 @@ def milestone_delete(driver, wait):
     with allure.step("Click three dots menu"):
         try:
             time.sleep(5)
-            milestone_file = os.path.join("data", "latest_milestone.txt")
+            milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()

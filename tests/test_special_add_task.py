@@ -14,8 +14,8 @@ at_test_case_list = get_test_case_list(module='special_add_task')
 
 @allure.suite("Special Add Task Test Suite")
 @allure.sub_suite("Special Add Task Flow")
-@pytest.mark.parametrize("test_case_id,task_name,test_case_description,start_date,due_date,frequency,repeat_if_due_date_is_on_holiday,end_frequency_date,weekday_name,repeat_day_and_month,end_time,internal_deadline,assign_to,approver,cc,risk_rating,license_name,task_category,description,attach_file_name,impact_details,impact_file_name,circular_search,test_type", at_test_case_list)
-def test_special_task_flow(setup, test_case_id, task_name, test_case_description, start_date, due_date, frequency, repeat_if_due_date_is_on_holiday, end_frequency_date, weekday_name, repeat_day_and_month, end_time, internal_deadline, assign_to, approver, cc, risk_rating, license_name, task_category, description, attach_file_name, impact_details, impact_file_name, circular_search, test_type):
+@pytest.mark.parametrize("test_case_id,task_name,test_case_description,start_date,due_date,frequency,repeat_if_due_date_is_on_holiday,end_frequency_date,weekday_name,repeat_day_and_month,end_time,internal_deadline,assign_to,approver,cc,risk_rating,license_name,task_category,description,attach_file_name,impact_details,impact_file_name,circular_search,test_type,test_case_execution", at_test_case_list)
+def test_special_task_flow(setup, test_case_id, task_name, test_case_description, start_date, due_date, frequency, repeat_if_due_date_is_on_holiday, end_frequency_date, weekday_name, repeat_day_and_month, end_time, internal_deadline, assign_to, approver, cc, risk_rating, license_name, task_category, description, attach_file_name, impact_details, impact_file_name, circular_search, test_type, test_case_execution):
     # allure.dynamic.title(f"Special Add Task Module: Test Execution Flow For {'Valid Case' if test_type else 'Invalid Case'}")
     # allure.dynamic.description(f"This test checks add task functionality with {'valid' if test_type else 'invalid'} information.")
     allure.dynamic.title(f"{test_case_id}_{task_name}")
@@ -53,10 +53,6 @@ def test_special_task_flow(setup, test_case_id, task_name, test_case_description
 
             # ✅ Attach to Allure report
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
-            # if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-            #     allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
-            # else:
-            #     print("❌ Video missing or empty")
     
             allure.attach(str(e), name="Failure Reason", attachment_type=allure.attachment_type.TEXT)
             # pytest.fail('Failure')

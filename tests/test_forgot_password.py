@@ -19,8 +19,8 @@ fp_test_case_list = get_test_case_list(module='forgot_password')
 
 @allure.suite("Forgot Password Test Suite")
 @allure.sub_suite("Forgot Password Flow")
-@pytest.mark.parametrize("test_case_id,test_case_description,email,test_type", fp_test_case_list)
-def test_forgot_password_flow(setup, test_case_id, test_case_description, email,  test_type):
+@pytest.mark.parametrize("test_case_id,test_case_description,email,test_type,test_case_execution", fp_test_case_list)
+def test_forgot_password_flow(setup, test_case_id, test_case_description, email,  test_type, test_case_execution):
     allure.dynamic.title(f"{test_case_id}")
     allure.dynamic.description(f'{test_case_description}')
     driver = setup

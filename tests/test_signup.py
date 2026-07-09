@@ -15,8 +15,8 @@ signup_test_case_list = get_test_case_list(module='signup')
 
 @allure.suite("Signup Test Suite")
 @allure.sub_suite("Signup Flow")
-@pytest.mark.parametrize("test_case_id,test_case_description,email,check_selection,test_type", signup_test_case_list)
-def test_signup_flow(setup, test_case_id, test_case_description, email, check_selection, test_type):
+@pytest.mark.parametrize("test_case_id,test_case_description,email,check_selection,test_type,test_case_execution", signup_test_case_list)
+def test_signup_flow(setup, test_case_id, test_case_description, email, check_selection, test_type, test_case_execution):
     # allure.dynamic.title(f"Signup Module: Test Execution Flow For {'Valid Case' if test_type else 'Invalid Case'}")
     # allure.dynamic.description(f"This test checks signup functionality with {'valid' if test_type else 'invalid'} credential.")
     allure.dynamic.title(f"{test_case_id}")

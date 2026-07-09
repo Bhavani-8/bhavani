@@ -32,6 +32,9 @@ def assign_to_negative(driver, wait):
             column_filter_ok_btn = elements_details['column_filter_ok_btn']
             dash_bulk_options_first_member = elements_details['dash_bulk_options_first_member']
             select_first_checkbox = elements_details['select_first_checkbox'] 
+            column_chooser_assign_to = elements_details['column_chooser_assign_to']
+            column_filter_assigned_to = elements_details['column_filter_assigned_to']
+            dash_bulk_options_assign_to = elements_details['dash_bulk_options_assign_to']
     except FileNotFoundError as e:
         msg = f"locators.json file not found: {str(e)}"
         print(msg)
@@ -70,10 +73,17 @@ def assign_to_negative(driver, wait):
             allure.attach(msg, name="Assigned To Me Tab Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
     with allure.step("Open Column Chooser from task list"):
-        column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
-        highlight_element(driver, column_chooser_btn_elem)
-        driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
-        wait_for_loader_to_disappear(driver, wait)
+        try:
+            column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
+            highlight_element(driver, column_chooser_btn_elem)
+            driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
+            print("Clicked Column Chooser button")
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            msg = f"Failed to Click Column chooser button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Column chooser Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
         def get_state(elem):
             """
@@ -127,39 +137,43 @@ def assign_to_negative(driver, wait):
             raise Exception(msg)
     with allure.step("Select 'Assign' from Column Chooser"):
         try:           
-            assigned_to_option = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and normalize-space()='Assigned To']")))
+            assign_to_option = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_assign_to)))
             actions = ActionChains(driver)
-            actions.move_to_element(assigned_to_option).perform()
+            actions.move_to_element(assign_to_option).perform()
             time.sleep(0.5)
-            wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and normalize-space()='Assigned To']")))
-            assigned_to_option.click()
-
-
-            save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_save_btn)))
-            highlight_element(driver, save_btn)
-            save_btn.click()
+            assign_to_option.click()
         
         except Exception as e:
             msg = f"Failed to Clicking Assigned To option: {str(e)}"
             print(msg)
             allure.attach(msg, name="Assigned To Option Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
+    try:
+        save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_save_btn)))
+        highlight_element(driver, save_btn)
+        save_btn.click()
+        print("✅ Column Chooser saved")
+    except Exception as e:
+        msg = f"Failed to Save Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Save Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
 
-        try:
-            toast = wait.until(EC.presence_of_element_located((By.XPATH,f"{toast_msg} | {error_toast_msg}")))
-            highlight_element(driver, toast)
-            toast_class = toast.get_attribute("class")
+    try:
+        toast = wait.until(EC.presence_of_element_located((By.XPATH,f"{toast_msg} | {error_toast_msg}")))
+        highlight_element(driver, toast)
+        toast_class = toast.get_attribute("class")
 
-            if "Toastify__toast--success" in toast_class:
-                print(f"📢 Success Toast: {toast.text.strip()}")
-            elif "Toastify__toast--error" in toast_class:
-                print(f"❌ Error Toast: {toast.text.strip()}")
-        
-        except Exception as e:
-            msg = f"Toast message not found: {str(e)}"
-            print(msg)
-            allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
-            raise Exception(msg)
+        if "Toastify__toast--success" in toast_class:
+            print(f"📢 Success Toast: {toast.text.strip()}")
+        elif "Toastify__toast--error" in toast_class:
+            print(f"❌ Error Toast: {toast.text.strip()}")
+    
+    except Exception as e:
+        msg = f"Toast message not found: {str(e)}"
+        print(msg)
+        allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     with allure.step("👤 Reading User Title from Dashboard"):
         try:
             user_title_elem = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='user-title']")))
@@ -177,7 +191,7 @@ def assign_to_negative(driver, wait):
             raise Exception(msg)
     with allure.step("Open Approver column filter and search for User"):
         try:  
-            assigned_to_filter = wait_less.until(EC.presence_of_element_located((By.XPATH, "//td[@role='columnheader'][.//text()[normalize-space()='Assigned To']]//span[contains(@class,'dx-header-filter')]")))
+            assigned_to_filter = wait_less.until(EC.presence_of_element_located((By.XPATH, column_filter_assigned_to)))
             assigned_to_filter.click()
             highlight_element(driver,  assigned_to_filter)
             time.sleep(1)
@@ -237,7 +251,7 @@ def assign_to_negative(driver, wait):
             highlight_element(driver, bulk_dd)
             bulk_dd.click()
 
-            assign_to_option = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='dx-item-content dx-list-item-content' and text()='Assign To']")))
+            assign_to_option = wait.until(EC.element_to_be_clickable((By.XPATH, dash_bulk_options_assign_to)))
             highlight_element(driver, assign_to_option)
             assign_to_option.click()
     

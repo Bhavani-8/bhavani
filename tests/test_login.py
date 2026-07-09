@@ -13,8 +13,8 @@ test_case_list = get_test_case_list(module='login')
 
 @allure.suite("Login Test Suite")
 @allure.sub_suite("Credential Validation")
-@pytest.mark.parametrize("test_case_id,test_case_description,username,password,test_type", test_case_list)
-def test_login_flow(setup, test_case_id, test_case_description, username, password,  test_type):
+@pytest.mark.parametrize("test_case_id,test_case_description,username,password,test_type,test_case_execution", test_case_list)
+def test_login_flow(setup, test_case_id, test_case_description, username, password,  test_type, test_case_execution):
     allure.dynamic.title(f"{test_case_id}")
     allure.dynamic.description(f'{test_case_description}')
     driver = setup
@@ -33,19 +33,7 @@ def test_login_flow(setup, test_case_id, test_case_description, username, passwo
                 assert success, "Login failed with valid credentials"
 
             elif test_type == "negative":
-                #  # Capture screenshot immediately while toast is visible
-                # if toast_message:
-                #     allure.attach(
-                #         driver.get_screenshot_as_png(),
-                #         name=f"Toast Message: {toast_message}",
-                #         attachment_type=allure.attachment_type.PNG
-                #     )
-
-                #     allure.attach(
-                #         toast_message,
-                #         name="Toast Text",
-                #         attachment_type=allure.attachment_type.TEXT
-                #     )
+                
                 assert not success, "Login succeeded with invalid credentials"
         except Exception as e:
             test_failed = True
@@ -60,10 +48,6 @@ def test_login_flow(setup, test_case_id, test_case_description, username, passwo
 
             # ✅ Attach to Allure report
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
-            # if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-            #     allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
-            # else:
-            #     print("❌ Video missing or empty")
             allure.attach(str(e), name="Failure Reason", attachment_type=allure.attachment_type.TEXT)
             pytest.fail(f"Failure reason: {e}")
             
