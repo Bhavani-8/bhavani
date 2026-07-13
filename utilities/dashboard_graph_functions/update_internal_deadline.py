@@ -20,16 +20,11 @@ from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_l
 
 
 
-def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
+def update_internal_deadline(driver, wait, internal_deadline):
     with allure.step("Loading locators from JSON"):
         try:
             with open(os.path.join("data", 'locators.json'), 'r') as f:
                 elements_details = json.load(f)
-                dash_bulk_task_dropdown_btn = elements_details['dash_bulk_task_dropdown_btn']
-                dash_bulk_task_dropdown_form_label = elements_details['dash_bulk_task_dropdown_form_label']
-                dash_bulk_task_dropdown_form_member_confirmation = elements_details['dash_bulk_task_dropdown_form_member_confirmation']
-                dash_total_btn = elements_details['dash_total_btn']
-                column_filter_search_input = elements_details['column_filter_search_input']
                 task_deadline_label = elements_details['task_deadline_label']
                 
 
@@ -53,10 +48,8 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
     task_name = current_task_name
     task_value_store("task_name", task_name)
 
-    start_date = datetime.today().strftime("%d-%m-%Y")
-
-    # Due date = Today + 7 days
-    due_date = (datetime.today() + timedelta(days=7)).strftime("%d-%m-%Y")
+    start_date = datetime.today().strftime("%d %B %Y")
+    due_date = (datetime.today() + timedelta(days=7)).strftime("%d %B %Y")
     frequency = first_row.get('frequency')
     repeat_if_holiday = first_row.get('repeat_if_holiday')
     end_freq_date = first_row.get('end_freq_date')
@@ -93,22 +86,35 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
         except Exception as e:
             allure.attach(str(e), name="Add Task Error", attachment_type=allure.attachment_type.TEXT)
         
-    with allure.step("Edit Internal Deadline"):
+    with allure.step("Verify Internal Deadline Before Update"):
         try:
             task_deadline_label_elem = wait.until(EC.visibility_of_element_located((By.XPATH, task_deadline_label)))
-            highlight_element(driver, task_deadline_label_elem, 0.2)
-            fetched_deadline = datetime.strptime(task_deadline_label_elem.text.strip(), "%d %b %Y %I:%M %p")
-            edit_internal_deadline=(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'holding-list-bold-title')]//button")))
+            highlight_element(driver, task_deadline_label_elem)
+            task_deadline_text = task_deadline_label_elem.text.strip()
+
+            fetched_deadline = datetime.strptime(task_deadline_text,"%d %b %Y %I:%M %p")
+            print(f"Fetched Deadline: {fetched_deadline}")
+
+            allure.attach(fetched_deadline.strftime("%d %b %Y %I:%M %p"),name="Before Update - Internal Deadline (Date & Time)",attachment_type=allure.attachment_type.TEXT)
+    
+        except Exception as e:
+            msg = f"Failed to Fetch Internal Deadline: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Internal Deadline Fetch Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    with allure.step("Edit Internal Deadline"):
+        try:
+            edit_internal_deadline=wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'holding-list-bold-title')]//button")))
             highlight_element(driver, edit_internal_deadline)
             edit_internal_deadline.click()
         except Exception as e:
-            msg = f"Failed to click Internal Deadline Button: {str(e)}"
+            msg = f"Failed to Click Edit Internal deadline button: {str(e)}"
             print(msg)
             allure.attach(msg, name="Internal Deadline Button Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
         
         try:
-            calendar_btn=(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'ant-picker')]//img[@alt='calendar']")))
+            calendar_btn=wait.until(EC.presence_of_element_located((By.XPATH, "(//div[contains(@class,'ant-picker-input')])[1]")))
             highlight_element(driver, calendar_btn)
             calendar_btn.click()
             future_date = (datetime.today() + timedelta(days=2)).day
@@ -124,7 +130,7 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
     with allure.step("Edit Time"):
         
         try:
-            time_btn=(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Select Time']")))
+            time_btn=wait.until(EC.presence_of_element_located((By.XPATH, "(//div[contains(@class,'ant-picker-input')])[2]")))
             highlight_element(driver, time_btn)
             time_btn.click()
             # presnt_time = (datetime.today() + timedelta(days=2)).day
@@ -141,23 +147,30 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
             confirm_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[span[text()='Confirm']]")))
             highlight_element(driver, confirm_btn)
             confirm_btn.click()
+            time.sleep(2)
         except Exception as e:
             msg = f"Failed to click Confirm Button: {str(e)}"
             print(msg)
             allure.attach(msg, name="Confirm Button Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
-        
+    
+    with allure.step("Verify Internal Deadline After Update"):
         try:
             task_deadline_label_elem = wait.until(EC.visibility_of_element_located((By.XPATH, task_deadline_label)))
             highlight_element(driver, task_deadline_label_elem)
-            date_text = " ".join(task_deadline_label_elem.text.strip().split()[:3])
+            task_deadline_text = task_deadline_label_elem.text.strip()
 
-            expected_deadline = datetime.strptime(date_text, "%d %b %Y").date()
+            fetched_deadline = datetime.strptime(task_deadline_text,"%d %b %Y %I:%M %p")
+            print(f"Fetched Deadline: {fetched_deadline}")
+
+            allure.attach(fetched_deadline.strftime("%d %b %Y %I:%M %p"),name="After Update - Internal Deadline (Date & Time)",attachment_type=allure.attachment_type.TEXT)
+    
         except Exception as e:
-            msg = f"Failed to click Confirm Button: {str(e)}"
+            msg = f"Failed to Fetch Internal Deadline: {str(e)}"
             print(msg)
-            allure.attach(msg, name="Confirm Button Error", attachment_type=allure.attachment_type.TEXT)
+            allure.attach(msg, name="Internal Deadline Fetch Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
+    return True
         
     
     

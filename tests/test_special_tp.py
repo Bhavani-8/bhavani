@@ -14,8 +14,8 @@ at_test_case_list = get_test_case_list(module='special_tp')
 
 @allure.suite("Special Team Performance Test Suite")
 @allure.sub_suite("Special Team Performance Validation")
-@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,test_case_execution", at_test_case_list)
-def test_special_tp_flow(setup, test_case_id, module_name, test_case_description, test_type, test_case_execution):
+@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details,test_case_execution", at_test_case_list)
+def test_special_tp_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details, test_case_execution):
     # allure.dynamic.title(f"Dashboard Validation")
     # allure.dynamic.description(f"This test checks dashboard functionality.")
     allure.dynamic.title(f"{test_case_id}_{module_name}")
@@ -30,7 +30,7 @@ def test_special_tp_flow(setup, test_case_id, module_name, test_case_description
     test_failed = False
     with allure.step(f"Special Team Performance Flow"):
         try:
-            success = team_performance_dashboard_check(driver, dash_type='special', module_name=module_name, test_case_id=test_case_id)
+            success = team_performance_dashboard_check(driver, dash_type='special', module_name=module_name, test_case_id=test_case_id, task_details=task_details)
             # if success and test_type == 'positive':
             if test_type == 'positive':
                 assert success, "Special Team Performance Dashboard failed with valid scenario"

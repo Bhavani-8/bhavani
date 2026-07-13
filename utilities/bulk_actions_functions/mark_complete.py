@@ -169,9 +169,9 @@ def mark_complete_bulk_action(driver, wait, task_name='Internal Task'):
     wait_for_loader_to_disappear(driver, wait)
     with allure.step(f"Open Company/Project filter and search for '{task_name}'"):
         try:
-            company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
-            company_project_filter_btn.click()
+            company_project_filter_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
             highlight_element(driver, company_project_filter_btn)
+            company_project_filter_btn.click()
             time.sleep(2)
 
             search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))

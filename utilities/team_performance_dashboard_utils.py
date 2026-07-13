@@ -304,7 +304,7 @@ def team_performance_dashboard_check(driver, dash_type='QCC', module_name=None, 
             except Exception as e:
                 allure.attach(str(e), name="Project Error", attachment_type=allure.attachment_type.TEXT)
     
-    
+   
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)

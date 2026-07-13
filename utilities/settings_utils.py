@@ -20,7 +20,10 @@ from utilities.settings_functions.create_department import create_department
 from utilities.settings_functions.create_designation import create_designation
 from utilities.settings_functions.team_members import invite_team_member
 from utilities.settings_functions.task_category import task_category
-from utilities.settings_functions.not_applicable_tasks import not_applicable_tasks
+from utilities.settings_functions.mark_circular_as_na import mark_circular_as_na
+from utilities.settings_functions.not_applicable_export_data import not_applicable_export_data
+from utilities.settings_functions.not_applicable_search_task import not_applicable_search_task
+from utilities.settings_functions.not_applicable_view import not_applicable_view
 from utilities.settings_functions.department_export_data import department_export_all_data
 from utilities.settings_functions.configurations_normal_task import configurations_normal_task
 from utilities.settings_functions.configurations_special_task import configurations_special_task
@@ -234,19 +237,19 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
-    if module_name == 'not_applicable_tasks':
+    if module_name == 'mark_circular_as_na'and task_details:
         company_name =  task_details.get("company_name")
         license_name = task_details.get("license_name")
         with allure.step("Click Not Applicable"):
             try:
-                if not_applicable_tasks(driver, wait, company_name, license_name):
+                if mark_circular_as_na(driver, wait, company_name, license_name):
                     print("✅ Click Not Applicable successful")
                     return True
                 else:
                     allure.attach("Test case failed for Click Not Applicable", name="Click Not Applicable Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-               allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
+               allure.attach(str(e), name="Mark Circular as NA Error", attachment_type=allure.attachment_type.TEXT)
    
 
     if module_name == 'department_export':
@@ -286,6 +289,43 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
                     return False
             except Exception as e:
                 allure.attach(str(e), name="Configurations Special Task Button Error", attachment_type=allure.attachment_type.TEXT)
+    if module_name == 'not_applicable_search_task':
+        with allure.step("Add Team Members in License task"):
+            try:
+                if not_applicable_search_task(driver, wait):
+                    print("✅ Add Team Members in License task successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Add Team Members in License task", name="Add Team Members in License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
+    
+    if module_name == 'not_applicable_view':
+        with allure.step("Add Team Members in License task"):
+            try:
+                if not_applicable_view(driver, wait):
+                    print("✅ Add Team Members in License task successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Add Team Members in License task", name="Add Team Members in License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
+    if module_name == 'not_applicable_export_data':
+        with allure.step("Add Team Members in License task"):
+            try:
+                if not_applicable_export_data(driver, wait):
+                    print("✅ Add Team Members in License task successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Add Team Members in License task", name="Add Team Members in License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
+    
+    
+    
    
     if module_name == 'license_task' and task_details:
         company_license_name = task_details.get("company_name")

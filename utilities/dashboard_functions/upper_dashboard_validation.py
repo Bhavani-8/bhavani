@@ -73,29 +73,34 @@ def upper_dashboard_validation(driver, wait):
 
 
     for idx, (btn_name, btn_path) in enumerate(dash_buttons.items()):
+        actual_value = 0
+        expected_value = 0
+        selected_count = None
+
 
         safe_click(driver, wait, btn_path, f"{btn_name} Button")
         wait_for_loader_to_disappear(driver, wait)
 
         for title in titles:
-            with allure.step(f"Validating '{title}' in '{btn_name}'"):
-                try:
-                    # --- Get the value element
-                    dash_value_selector = dash_value_selector_template.replace("{title}", title)
-                    dash_value_elements = wait.until(EC.presence_of_all_elements_located((By.XPATH, dash_value_selector)))
+            
+            try:
+                # --- Get the value element
+                dash_value_selector = dash_value_selector_template.replace("{title}", title)
+                dash_value_elements = wait.until(EC.presence_of_all_elements_located((By.XPATH, dash_value_selector)))
 
-                    if len(dash_value_elements) <= idx:
-                        continue
+                if len(dash_value_elements) <= idx:
+                    continue
 
-                    value_elem = dash_value_elements[idx]
-                    actual_value = int(value_elem.text.replace(",", "").strip() or 0)
-
+                value_elem = dash_value_elements[idx]
+                actual_value = int(value_elem.text.replace(",", "").strip() or 0)
+                highlight_element(driver, value_elem, duration=0.3) 
+                with allure.step(f"Validating '{title}' in '{btn_name}' "f"(Dashboard Count: {actual_value})"):
                     # --- Get the validator element for expected value
                     dash_value_validator = dash_value_validator_template.replace("{title}", title)
                     validator_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_value_validator)))
                     expected_value = int(validator_elem.text.replace(",", "").strip() or 0)
                     highlight_element(driver, validator_elem, duration=0.2)  # Header
-                    highlight_element(driver, value_elem, duration=0.3)      # Actual value
+                         # Actual value
 
                     # --- Activate the grid
                     driver.execute_script("arguments[0].click();", validator_elem)
@@ -103,38 +108,98 @@ def upper_dashboard_validation(driver, wait):
                     # highlight_element(driver, validator_elem, duration=0.2)
                     wait_for_loader_to_disappear(driver, wait)
 
-                    
+                    if actual_value == 0 and expected_value == 0:
+                        success_msg = (
+                            f"✅ {btn_name} - {title} - "
+                            f"Dashboard Count : {actual_value}, "
+                            f"Header Count : {expected_value}, "
+                            f"Select All Count : No Tasks"
+                        )
+                        print(success_msg)
+                        allure.attach(
+                            success_msg,
+                            name=f"{btn_name}-{title}-Matched",
+                            attachment_type=allure.attachment_type.TEXT
+                        )
+                        continue
+
+                    # If dashboard and header counts differ, fail immediately
+                    if actual_value != expected_value:
+                        error_msg = (
+                            f"❌ {btn_name} - {title} Count Mismatch\n"
+                            f"Dashboard Count : {actual_value}\n"
+                            f"Header Count    : {expected_value}"
+                        )
+                        print(error_msg)
+                        allure.attach(
+                        error_msg,
+                        name=f"{btn_name}-{title}-Mismatch",
+                        attachment_type=allure.attachment_type.TEXT
+                    )
+                        raise AssertionError(error_msg)
                     # --- Click Select All
                     select_all_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_select_all_checkbox)))
                     driver.execute_script("arguments[0].click();", select_all_elem)
                     time.sleep(2)
                     wait_for_loader_to_disappear(driver, wait)
 
-                    # --- OUTPUT FORMAT (UNIFORM)
-                    if actual_value == expected_value:
-                        print(f"✅ {btn_name} - {title} - Select all - matched ({actual_value})")
+                    selected_count_elem = wait.until(EC.presence_of_element_located((By.XPATH, '//div[contains(text(),"selected")]')))
+                    highlight_element(driver, selected_count_elem, duration=0.2)
+
+                    selected_text = selected_count_elem.text.strip()
+                    selected_count = int(selected_text.replace(",", "").split()[0])
+
+                    # Validate Dashboard, Header and Select All counts
+                    if actual_value == expected_value == selected_count:
+
+                        success_msg = (
+                            f"✅ {btn_name} - {title} - MATCHED\n\n"
+                            f"Dashboard Count : {actual_value}\n"
+                            f"Header Count    : {expected_value}\n"
+                            f"Select All Count: {selected_count}"
+                        )
+
+                        print(success_msg)
+
+                        allure.attach(
+                            success_msg,
+                            name=f"{btn_name}-{title}-Matched",
+                            attachment_type=allure.attachment_type.TEXT
+                        )
+
                     else:
-                        print(f"❌ {btn_name} - {title} - Select all - mismatch "
-                              f"(Actual: {actual_value}, Expected: {expected_value})")
+                        error_msg = (
+                            f"❌ {btn_name} - {title} Count Mismatch\n"
+                            f"Dashboard Count : {actual_value}\n"
+                            f"Header Count    : {expected_value}\n"
+                            f"Select All Count: {selected_count}"
+                        )
+                        print(error_msg)
+                        allure.attach(
+                            error_msg,
+                            name=f"{btn_name}-{title}-Mismatch",
+                            attachment_type=allure.attachment_type.TEXT
+                        )
+                        raise AssertionError(error_msg)
+            except Exception as e:
+                print(f"❌ {btn_name} - {title} validation failed: {e}")
+                # allure.attach(str(e), f"{btn_name}-{title} Error", allure.attachment_type.TEXT)
+                raise
 
-                except Exception as e:
-                    print(f"❌ {btn_name} - {title} validation failed: {e}")
-                    allure.attach(str(e), f"{btn_name}-{title} Error", allure.attachment_type.TEXT)
+       
+        try:
+            sum_elements = wait.until(EC.presence_of_all_elements_located((By.XPATH, dash_sum_value_selector)))
 
-        with allure.step(f"Validating Total in '{btn_name}'"):
-            try:
-                sum_elements = wait.until(EC.presence_of_all_elements_located((By.XPATH, dash_sum_value_selector)))
+            if len(sum_elements) <= idx:
+                print(f"ℹ️ {btn_name} - Total value not available")
+                continue
 
-                if len(sum_elements) <= idx:
-                    print(f"ℹ️ {btn_name} - Total value not available")
-                    continue
-
-                sum_elem = sum_elements[idx]
-                actual_sum = int(sum_elem.text.replace(",", "").strip() or 0)
-
+            sum_elem = sum_elements[idx]
+            actual_sum = int(sum_elem.text.replace(",", "").strip() or 0)
+            with allure.step(f"Validating Total in '{btn_name}'"):
                 sum_elem.click()
                 wait_for_loader_to_disappear(driver, wait)
-
+                highlight_element(driver, sum_elem, duration=0.3)
                 dash_sum_validator = dash_value_validator_template.replace("{title}", "All")
                 total_validator_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_sum_validator)))
                 highlight_element(driver, total_validator_elem)
@@ -144,19 +209,86 @@ def upper_dashboard_validation(driver, wait):
                 driver.execute_script("arguments[0].click();", total_validator_elem)
                 wait_for_loader_to_disappear(driver, wait)
                 # Click Select All
+
+                if actual_sum == 0 and expected_sum == 0:
+                    print(
+                        f"✅ {btn_name} - Total - "
+                        f"Dashboard count : {actual_sum}, "
+                        f"Header Count : {expected_sum}, "
+                        f"Select All Count : No Tasks"
+
+                    )
+                    allure.attach(
+                        success_msg,
+                        name=f"{btn_name}-Total-Matched",
+                        attachment_type=allure.attachment_type.TEXT
+                    )
+                    continue
+
+                # Dashboard and Header mismatch
+                if actual_sum != expected_sum:
+                    error_msg = (
+                        f"❌ {btn_name} - Total Count Mismatch\n"
+                        f"Dashboard Count : {actual_sum}\n"
+                        f"Header Count : {expected_sum}"
+                    )
+                    print(error_msg)
+                    allure.attach(
+                        error_msg,
+                        name=f"{btn_name}- Total -Mismatch",
+                        attachment_type=allure.attachment_type.TEXT
+                    )
+                    raise AssertionError(error_msg)
+
                 select_all_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_select_all_checkbox)))
                 driver.execute_script("arguments[0].click();", select_all_elem)
                 wait_for_loader_to_disappear(driver, wait)
 
-                # Output Total
-                if actual_sum == expected_sum:
-                    print(f"✅ {btn_name} - Total - Select all - matched ({actual_sum})")
-                else:
-                    print(f"❌ {btn_name} - Total - Select all - mismatch "
-                          f"(Actual: {actual_sum}, Expected: {expected_sum})")
+                selected_count_elem = wait.until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, '//div[contains(text(),"selected")]')
+                        )
+                    )
+                highlight_element(driver, selected_count_elem, duration=0.2)
 
-            except Exception as e:
-                print(f"❌ {btn_name} - Total validation failed: {e}")
-                allure.attach(str(e), f"{btn_name}-Total Error", allure.attachment_type.TEXT)
+                selected_text = selected_count_elem.text.strip()
+                selected_count = int(selected_text.replace(",", "").split()[0])
+
+                    # Validate Dashboard, Header and Select All counts
+                if actual_sum == expected_sum == selected_count:
+                    success_msg = (
+                        f"✅ {btn_name} - Total - MATCHED\n\n"
+                         f"Dashboard Count : {actual_sum}, "
+                        f"Header Count : {expected_sum}, "
+                        f"Select All Count : {selected_count}"
+                    )
+
+                    print(success_msg)
+
+                    allure.attach(
+                        success_msg,
+                        name=f"{btn_name}-Total-Matched",
+                        attachment_type=allure.attachment_type.TEXT
+                    )
+                   
+                else:
+                    error_msg = (
+                        f"❌ {btn_name} - Total Count Mismatch\n"
+                        f"Dashboard Total : {actual_sum}\n"
+                        f"Header Total    : {expected_sum}\n"
+                        f"Select All Count: {selected_count}"
+                    )
+                    print(error_msg)
+                    allure.attach(
+                        error_msg,
+                        name=f"{btn_name}-{title}-Mismatch",
+                        attachment_type=allure.attachment_type.TEXT
+                    )
+                    raise AssertionError(error_msg)
+
+        except Exception as e:
+            print(f"❌ {btn_name} - Total validation failed: {e}")
+            # allure.attach(str(e), f"{btn_name}-Total Error", allure.attachment_type.TEXT)
+            raise
 
     return True

@@ -138,6 +138,7 @@ def new_compliances_special_task(driver, wait, new_compliance_sp_task):
             time.sleep(4)
             export_data_btn = wait.until(EC.presence_of_element_located((By.XPATH, export_btn)))
             export_data_btn.click()
+            time.sleep(2)
             export_all = wait.until(EC.presence_of_element_located((By.XPATH, export_all_data_btn)))
             export_all.click()
             print("✅ Exported Selected Rows (after selecting rows)")

@@ -20,8 +20,6 @@ from utilities.task_functions.note_tab import note_check
 from utilities.task_functions.update_tab import update_check
 from utilities.task_functions.log_tab import log_check
 from load_test_config_excel_data import load_test_config_excel_data
-from utilities.task_functions.normal_task_valid_details import normal_task_valid_details
-from utilities.task_functions.special_task_valid_details import special_task_valid_details
 
 
 def task_sections_check(driver, dash_type='QCC', module_name=None, test_case_id=None):
@@ -139,28 +137,6 @@ def task_sections_check(driver, dash_type='QCC', module_name=None, test_case_id=
             except Exception as e:
                 allure.attach(str(e), name="Log Tab Section Error", attachment_type=allure.attachment_type.TEXT)
 
-    if module_name == 'normal_task_valid_details':
-        with allure.step("Create Normal Task functionality"):
-            try:
-                if normal_task_valid_details(driver, wait):
-                    print("✅ Create Normal Task  successful")
-                    return True
-                else:
-                    allure.attach("Test case failed for Create Normal Task ", name="Create Normal Task Failed", attachment_type=allure.attachment_type.TEXT)
-                    return False
-            except Exception as e:
-                allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
-    if module_name == 'special_task_valid_details':
-        with allure.step("Create Special Task functionality"):
-            try:
-                if special_task_valid_details(driver, wait):
-                    print("✅Create Special Task  successful")
-                    return True
-                else:
-                    allure.attach("Test case failed for Create Special Task ", name="Create Special Task  Failed", attachment_type=allure.attachment_type.TEXT)
-                    return False
-            except Exception as e:
-                allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
     
     allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
 def get_test_case_list(module=None):

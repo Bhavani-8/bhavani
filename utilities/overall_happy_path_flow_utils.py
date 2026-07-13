@@ -15,9 +15,9 @@ from utilities.login_utils import login_check
 from load_test_config_excel_data import load_test_config_excel_data
 from utilities.settings_functions.company_details import company_details
 from utilities.settings_functions.license_task import license_task
-from utilities.task_functions.normal_task_valid_details import normal_task_valid_details
+from utilities.dashboard_graph_functions.normal_task_valid_details import normal_task_valid_details
+from utilities.dashboard_graph_functions.special_task_valid_details import special_task_valid_details
 from utilities.settings_functions.task_category import task_category
-from utilities.task_functions.special_task_valid_details import special_task_valid_details
 from utilities.updates_functions.add_task_updates import updates_add_task
 from utilities.project_functions.add_project import create_project
 from utilities.project_functions.add_milestone import create_milestone
@@ -34,7 +34,7 @@ from utilities.settings_functions.personal_details import personal_details
 from utilities.settings_functions.create_department import create_department
 from utilities.settings_functions.create_designation import create_designation
 from utilities.settings_functions.team_members import invite_team_member
-from utilities.settings_functions.not_applicable_tasks import not_applicable_tasks
+from utilities.settings_functions.mark_circular_as_na import mark_circular_as_na
 
 
 def overall_happy_path_check(driver, task_details):
@@ -109,71 +109,71 @@ def overall_happy_path_check(driver, task_details):
     #     else:
     #         allure.attach("Test case failed for Check License task", name="Check License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
     #         return False
-    # with allure.step("Create Normal Task"):
-    #     if normal_task_valid_details(driver, wait):
-    #         print("✅ Create Normal Task validation successful")
-    #         # return True
-    #     else:
-    #         allure.attach("Test case failed for Create Normal Task", name="Create Normal Task Failed", attachment_type=allure.attachment_type.TEXT)
-    #         return False
-    # with allure.step("Create Task Category"):
-    #     category_name = task_details.get("category_name")
-    #     category_desc= task_details.get("category_desc")
+    with allure.step("Create Normal Task"):
+        if normal_task_valid_details(driver, wait):
+            print("✅ Create Normal Task validation successful")
+            # return True
+        else:
+            allure.attach("Test case failed for Create Normal Task", name="Create Normal Task Failed", attachment_type=allure.attachment_type.TEXT)
+            return False
+    with allure.step("Create Task Category"):
+        category_name = task_details.get("category_name")
+        category_desc= task_details.get("category_desc")
     
-    #     if task_category(driver, wait, category_name, category_desc):
-    #         print("✅ Create Task Category successful")
-    #         # return True
-    #     else:
-    #         allure.attach("Test case failed for Create Task Category",name="Create Task Category Validation Failed",attachment_type=allure.attachment_type.TEXT)
-    #         return False
-    # with allure.step("Create Special Task functionality"):
+        if task_category(driver, wait, category_name, category_desc):
+            print("✅ Create Task Category successful")
+            # return True
+        else:
+            allure.attach("Test case failed for Create Task Category",name="Create Task Category Validation Failed",attachment_type=allure.attachment_type.TEXT)
+            return False
+    with allure.step("Create Special Task functionality"):
        
-    #     if special_task_valid_details(driver, wait):
-    #         print("✅Create Special Task  successful")
-    #         # return True
-    #     else:
-    #         allure.attach("Test case failed for Create Special Task ", name="Create Special Task  Failed", attachment_type=allure.attachment_type.TEXT)
-    #         return False
+        if special_task_valid_details(driver, wait):
+            print("✅Create Special Task  successful")
+            # return True
+        else:
+            allure.attach("Test case failed for Create Special Task ", name="Create Special Task  Failed", attachment_type=allure.attachment_type.TEXT)
+            return False
    
-    # with allure.step("Create a Task from Updates"):
-    #     updates_task_name = task_details.get("updates_task_name")
-    #     if updates_add_task(driver, wait, updates_task_name):
-    #         print("✅ Create a Task from Updates successful")
-    #     else:
-    #         allure.attach("Test case failed for Create a Task from Update ", name="Create a Task from Update  Failed", attachment_type=allure.attachment_type.TEXT)
-    #         return False
+    with allure.step("Create a Task from Updates"):
+        updates_task_name = task_details.get("updates_task_name")
+        if updates_add_task(driver, wait, updates_task_name):
+            print("✅ Create a Task from Updates successful")
+        else:
+            allure.attach("Test case failed for Create a Task from Update ", name="Create a Task from Update  Failed", attachment_type=allure.attachment_type.TEXT)
+            return False
         
-    # with allure.step("Create Project"):
-    #     project_name = task_details.get("project_name")
-    #     project_description = task_details.get("project_description")
-    #     if create_project(driver, wait, project_name, project_description):
-    #         print("✅ Create Project successful")
-    #         # return True
-    #     else:
-    #         allure.attach("Test case failed for Create Project",name="Create Project Validation Failed",attachment_type=allure.attachment_type.TEXT)
-    #         return False
+    with allure.step("Create Project"):
+        project_name = task_details.get("project_name")
+        project_description = task_details.get("project_description")
+        if create_project(driver, wait, project_name, project_description):
+            print("✅ Create Project successful")
+            # return True
+        else:
+            allure.attach("Test case failed for Create Project",name="Create Project Validation Failed",attachment_type=allure.attachment_type.TEXT)
+            return False
          
-    # with allure.step("Create Milestone"):
-    #     project_name = task_details.get("project_name")
-    #     milestone = task_details.get("milestone")
-    #     if create_milestone(driver, wait, project_name, milestone):
-    #         print("✅ Create Milestone successful")
-    #         # return True
-    #     else:
-    #         allure.attach("Test case failed for Create Milestone",name="Create Milestone Validation Failed",attachment_type=allure.attachment_type.TEXT)
-    #         return False
+    with allure.step("Create Milestone"):
+        project_name = task_details.get("project_name")
+        milestone = task_details.get("milestone")
+        if create_milestone(driver, wait, project_name, milestone):
+            print("✅ Create Milestone successful")
+            # return True
+        else:
+            allure.attach("Test case failed for Create Milestone",name="Create Milestone Validation Failed",attachment_type=allure.attachment_type.TEXT)
+            return False
          
-    # with allure.step("Create Task List"):
-    #     project_name = task_details.get("project_name")
-    #     milestone = task_details.get("milestone")
-    #     task_list = task_details.get("task_list")
+    with allure.step("Create Task List"):
+        project_name = task_details.get("project_name")
+        milestone = task_details.get("milestone")
+        task_list = task_details.get("task_list")
 
-    #     if create_task_list(driver, wait, project_name, milestone, task_list):
-    #         print("✅ Create Project successful")
-    #         # return True
-    #     else:
-    #         allure.attach("Test case failed for Create Project",name="Create Project Validation Failed",attachment_type=allure.attachment_type.TEXT)
-    #         return False
+        if create_task_list(driver, wait, project_name, milestone, task_list):
+            print("✅ Create Project successful")
+            return True
+        else:
+            allure.attach("Test case failed for Create Project",name="Create Project Validation Failed",attachment_type=allure.attachment_type.TEXT)
+            return False
     with allure.step("Create Project Task"):
         project_name = task_details.get("project_name")
         project_task_name = task_details.get("project_task_name")
@@ -271,7 +271,7 @@ def overall_happy_path_check(driver, task_details):
     with allure.step("Click Not Applicable"):
         company_name = task_details.get("company_name")
         license_name = task_details.get("license_name")
-        if not_applicable_tasks(driver, wait, company_name, license_name):
+        if mark_circular_as_na(driver, wait, company_name, license_name):
             print("✅ Click Not Applicable successful")
             return True
         else:

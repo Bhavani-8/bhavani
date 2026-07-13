@@ -38,6 +38,9 @@ from utilities.dashboard_graph_functions.new_compliances_added_normal_task impor
 from utilities.dashboard_graph_functions.new_compliances_added_special_task import new_compliances_special_task
 from utilities.dashboard_graph_functions.new_compliances_column_chooser import new_compliances_column_chooser
 from utilities.dashboard_graph_functions.new_compliances_export_data import new_compliances_export_all_data
+from utilities.dashboard_graph_functions.update_internal_deadline import update_internal_deadline
+from utilities.dashboard_graph_functions.normal_task_valid_details import normal_task_valid_details
+from utilities.dashboard_graph_functions.special_task_valid_details import special_task_valid_details
 from utilities.search_utils import clear_search
 from load_test_config_excel_data import load_test_config_excel_data
 
@@ -106,27 +109,27 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
     step_name = "Bulk Task Creation" if dash_type == 'QCC' else "Bulk Special Task Creation"
     if module_name == 'bulk_task_creation':
         # ✅ Step 4: Read Excel bulk task creation file
-            try:
-                filename = 'bulk_task_creation_valid.xlsx' if dash_type == 'QCC' else 'bulk_special_task_creation_valid.xlsx'
-
-                df = pd.read_excel(f'data/{filename}', skiprows=[1])
-                task_name = str(df['Task Name*'].iloc[0])
-                print(f'📄 Fetched task name: {task_name}')
-            except Exception as e:
-                allure.attach(str(e), name="Excel Read Error", attachment_type=allure.attachment_type.TEXT)
-                task_name = None
-    
-    with allure.step(f"{step_name} Validation"):
-        bulk_task_name = task_details.get("bulk_task_name")
         try:
-            if bulk_task_creation_check(driver, wait, bulk_task_name, filename, step_name):
-                print("✅ Bulk task created successfully")
-                return True
-            else:
-                allure.attach("Bulk task creation failed",name="Bulk Task Creation Failed",attachment_type=allure.attachment_type.TEXT)
-                return False
+            filename = 'bulk_task_creation_valid.xlsx' if dash_type == 'QCC' else 'bulk_special_task_creation_valid.xlsx'
+
+            df = pd.read_excel(f'data/{filename}', skiprows=[1])
+            task_name = str(df['Task Name*'].iloc[0])
+            print(f'📄 Fetched task name: {task_name}')
         except Exception as e:
-            allure.attach(str(e), name="Bulk Task Creation Error", attachment_type=allure.attachment_type.TEXT)
+            allure.attach(str(e), name="Excel Read Error", attachment_type=allure.attachment_type.TEXT)
+            task_name = None
+
+        with allure.step(f"{step_name} Validation"):
+            bulk_task_name = task_details.get("bulk_task_name")
+            try:
+                if bulk_task_creation_check(driver, wait, bulk_task_name, filename, step_name):
+                    print("✅ Bulk task created successfully")
+                    return True
+                else:
+                    allure.attach("Bulk task creation failed",name="Bulk Task Creation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Bulk Task Creation Error", attachment_type=allure.attachment_type.TEXT)
 
     # ✅ Step 6: Upper Dashboard Validation
     if module_name == 'upper_dashboard_count':
@@ -139,7 +142,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                     allure.attach("Test case failed for Upper Dashboard", name="Upper Dashboard Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Upper Dashboard Error", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(str(e), name="Upper Dashboard Count Error", attachment_type=allure.attachment_type.TEXT)
 
     # ✅ Step 6: Upper Dashboard Validation
     if module_name == 'lower_dashboard_count':
@@ -152,7 +155,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                     allure.attach("Test case failed for Lower Dashboard", name="Lower Dashboard Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Lower Dashboard Error", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(str(e), name="Lower Dashboard Count Error", attachment_type=allure.attachment_type.TEXT)
 
     if module_name == 'lower_sp_dashboard_count':
         with allure.step("Lower Special Dashboard Count Validation"):
@@ -164,7 +167,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                     allure.attach("Test case failed for Lower Dashboard", name="Lower Dashboard Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Lower Dashboard Error", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(str(e), name="Lower Dashboard Count Error", attachment_type=allure.attachment_type.TEXT)
 
     # # ✅ Step 7: Lower Dashboard Validation
     if module_name == 'lower_dashboard_date_filter_count':
@@ -177,7 +180,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                     allure.attach("Test case failed for Lower Dashboard Date Filter", name="Lower Dashboard Date Filter Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Lower Dashboard Error", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(str(e), name="Lower Dashboard Count Error", attachment_type=allure.attachment_type.TEXT)
 
     if module_name == 'lower_sp_dashboard_date_filter_count':
         with allure.step("Lowerspecial  Dashboard Date Filter Validation"):
@@ -189,7 +192,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                     allure.attach("Test case failed for Lower Dashboard Date Filter", name="Lower Dashboard Date Filter Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Lower Dashboard Error", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(str(e), name="Lower Dashboard Date filter Count Error", attachment_type=allure.attachment_type.TEXT)
 
     if module_name == 'upper_dashboard_date_filter_count':
         with allure.step("Upper Dashboard Filter Validation"):
@@ -201,7 +204,7 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
                     allure.attach("Test case failed for Dashboard Filter", name="Dashboard Filter Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Dashboard Filter Error", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(str(e), name="Upper Dashboard Date Filter Count Error", attachment_type=allure.attachment_type.TEXT)
 
    
     if module_name == 'column_filter_functionality_valid_values':
@@ -410,6 +413,44 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
             except Exception as e:
                 allure.attach(str(e), name="New compliances Export all Data Error", attachment_type=allure.attachment_type.TEXT)
 
+    if module_name == 'update_internal_deadline':
+        internal_deadline = task_details.get("internal_deadline")
+        with allure.step("Update Internal Deadline"):
+            try:
+                if update_internal_deadline(driver, wait, internal_deadline):
+                    print("✅ Update Internal Deadline validation successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Update Internal Deadline", name="Update Internal Deadline Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Update Internal Deadline Error", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'normal_task_valid_details':
+        normal_task = task_details.get("normal_task")
+        with allure.step("Create Normal Task functionality"):
+            try:
+                if normal_task_valid_details(driver, wait, normal_task):
+                    print("✅ Create Normal Task  successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Create Normal Task ", name="Create Normal Task Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
+    if module_name == 'special_task_valid_details':
+        special_task = task_details.get("special_task")
+        with allure.step("Create Special Task functionality"):
+            try:
+                if special_task_valid_details(driver, wait, special_task):
+                    print("✅Create Special Task  successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Create Special Task ", name="Create Special Task  Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
+    
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)
