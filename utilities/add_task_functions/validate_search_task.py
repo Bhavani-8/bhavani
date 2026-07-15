@@ -59,19 +59,18 @@ def validate_search_task(driver, wait, task_name):
         highlight_element(driver, search_input)
         search_input.clear()
         search_input.send_keys(task_name)
-
-        wait_for_loader_to_disappear(driver, wait)
         time.sleep(4)
     except Exception as e:
         msg = f"🔥 Error Searching Task: {e}"
         print(msg)
         allure.attach(msg, name="Search Task Failure", attachment_type=allure.attachment_type.TEXT)
         return False
-
+    wait_for_loader_to_disappear(driver, wait)
     try:
-        dash_col_all_selection_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_col_all_selection_btn)))
+        dash_col_all_selection_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, dash_col_all_selection_btn)))
         highlight_element(driver, dash_col_all_selection_btn_elem)
         dash_col_all_selection_btn_elem.click()
+        
         print("✅ Selected all rows in Dashboard")
         time.sleep(4)
         wait_for_loader_to_disappear(driver, wait)
@@ -85,6 +84,7 @@ def validate_search_task(driver, wait, task_name):
         time.sleep(4)
         export_data_btn = wait.until(EC.presence_of_element_located((By.XPATH, export_btn)))
         export_data_btn.click()
+        time.sleep(2)
         export_selected_rows = wait.until(EC.presence_of_element_located((By.XPATH, export_selected_rows_btn)))
         export_selected_rows.click()
         print("✅ Exported Selected Rows (after selecting rows)")
@@ -133,7 +133,14 @@ def validate_search_task(driver, wait, task_name):
         if missing_cols:
             raise Exception(f"Missing columns in Excel: {missing_cols}")
 
-        final_df = excel_df[required_cols].copy()
+        final_df = excel_df[
+            excel_df["Task Name"].astype(str).str.strip() == task_name.strip()
+        ][required_cols].copy()
+
+        if final_df.empty:
+            msg = f"Task '{task_name}' not found in exported Excel."
+            allure.attach(msg, name="Task Not Found", attachment_type=allure.attachment_type.TEXT)
+            return False
 
         def clean(val):
             return " ".join(str(val).split())

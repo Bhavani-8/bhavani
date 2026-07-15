@@ -10,6 +10,7 @@ import os
 import pandas as pd
 import pyautogui as pg
 import glob
+import random
 from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from selenium.common.exceptions import TimeoutException
@@ -62,7 +63,7 @@ def delete_monthly_all_future_events(driver, wait):
     test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx"), sheet_name=f"add_task_test_cases").fillna("")
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
-    task_name = f"{first_row.get('task_name')}_monthly"
+    task_name = f"{first_row.get('task_name')}_monthly_{random.randint(100000, 999999)}"
     # task_name = delete_task_name if delete_task_name else "task_name"
     # task_name = project_task_name or first_row.get('task_name')
     start_date = format_date_if_valid(first_row.get('start_date'))
@@ -99,7 +100,7 @@ def delete_monthly_all_future_events(driver, wait):
                 circular_search, test_type, task_type='mandatory', direct_task_creation=False):
                 print("✅ Task creation successful")
                 time.sleep(6)
-                task_name = task_value_get("task_name")
+                # task_name = task_value_get("task_name")
             else:
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)
                 return False

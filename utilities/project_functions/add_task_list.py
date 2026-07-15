@@ -12,11 +12,6 @@ from selenium.common.exceptions import TimeoutException
 from utilities.add_task_utils import wait_for_loader_to_disappear
 import random
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-   
 def create_task_list(driver, wait, task_list):
 
     with allure.step("Load locators.json"):
@@ -32,8 +27,16 @@ def create_task_list(driver, wait, task_list):
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
 
             print("✅ locators.json loaded")
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
         
     with allure.step("Click project icon"):
         try:
@@ -42,7 +45,10 @@ def create_task_list(driver, wait, task_list):
             project_btn.click()
             time.sleep(2)
         except Exception as e:
-           step_fail(driver, "Click project icon", e)
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
@@ -55,7 +61,11 @@ def create_task_list(driver, wait, task_list):
             project_task.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click Project Task", e)
+            msg = f"Failed to Click Project Task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    
 
     with allure.step("Click three dots menu"):
         try:
@@ -71,7 +81,10 @@ def create_task_list(driver, wait, task_list):
             milestone_btn.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click three dots menu", e)
+            msg = f"Failed to click Milestone Three dots Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone Three dots Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg) 
             
     with allure.step("Click 'Add Tasklist' button"):
         try:
@@ -81,8 +94,10 @@ def create_task_list(driver, wait, task_list):
             driver.execute_script("arguments[0].click();", task_list_btn)
             time.sleep(3)
         except Exception as e:
-            step_fail(driver, "Click 'Add Tasklist' button", e)
-
+            msg = f"Failed to Click Add Tasklist button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Add Tasklist button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Enter Task List Name"):
         try:
             task_list_input = wait.until(EC.presence_of_element_located((By.XPATH, task_list_input_elem)))
@@ -98,7 +113,11 @@ def create_task_list(driver, wait, task_list):
             print(f"Task List Created: {unique_task_list}")
             time.sleep(3)
         except Exception as e:
-            step_fail(driver, "Enter Task List Name", e)
+            msg = f"Failed to Enter Task List Name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Task List Name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    
 
     with allure.step("Submit Task List"):
         try:
@@ -108,7 +127,10 @@ def create_task_list(driver, wait, task_list):
             time.sleep(3)
             print("✅ Project Submit clicked")
         except Exception as e:
-            step_fail(driver, "Submit Task List", e)
+            msg = f"Failed to Click submit Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Submit Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
         try:
             toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
@@ -129,7 +151,10 @@ def create_task_list(driver, wait, task_list):
             drop_down_task.click()
             time.sleep(3)
         except Exception as e:
-            step_fail(driver, "Click Dropdown Tasklist", e)
+            msg = f"Failed to Click milestone dropdown: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone dropdown Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
     with allure.step("Verify Task List Creation"):
         try:
@@ -138,8 +163,10 @@ def create_task_list(driver, wait, task_list):
             fetched_task_list_in_list = task_list_in_list.text.strip() 
             print(f"Task List Name: {fetched_task_list_in_list}")
         except Exception as e:
-           step_fail(driver, "Verify Task List in List", e)
-
+            msg = f"Failed to Verify Task List Creation: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Verify Task List Creation Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Milestone Close Button"):
         try:
             close_btn = wait.until(EC.presence_of_element_located((By.XPATH, milestone_cancel_btn)))
@@ -147,8 +174,9 @@ def create_task_list(driver, wait, task_list):
             close_btn.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click Milestone Close Button", e)
-
-
+            msg = f"Failed to Click Milestone close button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone close button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
    
     return True

@@ -14,7 +14,7 @@ from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_l
 from selenium.common.exceptions import StaleElementReferenceException
 
 
-def open_task(driver, wait, task_name):
+def open_task(driver, wait, created_task_name):
     try:
         with open(os.path.join("data", 'locators.json'), 'r') as f:
             elements_details = json.load(f)
@@ -36,7 +36,7 @@ def open_task(driver, wait, task_name):
         search_input = wait.until(EC.visibility_of_element_located((By.XPATH, task_search_input)))
         highlight_element(driver, search_input)
         search_input.clear()
-        search_input.send_keys(task_name)
+        search_input.send_keys(created_task_name)
 
         wait_for_loader_to_disappear(driver, wait)
         time.sleep(5)
@@ -44,7 +44,7 @@ def open_task(driver, wait, task_name):
         msg = f"🔥 Error Searching Task: {e}"
         print(msg)
         allure.attach(msg, name="Search Task Failure", attachment_type=allure.attachment_type.TEXT)
-        return False
+        raise Exception(msg)
        
     with allure.step("Opening task from table"):
         try:

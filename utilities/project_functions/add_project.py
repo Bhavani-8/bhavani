@@ -11,11 +11,6 @@ from utilities.add_task_utils import wait_for_loader_to_disappear
 from datetime import datetime
 import random
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-   
 def create_project(driver, wait, project_name, project_description):
 
     with allure.step("Load locators.json"):
@@ -33,8 +28,16 @@ def create_project(driver, wait, project_name, project_description):
 
 
             print("✅ locators.json loaded")
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
         
     with allure.step("Click project icon"):
         try:
@@ -43,7 +46,10 @@ def create_project(driver, wait, project_name, project_description):
             project_btn.click()
             time.sleep(3)
         except Exception as e:
-           step_fail(driver, "Click project icon", e)
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click 'Add New Project' button"):
         try:
             add_new_project_btn = wait.until(EC.element_to_be_clickable((By.XPATH, add_new_project)))
@@ -51,7 +57,10 @@ def create_project(driver, wait, project_name, project_description):
             driver.execute_script("arguments[0].click();", add_new_project_btn)
             time.sleep(1)
         except Exception as e:
-           step_fail(driver, "Click 'Add New Project' button", e)
+            msg = f"Failed to Click Add New project button : {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Add New project button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     #
     with allure.step("Enter Project Name"):
         try:
@@ -70,8 +79,10 @@ def create_project(driver, wait, project_name, project_description):
             print(f"Project Name Created: {unique_project_name}")
 
         except Exception as e:
-            step_fail(driver, "Enter Project Name", e)
-
+            msg = f"Failed to Enter Project Name : {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Enter Project Name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Enter Project Description"):
         try:
             desc_input = wait.until(EC.presence_of_element_located((By.XPATH, project_description_text)))
@@ -79,7 +90,10 @@ def create_project(driver, wait, project_name, project_description):
             desc_input.send_keys(project_description)
             time.sleep(1)
         except Exception as e:
-           step_fail(driver, "Enter Project Description", e)
+            msg = f"Failed to Enter Project Description : {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Enter Project Description Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Click submit button"):
         try:
@@ -89,7 +103,10 @@ def create_project(driver, wait, project_name, project_description):
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(2)
         except Exception as e:
-              step_fail(driver, "Click submit button", e)
+            msg = f"Failed to Click submit Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Submit Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg) 
     
     with allure.step("Verify Toast Message"):
         try:
@@ -98,7 +115,10 @@ def create_project(driver, wait, project_name, project_description):
             toast_text = toast_element.text.strip()
             print(f"Toast Message: {toast_text}")
         except Exception as e:
-            step_fail(driver, "Verify Toast Message", e)
+            msg = f"Failed to Verify Toast Message: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Toast Message Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg) 
         
 
     with allure.step("Verify project task"):
@@ -110,6 +130,9 @@ def create_project(driver, wait, project_name, project_description):
             fetched_project_in_list = project_task.text.strip() 
             print(f"Project Name: {fetched_project_in_list}")
         except Exception as e:
-            step_fail(driver, "Select the latest project task", e)
+            msg = f"Failed to Verify project task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Verify project task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg) 
     return True
    

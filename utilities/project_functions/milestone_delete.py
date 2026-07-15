@@ -17,12 +17,6 @@ from utilities.add_task_functions.format_date_if_valid import format_date_if_val
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import StaleElementReferenceException
 
-
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-   
 def milestone_delete(driver, wait):
 
     with allure.step("Load locators.json"):
@@ -40,8 +34,16 @@ def milestone_delete(driver, wait):
             task_delete_btn = elements_details['task_delete_btn']
             milestone_tab_btn = elements_details['milestone_tab_btn']
             print("✅ locators.json loaded")
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
         
     with allure.step(" Click project icon"):
         try:
@@ -50,7 +52,10 @@ def milestone_delete(driver, wait):
             project_btn.click()
             time.sleep(3)
         except Exception as e:
-            step_fail(driver, " Click project icon", e)
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
     with allure.step("Click Project Task"):
         try:
@@ -64,7 +69,11 @@ def milestone_delete(driver, wait):
             project_task.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click Project Task", e)
+            msg = f"Failed to Click Project Task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    
     
     with allure.step("Click 'Add New Milestone' button"):
         try:
@@ -73,7 +82,11 @@ def milestone_delete(driver, wait):
             milestone_btn.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click 'Add New Milestone' button", e)
+            msg = f"Failed to Click Add New Milestone button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Add New Milestone button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    
     with allure.step("Enter Milestone Name"):
         # milestone = f"{milestone}_delete_check"
         try:
@@ -88,15 +101,22 @@ def milestone_delete(driver, wait):
 
             print(f"Milestone Created: {created_milestone}")
         except Exception as e:
-           step_fail(driver, "Enter Milestone Name", e)
-    with allure.step("Click Submit Milestone"):
+            msg = f"Failed to Enter Milestone Name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone Name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    
+    with allure.step("Click confirm Milestone"):
         try:
             confirm_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Confirm']")))
             highlight_element(driver, confirm_btn)
             confirm_btn.click()
             time.sleep(2)
-        except TimeoutException:
-            print("⚠️ Confirm failed")     
+        except Exception as e:
+            msg = f"Failed to Click Confirm Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Confirm Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)    
             
     with allure.step("Verify Milestone Creation"):
         try:
@@ -110,7 +130,10 @@ def milestone_delete(driver, wait):
             with open(milestone_file, "w") as f:
                 f.write(created_milestone)
         except Exception as e:
-            step_fail(driver, "Verify Milestone Creation", e)  
+            msg = f"Failed to Verify Milestone Creation: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Verify Milestone Creation Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)   
     with allure.step("Click three dots menu"):
         time.sleep(7)
         try:
@@ -123,7 +146,10 @@ def milestone_delete(driver, wait):
             highlight_element(driver, milestone_btn)
             milestone_btn.click()
         except Exception as e:
-            step_fail(driver, "Click three dots menu", e)
+            msg = f"Failed to click Milestone Three dots Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone Three dots Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg) 
     with allure.step("Click Delete Milestone"):
         try:
             delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_delete_btn)))
@@ -138,7 +164,10 @@ def milestone_delete(driver, wait):
             print("☑️ YES clicked — Milestone delete confirmed")
 
         except Exception as e:
-            step_fail(driver, "Click Delete Milestone", e)
+            msg = f"Failed to Click Delete button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Delete button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
     with allure.step("Click Milestone close button on task details panel"):
         try:
@@ -148,8 +177,10 @@ def milestone_delete(driver, wait):
             time.sleep(2)
             print("✅ Milestone Submit clicked")
         except Exception as e:
-            step_fail(driver, "Click Milestone close button on task details panel", e)
-
+            msg = f"Failed to Click Milestone close button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone close button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Trash Icon"):
         try:
             print()
@@ -157,7 +188,10 @@ def milestone_delete(driver, wait):
             highlight_element(driver, trash_btn)
             trash_btn.click()
         except Exception as e:
-            step_fail(driver, "Click Trash Icon", e)
+            msg = f"Failed to Click Thrash Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Thrash Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
     with allure.step("Click Milestone Tab"):
         try:
@@ -167,7 +201,10 @@ def milestone_delete(driver, wait):
             milestone_tab.click()
             print("📌 Milestone tab clicked")
         except Exception as e:
-            step_fail(driver, "Click Milestone Tab", e)
+            msg = f"Failed to Click Milestone Tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone Tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Verify Deleted Milestone in Trash"):
         try:
             milestone_file = os.path.join("latest_data", "latest_milestone.txt")
@@ -179,8 +216,10 @@ def milestone_delete(driver, wait):
             fetch_milestone_in_trash = milestone_in_trash.text.strip()
             print(f"✅ Milestone '{fetch_milestone_in_trash}' found in Trash")
         except Exception as e:
-            step_fail(driver, "Verify Deleted Milestone in Trash", e)
-
+            msg = f"Failed to Verify Deleted Milestone: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Deleted Milestone Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Restore Deleted Milestone"):
         try:
             time.sleep(3)
@@ -197,7 +236,10 @@ def milestone_delete(driver, wait):
             time.sleep(3)
 
         except Exception as e:
-           step_fail(driver, "Restore Deleted Task", e)
+            msg = f"Failed to Click Restore Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Restore Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Click project icon again"):
         try:
@@ -206,7 +248,10 @@ def milestone_delete(driver, wait):
             project_btn.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click project icon again", e)
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
@@ -219,7 +264,10 @@ def milestone_delete(driver, wait):
             project_task.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click Project Task", e)
+            msg = f"Failed to Click newly created Project task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="newly created Project task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
     with allure.step("Click three dots menu"):
         try:
@@ -233,8 +281,10 @@ def milestone_delete(driver, wait):
             highlight_element(driver, milestone_btn)
             milestone_btn.click()
         except Exception as e:
-            step_fail(driver, "Click three dots menu", e)
-    
+            msg = f"Failed to click Milestone Three dots Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone Three dots Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
     with allure.step("Click Delete Milestone"):
         try:
@@ -249,13 +299,18 @@ def milestone_delete(driver, wait):
             time.sleep(2)
 
         except Exception as e:
-            step_fail(driver, "Click Delete Milestone", e)
+            msg = f"Failed to Click Delete button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Delete button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Milestone close button on task details"):
         try:
             milestone_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, milestone_cancel_btn)))
             highlight_element(driver, milestone_close_btn)
             milestone_close_btn.click()
         except Exception as e:
-            step_fail(driver, "Click Milestone close button on task details", e)
-    
+            msg = f"Failed to Click Milestone close button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone close button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     return True

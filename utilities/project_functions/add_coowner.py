@@ -12,11 +12,6 @@ from selenium.common.exceptions import TimeoutException
 from utilities.add_task_utils import wait_for_loader_to_disappear
 
    
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-   
 def add_coowner(driver, wait, coowner_name):
 
     with allure.step("Load locators.json"):
@@ -39,8 +34,16 @@ def add_coowner(driver, wait, coowner_name):
 
 
             print("✅ locators.json loaded")
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
         
     with allure.step("Create New Project"):
         try:
@@ -63,7 +66,10 @@ def add_coowner(driver, wait, coowner_name):
             highlight_element(driver, three_dots_btn)
             three_dots_btn.click()
         except Exception as e:
-            step_fail(driver, "Click the three dots menu for the task", e)
+            msg = f"Failed to Click Project Task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Add Co-owner or Add Button"):
         try:
             add_coowner_btn = wait.until(EC.element_to_be_clickable((By.XPATH, add_coowner_elem)))
@@ -72,16 +78,21 @@ def add_coowner(driver, wait, coowner_name):
             print("👥 Add Co-owner clicked")
 
         except Exception as e:
-            print("Add Co-owner not found, trying Add button...")
+            msg = f"Failed to Click Add Co-owner button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Add Co-owner button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+        try:
+            add_btn = wait.until(EC.element_to_be_clickable((By.XPATH, add_btn_elem)))
+            highlight_element(driver, add_btn)
+            add_btn.click()
+            print("➕ Add User clicked (fallback option)")
 
-            try:
-                add_btn = wait.until(EC.element_to_be_clickable((By.XPATH, add_btn_elem)))
-                highlight_element(driver, add_btn)
-                add_btn.click()
-                print("➕ Add User clicked (fallback option)")
-
-            except Exception as e2:
-                step_fail(driver, "Click Add Co-owner or Add Button", e2)
+        except Exception as e:
+            msg = f"Failed to Click Add button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Add button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Dropdown and Select Co-owner"):
         try:
             dropdown_btn = wait.until(EC.presence_of_element_located((By.XPATH, coowner_drop_down_btn)))
@@ -98,7 +109,10 @@ def add_coowner(driver, wait, coowner_name):
             highlight_element(driver, coowner_option)
             coowner_option.click()
         except Exception as e:
-            step_fail(driver, "Click Dropdown and Select Co-owner", e)
+            msg = f"Failed to Click Dropdown and Select Co-owner: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Click Dropdown and Select Co-owner Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Add, Edit, Delete Checkbox"):
         try:
             add_checkbox = wait.until(EC.presence_of_element_located((By.XPATH, add_checkbox_btn)))
@@ -145,7 +159,10 @@ def add_coowner(driver, wait, coowner_name):
             highlight_element(driver, three_dots_btn)
             three_dots_btn.click()
         except Exception as e:
-            step_fail(driver, "Click the three dots menu from the project", e)
+            msg = f"Failed to Click the three dots menu from the project: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Click the three dots menu from the project Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Validate Co-owner Name and Permissions"):
         try:
             add_coowner_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_coowner_elem)))
@@ -170,8 +187,10 @@ def add_coowner(driver, wait, coowner_name):
             allure.attach(coowner_details,name="Co-owner Details",attachment_type=allure.attachment_type.TEXT)
     
         except Exception as e:
-            step_fail(driver, "Validate Co-owner Name and Permissions", e)
-            
+            msg = f"Failed to Validate Co-owner Name and Permissions: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Validate Co-owner Name and Permissions Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Done Button"):
         try:
             done_btn = wait.until(EC.element_to_be_clickable((By.XPATH, coowner_done_btn)))
@@ -179,7 +198,10 @@ def add_coowner(driver, wait, coowner_name):
             done_btn.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click Done Button", e)
+            msg = f"Failed to Click Done button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Done button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
 
     return True

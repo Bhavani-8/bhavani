@@ -16,12 +16,6 @@ from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
 
-
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-
 def mark_circular_as_na(driver, wait, company_name, license_name):
 
     with allure.step("Load locators.json"):
@@ -47,8 +41,16 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             task_license_close_btn = elements_details['task_license_close_btn']
             task_search_close_btn = elements_details['task_search_close_btn'] 
             column_filter_license = elements_details['column_filter_license']
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
     
     with allure.step("Open Dashboard"):
         try:
@@ -58,14 +60,23 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             dashboard_icon_elem.click()
             print("✅ Dashboard icon clicked")
         except Exception as e:
-            step_fail(driver, "Click Dashboard", e)
+            msg = f"Failed to Click Dashboard Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Dashboard Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Open Column Chooser from task list"):
-        column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
-        highlight_element(driver, column_chooser_btn_elem)
-        driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
-        print("Clicked Column Chooser button")
-        wait_for_loader_to_disappear(driver, wait)
+        try:
+            column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
+            highlight_element(driver, column_chooser_btn_elem)
+            driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
+            print("Clicked Column Chooser button")
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            msg = f"Failed to Click Column chooser button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Column chooser Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
         def get_state(elem):
             """
@@ -112,9 +123,11 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
 
             print("✅ 'Select All' normalized successfully")
 
-        except StaleElementReferenceException:
-            pytest.fail("❌ Stale element while normalizing Select All")
-
+        except Exception as e:
+            msg = f"Failed to Selecting all: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Selecting all Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Select 'Company / Project' from Column Chooser"): 
         try:
             company_project_option_elm = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_company_project)))
@@ -137,12 +150,15 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             time.sleep(2)
             print("✅ Column Chooser saved")
 
-        except TimeoutException:
-            step_fail(driver, "Click Dashboard", e)
+        except Exception as e:
+            msg = f"Failed to Clicking License option: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="License Option Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step(f"Open Company/Project filter and search for company"):
-        # company_file = os.path.join("data", "latest_company.txt")
-        # with open(company_file, "r") as f:
-        #     created_company_name = f.read().strip()
+        company_file = os.path.join("latest_data", "latest_company.txt")
+        with open(company_file, "r") as f:
+            created_company_name = f.read().strip()
         company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
         highlight_element(driver, company_project_filter_btn)
         company_project_filter_btn.click()
@@ -150,21 +166,30 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
 
         search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
         search_input.clear()
-        search_input.send_keys(company_name)
+        search_input.send_keys(created_company_name)
         time.sleep(6)
 
     try:
-        search_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{company_name}']")))
+        search_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{created_company_name}']")))
         search_task.click()
         time.sleep(4)
         print("✅ Clicked 'Company'")
-
+    
+    except Exception as e:
+        msg = f"Failed to Search Task: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Search Task Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
+    try:
+    
         column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
         column_filter_ok.click()
         time.sleep(4)
-    except TimeoutException:
-        print("❌ 'License Name' not found in filter list")
-        step_fail(driver, "Click Search Task", e)
+    except Exception as e:
+        msg = f"Failed to Click Column Filter OK Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Column Filter OK Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     
 
     with allure.step(f"Open License filter"):
@@ -185,24 +210,19 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
         highlight_element(driver, license_option)
         license_option.click()  
         time.sleep(3)
-    except TimeoutException:
-        print("❌ 'License Name' not found in filter list")
-        step_fail(driver, "Click License Option", e)
-    button_clicked = False
-
+    except Exception as e:
+        msg = f"Failed to License Option: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="License Option Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     try:
         column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
         column_filter_ok.click()
-        button_clicked = True
-    except TimeoutException:
-        print("ℹ️ Ok button not available / not clickable")
-        step_fail(driver, "Click Column Filter OK", e)
-    if not button_clicked:
-        try:
-            column_filter_cancel = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_cancel_btn)))
-            column_filter_cancel.click()
-        except TimeoutException:
-            print("ℹ️ Close/Cancel button not present")
+    except Exception as e:
+        msg = f"Failed to Click Column Filter OK Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Column Filter OK Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     
     wait_for_loader_to_disappear(driver, wait)
     time.sleep(4)
@@ -222,8 +242,11 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             time.sleep(1)
             wait_for_loader_to_disappear(driver, wait)
         except Exception as e:
-             step_fail(driver, "Click Task Open Button", e)
-    with allure.step("Fetch the task name from the opened task details page"):
+            msg = f"Failed to Click Task Open button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Task Open Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    with allure.step("Fetch the License task name from the opened task details page"):
         try:
             time.sleep(4)
             license_task_name_btn = wait.until(EC.visibility_of_element_located((By.XPATH, "//p[contains(@class,'task-details-sub-title') and @title]")))
@@ -232,7 +255,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             time.sleep(0.5)
             print("✅ Project Submit clicked")
         except Exception as e:
-            step_fail(driver, "Fetch the task name from the opened task details panel", e)
+            msg = f"Failed to Fetch the License task name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Fetch the License task name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Not Applicable"):
         try:
             not_applicable = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Not Applicable']")))
@@ -240,7 +266,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             not_applicable.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click Not Applicable", e)
+            msg = f"Failed to Click Not Applicable: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Not Applicable Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Click Are you sure you want to mark this task as 'Not Applicable'?"):
         try:
@@ -249,8 +278,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             confirm_btn.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click Are you sure you want to mark this task as 'Not Applicable'? ", e)
-    
+            msg = f"Failed to click Confirm Button: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Confirm Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Toast Msg"):
         try:
             toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
@@ -258,7 +289,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             print(f"📢 Toast message: {toast.text.strip()}")
             time.sleep(7)
         except Exception as e:
-            step_fail(driver, "Toast Message Verification", e)
+            msg = f"Toast message not found: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Verify Not Applicable Task"):
         try:
             dashboard_btn = wait.until(EC.visibility_of_element_located((By.XPATH,  "//h2[text()=\"We couldn't locate this task\"]")))
@@ -268,7 +302,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             allure.attach(f"Task Window: {fetched_task_name}", name="Task Window", attachment_type=allure.attachment_type.TEXT)   
             # step_fail(driver, "Verify Not Applicable Task", f"Dashboard with title: {fetched_task_name}")
         except Exception as e:
-            step_fail(driver, "Fetching Task Name", e)
+            msg = f"Failed to Click Dashboard Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Dashboard Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Clicking Dashboard Total button"):
         try:
             wait_for_loader_to_disappear(driver, wait)
@@ -277,9 +314,11 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             total_tab.click()
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(2)
-        except Exception as err:
-            allure.attach(str(err), "Total tab error", allure.attachment_type.TEXT)
-            pytest.fail("Failed to click Total tab")
+        except Exception as e:
+            msg = f"Failed to Click Total tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Total tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Search for the newly created task"):
         try:
             search_icon_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_btn)))
@@ -294,7 +333,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(4)  # Extra wait to ensure results load
         except Exception as e:
-            step_fail(driver, "Search for the newly created task", e)
+            msg = f"Failed to Click Search Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Search Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click close button on task details panel"):
         try:
             search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_close_btn)))
@@ -304,15 +346,20 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             time.sleep(3)
             print("✅ Project Submit clicked")
         except Exception as e:
-            step_fail(driver, "Click Search close button on task details", e)
-    
+            msg = f"Failed to Click Search close button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Search close button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Settings"):
         try:
             settings_btn = wait.until(EC.presence_of_element_located((By.XPATH, settings_icon)))
             highlight_element(driver, settings_btn)
             settings_btn.click()
         except Exception as e:
-            step_fail(driver, "Click Settings", e)
+            msg = f"Failed to Click Settings Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Settings Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
     with allure.step("Click Not Applicable"):
         try:
@@ -320,33 +367,31 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             highlight_element(driver,  not_applicable_tasks_btn)
             not_applicable_tasks_btn.click()
         except Exception as e:
-            step_fail(driver, "Click Not Applicable", e)
+            msg = f"Failed to Click Not Applicable: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Not Applicable Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     wait_for_loader_to_disappear(driver, wait)
     time.sleep(3)
     
     with allure.step("Click Mark Applicable"):
         try:
             task_name_elem = wait.until(
-            EC.presence_of_element_located(
-                (By.XPATH, f"//td[normalize-space()='{company_name}']/ancestor::tr//div[contains(@class,'wrap-break-word')]")
-            )
-            )
-
+            EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{company_name}']/ancestor::tr//div[contains(@class,'wrap-break-word')]")))
             task_name = task_name_elem.text.strip()
 
             print(f"🔹 Task Name: {task_name}")
 
-            allure.attach(
-                task_name,
-                name="Task Name Before Mark Applicable",
-                attachment_type=allure.attachment_type.TEXT
-            )
+            allure.attach(task_name,name="Task Name Before Mark Applicable",attachment_type=allure.attachment_type.TEXT)
             applicable_tasks_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{company_name}']/ancestor::tr//button[normalize-space()='Mark Applicable']")))
             highlight_element(driver,  applicable_tasks_btn)
             driver.execute_script("arguments[0].scrollIntoView(true);", applicable_tasks_btn)
             applicable_tasks_btn.click()
         except Exception as e:
-            step_fail(driver, "Click Mark Applicable", e)
+            msg = f"Failed to Click  Mark Applicable: {str(e)}"
+            print(msg)
+            allure.attach(msg, name=" Mark Applicable Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Are you sure you want to mark this task as 'Mark Applicable'?"):
         try:
             yes_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Yes']")))
@@ -354,7 +399,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             yes_btn.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click Are you sure you want to mark this task as 'Mark Applicable'? ", e)
+            msg = f"Failed to Click Yes Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Yes button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     wait_for_loader_to_disappear(driver, wait)
     time.sleep(3)
 
@@ -366,7 +414,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             dashboard_icon_elem.click()
             print("✅ Dashboard icon clicked")
         except Exception as e:
-            step_fail(driver, "Click Dashboard Icon", e)
+            msg = f"Failed to Click Dashboard Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Dashboard Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Dashboard Total button"):
         try:
             wait_for_loader_to_disappear(driver, wait)
@@ -375,7 +426,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             total_tab.click()
             wait_for_loader_to_disappear(driver, wait)
         except Exception as e:
-            step_fail(driver, "Click Dashboard Total button", e)
+            msg = f"Failed to Click Total tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Total tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Search for the newly created task by name"):
         try:
             search_icon_btn = wait.until(EC.element_to_be_clickable((By.XPATH, task_search_btn)))
@@ -390,34 +444,50 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(4)  
         except Exception as e:
-            step_fail(driver, "Search for the newly created task by name", e)
+            msg = f"failed to Search for the newly created task by name: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Search for the newly created task by name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step(f"Open Company/Project filter and search for company"):
-        # company_file = os.path.join("data", "latest_company.txt")
-        # with open(company_file, "r") as f:
-            # created_company_name = f.read().strip()
-        company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
-        highlight_element(driver, company_project_filter_btn)
-        company_project_filter_btn.click()
-        time.sleep(3)
+        try:
+            company_file = os.path.join("latest_data", "latest_company.txt")
+            with open(company_file, "r") as f:
+                created_company_name = f.read().strip()
+            company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
+            highlight_element(driver, company_project_filter_btn)
+            company_project_filter_btn.click()
+            time.sleep(3)
 
-        search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
-        search_input.clear()
-        search_input.send_keys(company_name)
-        time.sleep(6)
+            search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
+            search_input.clear()
+            search_input.send_keys(created_company_name)
+            time.sleep(6)
+        except Exception as e:
+            msg = f"Failed to Open Company Project filter: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Company Project filter Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+
 
     try:
-        search_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{company_name}']")))
+        search_task = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{created_company_name}']")))
         search_task.click()
         time.sleep(4)
         print("✅ Clicked 'Company'")
-
+    except Exception as e:
+        msg = f"Failed to Search Task: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Search Task Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
+    try:
         column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
         column_filter_ok.click()
         time.sleep(4)
     except Exception as e:
-        step_fail(driver, "Opening Company Project Filter", e)
-        # step_fail(driver, "Click Search Task", e)
-    
+        msg = f"Failed to Click Column Filter OK Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Column Filter OK Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     with allure.step("Opening task from table"):
         try:
             task_open_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, task_open_btn)))
@@ -429,7 +499,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
                 driver.execute_script("arguments[0].click();", task_open_btn_elem)
             time.sleep(3)
         except Exception as e:
-            step_fail(driver, "Opening task from table", e)
+            msg = f"Failed to Click Task button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Click Task button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Verify Not Applicable Task"):
         try:
             not_applicable_task_elem = wait.until(EC.visibility_of_element_located((By.XPATH, "//button[@title='Not Applicable']")))
@@ -445,7 +518,10 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             allure.attach(f"License Name: {fetched_license}", name="License Name", attachment_type=allure.attachment_type.TEXT)   
 
         except Exception as e:
-            step_fail(driver, "Fetching Task Name", e)
+            msg = f"Failed to Verify Not Applicable Task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Verify Not Applicable Task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Verify license name "):
         if fetched_license_task == license_task_name:
             print(f"✅ License Match: {fetched_license_task}: {license_task_name}")

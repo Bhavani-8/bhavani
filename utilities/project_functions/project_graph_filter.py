@@ -9,12 +9,6 @@ from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
 from selenium.webdriver.common.keys import Keys
 
-
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
-   
 def graph_filter(driver, wait):
 
     with allure.step("Load locators.json"):
@@ -25,8 +19,16 @@ def graph_filter(driver, wait):
             project_icon = elements_details["project_icon"]
 
             print("✅ locators.json loaded")
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
         
     with allure.step("Click project icon"):
         try:
@@ -35,7 +37,10 @@ def graph_filter(driver, wait):
             project_btn.click()
             time.sleep(3)
         except Exception as e:
-           step_fail(driver, "Click project icon", e)
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
    
         try:
             first_project_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, "(//tr[contains(@class,'dx-data-row')])[2]//td[1]//div[@title]")))
@@ -48,8 +53,10 @@ def graph_filter(driver, wait):
 
             print(f"📋 Copied First Project Name: {first_project_name}")
         except Exception as e:
-            print(f"❌ Could not retrieve first task name: {e}")
-            return False
+            msg = f"Failed to Fetch First Project Name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Fetch First Project Name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
         try:
             graph_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Graph']")))
@@ -57,7 +64,10 @@ def graph_filter(driver, wait):
             graph_btn.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click Graph Button", e)
+            msg = f"Failed to Click Graph button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name=" Graph Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
         try:
             filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, "(//div[contains(@class,'dx-toolbar-button')]//button[contains(@class,'ant-btn-icon-only')])[1]")))
@@ -66,7 +76,10 @@ def graph_filter(driver, wait):
             filter_btn.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click Filter Button", e)
+            msg = f"Failed to Click Filter button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name=" Filter Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
        
         
@@ -99,7 +112,10 @@ def graph_filter(driver, wait):
                 apply_btn.click()
                 time.sleep(1)
             except Exception as e:
-                step_fail(driver, "Select Dates from Calendar", e)
+                msg = f"Failed to Click From Date button: {str(e)}"
+                print(msg)
+                allure.attach(msg, name="From Date Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
             
         try:
             select_project = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@title='Open']")))
@@ -119,7 +135,10 @@ def graph_filter(driver, wait):
             
             print(f"✅ Successfully selected: {first_project_name}")
         except Exception as e:
-            step_fail(driver, "Click Select Project", e)
+            msg = f"Failed to Click Select Project: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Select project Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
 
         filter_label_text = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='ant-drawer-title']")))
@@ -132,8 +151,11 @@ def graph_filter(driver, wait):
             highlight_element(driver, apply_btn)
             apply_btn.click()
             time.sleep(4)
-        except Exception:
-           step_fail(driver, "Click Apply Filter", e)
+        except Exception as e:
+            msg = f"Failed to Click Apply button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Apply  Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
         
         try:
@@ -142,7 +164,10 @@ def graph_filter(driver, wait):
             time.sleep(1)
             close_filter_btn.click()
         except Exception as e:
-            step_fail(driver, "Click Close Filter", e)
+            msg = f"Failed to Click Close filter button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="filter Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
 
         try:
@@ -152,7 +177,10 @@ def graph_filter(driver, wait):
             driver.execute_script("arguments[0].click();", filter_btn_elem)
             print("✅ Date filter toolbar reopened")
         except Exception as e:
-            step_fail(driver, "Click filter Button", e)
+            msg = f"Failed to Click Filter button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="filter Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
 
         try:
@@ -162,8 +190,11 @@ def graph_filter(driver, wait):
             reset_btn.click()
             print("✅ Date filter reset successfully")
             time.sleep(4)
-        except Exception:
-           step_fail(driver, "Click Reset Button", e)
+        except Exception as e:
+            msg = f"Failed to Click Reset button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Reset Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
 
     return True

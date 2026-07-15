@@ -18,10 +18,6 @@ from utilities.add_task_functions.format_time_if_valid import format_time_if_val
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.add_task_utils import add_task_check
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
    
 def project_task_restore_delete(driver, wait):
 
@@ -40,8 +36,16 @@ def project_task_restore_delete(driver, wait):
             all_tasks_tab = elements_details['all_tasks_tab']
 
             print("✅ locators.json loaded")
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
         
     with allure.step("Click project icon"):
         try:
@@ -50,7 +54,10 @@ def project_task_restore_delete(driver, wait):
             project_btn.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click project icon", e)
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Project Task"):
         try:
             time.sleep(1)
@@ -63,7 +70,10 @@ def project_task_restore_delete(driver, wait):
             project_task.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click Project Task", e)
+            msg = f"Failed to Click Project Task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click 'Add new task' button"):
         try:
             add_new_task_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_new_task)))
@@ -71,7 +81,10 @@ def project_task_restore_delete(driver, wait):
             add_new_task_btn.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click 'Add new task' button", e)
+            msg = f"Failed to Click Add new task button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Add new task button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click 'Next' button"):
         try:
             next_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_next_btn)))
@@ -79,12 +92,15 @@ def project_task_restore_delete(driver, wait):
             next_btn.click()
             print("✅ Project Submit clicked")
         except Exception as e:
-            step_fail(driver, "Click 'Next' button", e)
+            msg = f"Failed to Click 'Next' button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="'Next' button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx"), sheet_name=f"add_task_test_cases").fillna("")
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
-    task_name = f"{first_row.get('task_name')}_delete"
+    task_name = (f"{first_row.get('task_name')}_delete_{random.randint(100000, 999999)}")
     # task_name = project_task_name if project_task_name else "task_name"
     start_date = format_date_if_valid(first_row.get('start_date'))
     due_date = format_date_if_valid(first_row.get('due_date'))
@@ -131,7 +147,10 @@ def project_task_restore_delete(driver, wait):
             fetch_task_name = task_name_element.text.strip()
             print(f"✅ Task '{fetch_task_name}' created successfully")
         except Exception as e:
-            step_fail(driver, "Verify Project Task Creation", e)
+            msg = f"Failed to Verify Project Task Creation: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Verify Project Task Creation Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click three dots menu"):
         try:
             three_dots_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[contains(@class,'font-weight-normal') and @title='{task_name}']]//button")))
@@ -140,7 +159,10 @@ def project_task_restore_delete(driver, wait):
             three_dots_btn.click()
             time.sleep(0.5)
         except Exception as e:
-            step_fail(driver, "Click three dots menu", e)
+            msg = f"Failed to Click Project task three dots button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project task three dots button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Delete Task"):
         try:
             delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_delete_btn)))
@@ -155,7 +177,10 @@ def project_task_restore_delete(driver, wait):
             print("☑️ YES clicked — Task delete confirmed")
 
         except Exception as e:
-            step_fail(driver, "Click Delete Task", e)
+            msg = f"Failed to Click Delete button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Delete button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
    
     with allure.step("Click Milestone close button on task details panel"):
@@ -166,7 +191,10 @@ def project_task_restore_delete(driver, wait):
             time.sleep(2)
             print("✅ Milestone Submit clicked")
         except Exception as e:
-            step_fail(driver, "Click Milestone close button on task details panel", e)
+            msg = f"Failed to Click Milestone close button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone close button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Trash Icon"):
         try:
             print()
@@ -176,8 +204,10 @@ def project_task_restore_delete(driver, wait):
             print("🗑️ Trash icon clicked")
 
         except Exception as e:
-            step_fail(driver, "Click Trash Icon", e)
-
+            msg = f"Failed to Click Thrash Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Thrash Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Tasks Tab"):
         try:
             time.sleep(3)
@@ -187,7 +217,10 @@ def project_task_restore_delete(driver, wait):
             print("📌 Tasks tab clicked")
 
         except Exception as e:
-            step_fail(driver, "Click Tasks Tab", e)
+            msg = f"Failed to Click Task Tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Task Tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
     with allure.step("Verify Project Task in Trash"):
         try:
@@ -196,8 +229,10 @@ def project_task_restore_delete(driver, wait):
             fetch_task_name_elem = task_name_elem.text.strip()
             print(f"✅ Task '{fetch_task_name_elem}' found in Trash")
         except Exception as e:
-            step_fail(driver, "Verify Project Task in Trash", e)
-    
+            msg = f"Failed to Verify Deleted Task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Deleted Task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Restore Task"):
         try:
             time.sleep(3)
@@ -208,7 +243,10 @@ def project_task_restore_delete(driver, wait):
             print("📌 Restore Task button clicked")
 
         except Exception as e:
-           step_fail(driver, "Click Project Task", e)
+            msg = f"Failed to Click Restore Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Restore Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Click project icon"):
         try:
@@ -217,7 +255,10 @@ def project_task_restore_delete(driver, wait):
             project_btn.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click project icon", e)
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Click Project Task"):
         try:
@@ -231,7 +272,10 @@ def project_task_restore_delete(driver, wait):
             project_task.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click Project Task", e)
+            msg = f"Failed to Click newly created Project task: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="newly created Project task Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
     with allure.step("Click project task three dots menu"):
         try:
@@ -241,7 +285,10 @@ def project_task_restore_delete(driver, wait):
             three_dots_btn.click()
             time.sleep(1)
         except Exception as e:
-            step_fail(driver, "Click project task three dots menu", e)
+            msg = f"Failed to Click project task three dots menu: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="project task three dots menu Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Delete Task"):
         try:
             delete_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_delete_btn)))
@@ -256,7 +303,10 @@ def project_task_restore_delete(driver, wait):
             print("☑️ YES clicked — Task delete confirmed")
 
         except Exception as e:
-            step_fail(driver, "Click Delete Task", e)
+            msg = f"Failed to Click Delete button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Delete button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Milestone close button on task details"):
         try:
             milestone_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, milestone_cancel_btn)))
@@ -264,6 +314,8 @@ def project_task_restore_delete(driver, wait):
             milestone_close_btn.click()
             print("✅ Milestone Submit clicked")
         except Exception as e:
-            step_fail(driver, "Click Milestone close button on task details", e)
-    
+            msg = f"Failed to Click Milestone close button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Milestone close button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     return True

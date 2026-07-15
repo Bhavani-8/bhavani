@@ -125,6 +125,7 @@ def special_task_check(driver, task_name, start_date, due_date, frequency, repea
             submit_button = elements_details['task_submit_btn']
             err_msg_toast = elements_details['err_msg_toast']
             toast_msg = elements_details['toast_msg']
+            special_task_icon = elements_details['special_task_icon']
             
 
 
@@ -170,6 +171,16 @@ def special_task_check(driver, task_name, start_date, due_date, frequency, repea
                     allure.attach("Login successful", name="Login Status", attachment_type=allure.attachment_type.TEXT)
                 else:
                     allure.attach("Login failed", name="Login Status", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            
+            with allure.step("Open Dashboard"):
+                try:
+                    time.sleep(2)
+                    special_task_icon_elem = wait.until(EC.element_to_be_clickable((By.XPATH, special_task_icon)))
+                    highlight_element(driver, special_task_icon_elem)
+                    special_task_icon_elem.click()
+                except Exception as e:
+                    allure.attach(str(e), name="Dashboard Open Error", attachment_type=allure.attachment_type.TEXT)
                     return False
             
     #     wait_for_loader_to_disappear(driver, wait, loader_class="dx-loadpanel-content")
@@ -777,23 +788,24 @@ def special_task_check(driver, task_name, start_date, due_date, frequency, repea
                 time.sleep(2)
                 return False
         
-        with allure.step(f"Click Open Task"):
-            print()
-            print(f"Opening Task:")
-            open_task_success = open_task(driver, wait, task_name)
-            time.sleep(3)
-            if open_task_success:
-                allure.attach("Task Opened successfully", name="Open Task Status", attachment_type=allure.attachment_type.TEXT)
-                print("✅ Task Opened successfully.")
-                time.sleep(3)
-                # return False
-            else:
-                msg = "❌ Failed to Open Task."
-                print(msg)
-                allure.attach(msg, name="Open Task Status", attachment_type=allure.attachment_type.TEXT)
-                show_toast(driver, msg)
-                time.sleep(2)
-                return False
+        # with allure.step(f"Click Open Task"):
+        #     print()
+        #     print(f"Opening Task:")
+        #     created_task_name = task_value_get("task_name")
+        #     open_task_success = open_task(driver, wait, created_task_name)
+        #     time.sleep(3)
+        #     if open_task_success:
+        #         allure.attach("Task Opened successfully", name="Open Task Status", attachment_type=allure.attachment_type.TEXT)
+        #         print("✅ Task Opened successfully.")
+        #         time.sleep(3)
+        #         # return False
+        #     else:
+        #         msg = "❌ Failed to Open Task."
+        #         print(msg)
+        #         allure.attach(msg, name="Open Task Status", attachment_type=allure.attachment_type.TEXT)
+        #         show_toast(driver, msg)
+        #         time.sleep(2)
+        #         return False
 
             
         # ✅ Step 20: Validation After Submitting Task
@@ -818,8 +830,8 @@ def special_task_check(driver, task_name, start_date, due_date, frequency, repea
 
         with allure.step("Verify created task is displayed in the task list using the search functionality"):
             print(f"Verify created task is displayed in the task list using the search functionality")
-            created_task_name = task_value_get("task_name")
-            search_task_success = validate_search_task(driver, wait, created_task_name)
+            created_task = task_value_get("task_name")
+            search_task_success = validate_search_task(driver, wait, created_task)
             if search_task_success:
                 print("✅ Verify created task is displayed in the task list using the search functionality successfull")
                 return True

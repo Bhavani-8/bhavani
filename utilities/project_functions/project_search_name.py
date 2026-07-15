@@ -9,10 +9,6 @@ import pyautogui as pg
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
 
 def project_search_name(driver, wait):
     try:
@@ -24,8 +20,15 @@ def project_search_name(driver, wait):
             verify_search_task = locators['verify_search_task']
             search_reset_btn = locators['search_reset_btn']
 
-    except Exception as e:
-        print(f"❌ Failed to load locators.json: {e}")
+    except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+    except json.JSONDecodeError as e:
+        msg = f"Invalid JSON in locators.json: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
         return False
 
     
@@ -36,7 +39,11 @@ def project_search_name(driver, wait):
             project_btn.click()
             time.sleep(2)
         except Exception as e:
-            step_fail(driver, "Click project icon", e)
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    
     
     with allure.step("Fetch first task name from Projects"):
         try:
@@ -45,7 +52,10 @@ def project_search_name(driver, wait):
             first_task_name = first_task_name_elem.get_attribute("title").strip()
             print(f"✅ First task name fetched: {first_task_name}")
         except Exception as e:
-            step_fail(driver, "Fetch first task name from Projects", e)
+            msg = f"Failed to Fetch first task name from Projects: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Fetch first task name from Projects Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
     with allure.step(f"Search using task name: {first_task_name}"):
         try:
@@ -59,7 +69,10 @@ def project_search_name(driver, wait):
             time.sleep(3)  # Extra wait to ensure results load
             print(f"✅ Searched using first task name: {first_task_name}")
         except Exception as e:
-             step_fail(driver, f"Search using task name: {first_task_name}", e)
+            msg = f"Failed to Click Search Input: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Search Input Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Verify search name after search"):
         try:
             search_task_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, verify_search_task)))
@@ -75,8 +88,10 @@ def project_search_name(driver, wait):
                 return False
                 
         except Exception as e:
-            step_fail(driver, "verify search name after search", e)     
-
+            msg = f"Failed to Verify search name after search: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Verify search name after search Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Reset Button to clear search"):
         try:
             reset_btn = wait.until(EC.element_to_be_clickable((By.XPATH, search_reset_btn)))
@@ -86,7 +101,10 @@ def project_search_name(driver, wait):
             time.sleep(2)  
             print("✅ Reset button clicked and search cleared")
         except Exception as e:
-            step_fail(driver, "Click Reset Button to clear search", e)
+            msg = f"Failed to Click Reset Button to clear search: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Click Reset Button to clear search Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     return True
     
     

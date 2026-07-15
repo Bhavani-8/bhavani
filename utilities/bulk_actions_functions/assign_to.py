@@ -337,7 +337,6 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
             allure.attach(msg, name="Approver filter Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
 
-
     try:
         search_task = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'dx-list-item-content') and text()='Assign']")))
         driver.execute_script("arguments[0].scrollIntoView({block:'center'});",search_task)

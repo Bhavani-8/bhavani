@@ -5,6 +5,7 @@ import pytest
 import json
 import time
 import glob
+import random
 from utilities.add_task_functions.add_task_common import task_value_store
 from utilities.add_task_functions.add_task_common import task_value_get
 from selenium.webdriver.support import expected_conditions as EC
@@ -18,10 +19,6 @@ from utilities.special_add_task_utils import special_task_check
 from utilities.add_task_functions.special_task_validation import special_task_validation
 from utilities.login_utils import login_check
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
 
 def special_task_valid_details(driver, wait, special_task):
     with allure.step("Load locators.json"):
@@ -38,8 +35,16 @@ def special_task_valid_details(driver, wait, special_task):
             task_close_btn = elements_details['task_close_btn']
             special_task_icon = elements_details['special_task_icon']
             print("✅ locators.json loaded")
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
     
     # with allure.step("Open Dashboard"):
     #     try:
@@ -57,9 +62,7 @@ def special_task_valid_details(driver, wait, special_task):
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
     # task_name = first_row.get('task_name')
-    current_task_name = special_task.strip() if special_task else "task_name"
-    task_name = current_task_name
-    task_value_store("task_name", task_name)
+    task_name = (f"{special_task.strip() if special_task else "task_name"}_{random.randint(100000, 999999)}")
     start_date = format_date_if_valid(first_row.get('start_date'))
     due_date = format_date_if_valid(first_row.get('due_date'))
     frequency = first_row.get('frequency')
@@ -89,8 +92,6 @@ def special_task_valid_details(driver, wait, special_task):
                 risk_rating, license_name, task_category, description, attach_file_name, impact_details, impact_file_name,
                 circular_search, test_type, login_required=False):
                 print("✅ Task creation successful")
-                created_task = task_value_get("task_name")
-                print(f"Created Taask{created_task}")
             else:
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)
                 return False
@@ -106,27 +107,38 @@ def special_task_valid_details(driver, wait, special_task):
         time.sleep(3)
         print("✅ Project Submit clicked")
     except Exception as e:
-        step_fail(driver, "Click close button on task details panel", e)  
-    
-    
-    time.sleep(2)
-    special_team_perf_elem = wait.until(EC.element_to_be_clickable((By.XPATH, team_performance_btn)))
-    highlight_element(driver, special_team_perf_elem)
-    special_team_perf_elem.click()
-    print("✅ Special Team Performance clicked")
-    wait_for_loader_to_disappear(driver, wait)
-    time.sleep(10)
-
-    team_perf_today_btn= wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'summary-item-key-today') and contains(@class,'cursor-pointer')]")))
-    highlight_element(driver, team_perf_today_btn)
-    time.sleep(1)
-    team_perf_today_btn.click()
-    print("✅ Team Performance clicked")
-    wait_for_loader_to_disappear(driver, wait)
-    time.sleep(3)
+        msg = f"Failed to Click Search Close Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Search Close Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
+    try:
+        time.sleep(2)
+        special_team_perf_elem = wait.until(EC.element_to_be_clickable((By.XPATH, team_performance_btn)))
+        highlight_element(driver, special_team_perf_elem)
+        special_team_perf_elem.click()
+        print("✅ Special Team Performance clicked")
+        wait_for_loader_to_disappear(driver, wait)
+        time.sleep(10)
+    except Exception as e:
+        msg = f"Failed to Click Special Team Performance Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Special Team Performance Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
+    try:
+        team_perf_today_btn= wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'summary-item-key-today') and contains(@class,'cursor-pointer')]")))
+        highlight_element(driver, team_perf_today_btn)
+        time.sleep(1)
+        team_perf_today_btn.click()
+        print("✅ Team Performance clicked")
+        wait_for_loader_to_disappear(driver, wait)
+        time.sleep(3)
+    except Exception as e:
+        msg = f"Failed to Click Team Performance Today Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Special Team Performance Today Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     with allure.step("Verify created task in Team Performance Search Button"):
         try:
-
             search_icon_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_btn)))
             highlight_element(driver, search_icon_btn)
             search_icon_btn.click()
@@ -134,74 +146,63 @@ def special_task_valid_details(driver, wait, special_task):
             search_input = wait.until(EC.visibility_of_element_located((By.XPATH, task_search_input)))
             highlight_element(driver, search_input)
             search_input.clear()
-            search_input.send_keys(created_task)
-            
+            search_input.send_keys(task_name)
 
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(4)  
+            time.sleep(5)  
 
-            print(f"🔍 Searching for task: {created_task}")
-            
+            print(f"🔍 Searching for task: {task_name}")
 
             no_task_elements = driver.find_elements(By.XPATH, "//*[contains(text(),'No Task Found')]")
-
             if no_task_elements and no_task_elements[0].is_displayed():
-                msg = f"❌ Task NOT found: {created_task}"
+                msg = f"❌ Task NOT found: {task_name}"
 
                 print(msg)
 
                 allure.attach(msg,name="No Task Found Validation",attachment_type=allure.attachment_type.TEXT)
 
-                allure.attach(driver.get_screenshot_as_png(),name="No Task Found Screenshot",attachment_type=allure.attachment_type.PNG)
-
-                pytest.fail(msg)  
-            task_elements = driver.find_elements(By.XPATH, f"//p[@title='{created_task}']")
+                raise Exception(msg)  
+            task_elements = driver.find_elements(By.XPATH, f"//p[@title='{task_name}']")
             if not task_elements:
-                msg = f"❌ Task element not found after search: {created_task}"
+                msg = f"❌ Task element not found after search: {task_name}"
 
                 print(msg)
 
                 allure.attach(msg,name="Task Element Validation",attachment_type=allure.attachment_type.TEXT)
 
-                allure.attach(driver.get_screenshot_as_png(),name="Task Element Missing",attachment_type=allure.attachment_type.PNG)
-                pytest.fail(msg)
+                raise Exception(msg)
                 
 
             # ✅ Validate task name
             actual_task_name = task_elements[0].text.strip() or \
                             task_elements[0].get_attribute("title")
             
-            validation_msg = f"task_name: actual='{actual_task_name}', expected='{created_task}'"
+            validation_msg = f"task_name: actual='{actual_task_name}', expected='{task_name}'"
             allure.attach(
             validation_msg,
             name="Task Name Validation",
             attachment_type=allure.attachment_type.TEXT
         )
-
-            if actual_task_name != created_task:
+            if actual_task_name != task_name:
                 msg = f"❌ Task name mismatch"
 
-                print(f"{msg}: expected='{created_task}', actual='{actual_task_name}'")
+                print(f"{msg}: expected='{task_name}', actual='{actual_task_name}'")
 
-    
-                allure.attach(driver.get_screenshot_as_png(),
-                            name="Task Name Mismatch",
-                            attachment_type=allure.attachment_type.PNG)
 
-                pytest.fail(validation_msg)
+                raise Exception(validation_msg)
 
             else:
                 print(f"✅ Task name validated: {actual_task_name}")
 
         except Exception as e:
-            step_fail(driver, "Step 5: Verify created task by searching", e)
-
+            msg = f"Failed to Click Search Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Search Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
         
         with allure.step("Verify created task in Team Performance"):
             try:
-                task_open_btn_elem = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, task_open_btn))
-                )
+                task_open_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, task_open_btn)))
 
                 highlight_element(driver, task_open_btn_elem)
                 task_open_btn_elem.click()
@@ -212,18 +213,22 @@ def special_task_valid_details(driver, wait, special_task):
                 print("✅ Task found and opened")
 
             except Exception as e:
-                step_fail(driver, "Task open failed", e)
+                msg = f"Failed to Click Task Open Button: {str(e)}"
+                print(msg)
+                allure.attach(msg, name="Task Open Button Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
 
 
-    # -----------------------------
-    # ✅ Validate task
-    # -----------------------------
-    validation_success = special_task_validation(driver, wait)
+    with allure.step("Validate Task Details in Special Team Performance Task"):
+        try:
+            validation_success = special_task_validation(driver, wait)
 
-    if not validation_success:
-        pytest.fail("❌ Task validation failed after search")
+            if not validation_success:
+                pytest.fail("❌ Task validation failed after search")
 
-    print("✅ Task verified successfully")       
+        except Exception as e:
+            allure.attach(str(e),name="Task Validation Error",attachment_type=allure.attachment_type.TEXT)
+            raise      
     with allure.step("Open Special Task Dashboard"):
         try:
             special_task_icon_elem = wait.until(EC.presence_of_element_located((By.XPATH, special_task_icon)))
@@ -233,7 +238,10 @@ def special_task_valid_details(driver, wait, special_task):
             time.sleep(3)
             print("✅ Special Task Dashboard icon clicked")
         except Exception as e:
-            step_fail(driver, "Click close button on task details panel", e)
+            msg = f"Failed to Click Special Task Icon : {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Special Task Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click close button on task details panel"):
         try:
             search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH,  task_search_close_btn)))
@@ -243,8 +251,10 @@ def special_task_valid_details(driver, wait, special_task):
             time.sleep(3)
             print("✅Search Close Button clicked")
         except Exception as e:
-            step_fail(driver, "Click close button on task details panel", e)
-    
+            msg = f"Failed to Click Search Close Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Search Close  Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     return True 
 
 

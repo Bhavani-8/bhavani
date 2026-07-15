@@ -107,9 +107,7 @@ def create_project_task(driver, wait, project_task_name=None):
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
     # task_name = project_task_name if project_task_name else "task_name"
-    current_task_name = project_task_name.strip() if project_task_name else "task_name"
-    task_name = current_task_name
-    task_value_store("task_name", task_name)
+    task_name = (f"{project_task_name.strip() if project_task_name else "task_name"}_{random.randint(100000, 999999)}")
     # task_name = project_task_name or first_row.get('task_name')
     start_date = format_date_if_valid(first_row.get('start_date'))
     due_date = format_date_if_valid(first_row.get('due_date'))
@@ -149,8 +147,7 @@ def create_project_task(driver, wait, project_task_name=None):
     with allure.step("Click the newly created Project task"):
         try:
             time.sleep(4)
-            created_task = task_value_get("task_name")
-            project_task_btn = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[@title='{created_task}']")))
+            project_task_btn = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[@title='{task_name}']")))
             highlight_element(driver, project_task_btn)
             project_task_fetch = project_task_btn .text.strip()
             time.sleep(1)
@@ -217,7 +214,7 @@ def create_project_task(driver, wait, project_task_name=None):
             search_input = wait.until(EC.visibility_of_element_located((By.XPATH, task_search_input)))
             highlight_element(driver, search_input)
             search_input.clear()
-            search_input.send_keys(created_task)
+            search_input.send_keys(task_name)
 
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(5)  # Extra wait to ensure results load
@@ -234,12 +231,12 @@ def create_project_task(driver, wait, project_task_name=None):
             raise Exception(msg)
         with allure.step("Validate Project Task vs Dashboard Search Task"):
 
-            validation_msg = f"Actual Project Task ='{project_task_fetch}', Expected Dashboard Search Task='{created_task}'"
+            validation_msg = f"Actual Project Task ='{project_task_fetch}', Expected Dashboard Search Task='{task_name}'"
             
             print(validation_msg)
             allure.attach(validation_msg, name="Task Validation", attachment_type=allure.attachment_type.TEXT)
 
-            if project_task_fetch != created_task:
+            if project_task_fetch != task_name:
                 print(f"❌ Mismatch: {validation_msg}")
                 allure.attach("❌ FAILED", name="Status", attachment_type=allure.attachment_type.TEXT)
                 pytest.fail(validation_msg)

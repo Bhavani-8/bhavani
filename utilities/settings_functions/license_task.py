@@ -13,10 +13,6 @@ from selenium.webdriver import ActionChains
 from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from selenium.common.exceptions import StaleElementReferenceException
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
 
 def license_task(driver, wait, company_name, license_name):
     wait_less = WebDriverWait(driver, 5)
@@ -43,8 +39,16 @@ def license_task(driver, wait, company_name, license_name):
                 column_chooser_license = elements_details['column_chooser_license']
                 column_filter_license = elements_details['column_filter_license']
             print("✅ locators.json loaded successfully")
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
 
     with allure.step("Open Dashboard"):
         try:
@@ -56,8 +60,11 @@ def license_task(driver, wait, company_name, license_name):
             wait_for_loader_to_disappear(driver, wait)
             print("✅ Dashboard icon clicked")
         except Exception as e:
-            allure.attach(str(e), name="Dashboard Open Error", attachment_type=allure.attachment_type.TEXT)
-            return False
+            msg = f"Failed to Click Dashboard Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Dashboard Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+
     # with allure.step("Validate License Subscription after login"):
     #     try:
     #         validate_license_subscription(driver)
@@ -83,14 +90,22 @@ def license_task(driver, wait, company_name, license_name):
             total_tab.click()
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(2)
-        except Exception as err:
-            allure.attach(str(err), "Total tab error", allure.attachment_type.TEXT)
-            pytest.fail("Failed to click Total tab")
+        except Exception as e:
+            msg = f"Failed to Click Total tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Total tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Clicking Not Assigned Tab"):
-        not_assigned_tab = wait.until(EC.element_to_be_clickable((By.XPATH, dash_not_assigned_tab)))
-        not_assigned_tab.click()
-        time.sleep(1)
-        wait_for_loader_to_disappear(driver, wait)
+        try:
+            not_assigned_tab = wait.until(EC.element_to_be_clickable((By.XPATH, dash_not_assigned_tab)))
+            not_assigned_tab.click()
+            time.sleep(1)
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            msg = f"Failed to Click Not Assigned Tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Not Assigned Tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
          
     with allure.step("Open Column Chooser from task list"):
         column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
@@ -144,9 +159,11 @@ def license_task(driver, wait, company_name, license_name):
 
             print("✅ 'Select All' normalized successfully")
 
-        except StaleElementReferenceException:
-            pytest.fail("❌ Stale element while normalizing Select All")
-
+        except Exception as e:
+            msg = f"Failed to Selecting all: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Selecting all Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Select 'Company / Project, License' from Column Chooser"): 
         try:
             company_project_option_elm = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_company_project)))
@@ -154,24 +171,39 @@ def license_task(driver, wait, company_name, license_name):
             actions.move_to_element(company_project_option_elm).perform()
             time.sleep(0.5)
             company_project_option_elm.click()
-
+        except Exception as e:
+            msg = f"Failed to Select Company project: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Selecting all Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+        try:
             license_option = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_license)))
             actions = ActionChains(driver)
             actions.move_to_element(license_option).perform()
             time.sleep(0.5)
             license_option.click()
-
+        except Exception as e:
+            msg = f"Failed to Select License Option {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Selecting all Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+        try:
             save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_save_btn)))
             highlight_element(driver, save_btn)
             save_btn.click()
             time.sleep(2)
             print("✅ Column Chooser saved")
 
-        except TimeoutException:
-            print("❌ 'Company / Project' not found in filter list")
-
+        except Exception as e:
+            msg = f"Failed to Save Button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Save Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step(f"Open Company/Project filter"):
-        company_project_filter_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
+        company_file = os.path.join("latest_data", "latest_company.txt")
+        with open(company_file, "r") as f:
+            created_company_name = f.read().strip()
+        company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
         highlight_element(driver, company_project_filter_btn)
         company_project_filter_btn.click()
         wait_for_loader_to_disappear(driver, wait)
@@ -179,69 +211,72 @@ def license_task(driver, wait, company_name, license_name):
 
         search_input = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@aria-label='Search' and contains(@class,'dx-texteditor-input')]")))
         search_input.clear()
-        search_input.send_keys(company_name)
+        search_input.send_keys(created_company_name)
         wait_for_loader_to_disappear(driver, wait)
         time.sleep(3)
 
     try:
-        company_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{company_name}']")))
+        company_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{created_company_name}']")))
         highlight_element(driver, company_option)
         company_option.click()
 
-    except TimeoutException:
-        print("❌ 'Company Name' not found in filter list")
-    button_clicked = False
+    except Exception as e:
+        msg = f"Failed to License Option: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="License Option Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
 
     try:
         column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
         column_filter_ok.click()
-        button_clicked = True
-    except TimeoutException:
-        print("ℹ️ Ok button not available / not clickable")
-    if not button_clicked:
-        try:
-            column_filter_cancel = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_cancel_btn)))
-            column_filter_cancel.click()
-        except TimeoutException:
-            print("ℹ️ Close/Cancel button not present")
+    except Exception as e:
+        msg = f"Failed to Click Column Filter OK Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Column Filter OK Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     
     wait_for_loader_to_disappear(driver, wait)
     time.sleep(4)
 
     with allure.step("Open License filter"):
-        license_filter_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, column_filter_license)))
-        highlight_element(driver, license_filter_btn)
-        license_filter_btn.click()
-        wait_for_loader_to_disappear(driver, wait)
-        time.sleep(4)
+        try:
+            license_filter_btn = wait_less.until(EC.presence_of_element_located((By.XPATH, column_filter_license)))
+            highlight_element(driver, license_filter_btn)
+            license_filter_btn.click()
+            wait_for_loader_to_disappear(driver, wait)
+            time.sleep(4)
 
-        search_input = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@aria-label='Search' and contains(@class,'dx-texteditor-input')]")))
-        search_input.clear()
-        search_input.send_keys(license_name)
-        wait_for_loader_to_disappear(driver, wait)
-        time.sleep(3)
+            search_input = wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@aria-label='Search' and contains(@class,'dx-texteditor-input')]")))
+            search_input.clear()
+            search_input.send_keys(license_name)
+            wait_for_loader_to_disappear(driver, wait)
+            time.sleep(4)
+        except Exception as e:
+            msg = f"Failed to Open License filter: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="License filter Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     try:
         license_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{license_name}']")))
         highlight_element(driver, license_option)
         license_option.click()  
-        time.sleep(2)
-    except TimeoutException:
-        print("❌ 'License Name' not found in filter list")
-    button_clicked = False
+        time.sleep(3)
+    except Exception as e:
+        msg = f"Failed to License Option: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="License Option Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
 
     try:
         column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
         column_filter_ok.click()
-        button_clicked = True
-    except TimeoutException:
-        print("ℹ️ Ok button not available / not clickable")
-    if not button_clicked:
-        try:
-            column_filter_cancel = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_cancel_btn)))
-            column_filter_cancel.click()
-        except TimeoutException:
-            print("ℹ️ Close/Cancel button not present")
+        time.sleep(3)
+    except Exception as e:
+        msg = f"Failed to Click Column Filter OK Button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Column Filter OK Button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
     
     wait_for_loader_to_disappear(driver, wait)
     time.sleep(6)
@@ -258,10 +293,11 @@ def license_task(driver, wait, company_name, license_name):
             print("✅ Task opened from table")
             time.sleep(1)
             wait_for_loader_to_disappear(driver, wait)
-        except Exception as err:
-            allure.attach(str(err), name="Task Open Error", attachment_type=allure.attachment_type.TEXT)
-            print(f"❌ Error opening task: {err}")
-
+        except Exception as e:
+            msg = f"Failed to Click Task Open button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Task Open Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Validate Company name and License in Task Details"):
         try:
             task_company_license_label_elem = wait.until(EC.visibility_of_element_located((By.XPATH, task_company_label)))
@@ -274,9 +310,12 @@ def license_task(driver, wait, company_name, license_name):
             fetched_license = task_license_label_elem.text.strip()
             print(f"License: {fetched_license}")
         
+    
         except Exception as e:
-            allure.attach(str(e), name="License Validation Error in Task Details", attachment_type=allure.attachment_type.TEXT)
-            return False
+            msg = f"Failed to Validate Comapny name and License: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Validate Company name and License Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click Task window close button"):
         try:
             
@@ -286,16 +325,21 @@ def license_task(driver, wait, company_name, license_name):
             time.sleep(2)
             print("✅ Task WindowClose Button clicked")
         except Exception as e:
-            step_fail(driver, "Click close button on task details panel", e)
+            msg = f"Failed to Click Task window close button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Click Task window close button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Click reset button on task details"):
-        try:
-            
+        try: 
             reset_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@title='Reset Filters']")))
             highlight_element(driver, reset_btn)
             reset_btn.click()
             time.sleep(2)
             print("✅ Reset Button Clicked")
         except Exception as e:
-            step_fail(driver, "Click close button on task details panel", e)
+            msg = f"Failed to Click Reset button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Click Reset button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     return True
     

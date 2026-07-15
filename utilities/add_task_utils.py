@@ -697,9 +697,9 @@ def add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if
         
         with allure.step("Verify created task is displayed in the task list using the search functionality"):
             print(f"Verify created task is displayed in the task list using the search functionality")
-            created_task_name = task_value_get("task_name")
+            # created_task_name = task_value_get("task_name")
 
-            search_task_success = validate_search_task(driver, wait, created_task_name)
+            search_task_success = validate_search_task(driver, wait, task_name)
             # search_task_success = validate_search_task(driver, wait, task_name)
             if search_task_success:
                 print("✅ Verify created task is displayed in the task list using the search functionality successfull")

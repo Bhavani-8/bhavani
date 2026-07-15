@@ -11,10 +11,6 @@ import os
 
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from utilities.other_utils_functions.highlight import highlight_element
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
    
 all_coll_list = [
     'Column Project Name', 'Column Owner', 'Column Department', 'Column Team',
@@ -30,8 +26,16 @@ def select_all_columns(driver, wait, project_icon, toast_msg):
             highlight_element(driver, project_btn)
             project_btn.click()
             time.sleep(3)
-        except Exception as e:
-            step_fail(driver, "Click project icon", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
     
     with allure.step("Open Column Chooser"):
         column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@role='button' and @aria-label='columnchooser']")))
@@ -121,7 +125,10 @@ def select_all_columns(driver, wait, project_icon, toast_msg):
                 pytest.fail(f"Missing columns: {missing_cols}")
 
         except Exception as e:
-            step_fail(driver, "Validate expected columns", e)
+            msg = f"Failed to Validate Colummn: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Validate Colummn Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     time.sleep(5)
     return True
 
@@ -137,7 +144,10 @@ def select_partial_columns(driver, wait, project_icon, toast_msg):
                     project_btn.click()
                     time.sleep(2)
                 except Exception as e:
-                    step_fail(driver, "Click project icon", e)
+                    msg = f"Failed to Click Project Icon: {str(e)}"
+                    print(msg)
+                    allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+                    raise Exception(msg)
             with allure.step("Open Column Chooser again"):
                 column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@role='button' and @aria-label='columnchooser']")))
                 highlight_element(driver, column_chooser_btn_elem)

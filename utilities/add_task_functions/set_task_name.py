@@ -27,25 +27,25 @@ def set_task_name(driver, task_name_input, task_name, wait):
             return False
 
         # with allure.step("Locating and setting task name..."):
-        unique_task_name = f"{task_name}_{random.randint(1000, 9999)}"
-        # task_value_store("task_name", unique_task_name)
-        with allure.step(f"Entering task name: {unique_task_name}"):
-            task_name_input_elem = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, task_name_input)))
+        # unique_task_name = f"{task_name}_{random.randint(1000, 9999)}"
+       
+        with allure.step(f"Entering task name: {task_name}"):
+            task_name_input_elem = wait.until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, task_name_input))
+            )
             highlight_element(driver, task_name_input_elem)
-            # task_name_input_elem.send_keys(task_name)
-            task_name_input_elem.send_keys(unique_task_name)
+            task_name_input_elem.send_keys(task_name)
             print(f"Task name '{task_name}' entered.")
 
             value_after_set = task_name_input_elem.get_attribute("value") or ""
             value_after_set = value_after_set.strip()
-            print(f"Set task name to: '{unique_task_name}', read back: '{value_after_set}'")
+            print(f"Set task name to: '{task_name}', read back: '{value_after_set}'")
 
-            # task_value_store("task_name", task_name)
-            task_value_store("task_name", unique_task_name)
+            task_value_store("task_name", task_name)
             print("✅ Task name stored successfully.")
 
-            if value_after_set != unique_task_name:
-                msg = f"❌ Task name mismatch. Expected: '{unique_task_name}', Found: '{value_after_set}'"
+            if value_after_set != task_name:
+                msg = f"❌ Task name mismatch. Expected: '{task_name}', Found: '{value_after_set}'"
                 print(msg)
                 allure.attach(msg, name="Task Name Failure", attachment_type=allure.attachment_type.TEXT)
                 return False

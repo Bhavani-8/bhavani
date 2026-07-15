@@ -10,10 +10,7 @@ from utilities.other_utils_functions.highlight import highlight_element
 import pyautogui as pg
 from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
+
 
 def project_export_all_data(driver, wait):
     wait_less = WebDriverWait(driver, 5)
@@ -41,9 +38,12 @@ def project_export_all_data(driver, wait):
             highlight_element(driver, project_btn)
             project_btn.click()
             time.sleep(2)
+        
         except Exception as e:
-            step_fail(driver, "Click project icon", e)
-    
+            msg = f"Failed to Click Project Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Project Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     # ✅ Export → All Data
     with allure.step("Export All Data from Dashboard"):
@@ -57,6 +57,6 @@ def project_export_all_data(driver, wait):
         except Exception as e:
             print("❌ Failed to export all data")
             allure.attach(str(e), name="Export_All_Error", attachment_type=allure.attachment_type.TEXT)
-            return False
+            raise Exception(msg)
   
     

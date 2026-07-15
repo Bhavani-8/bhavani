@@ -102,11 +102,8 @@ def updates_add_task(driver, wait, updates_task_name):
     # test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx")).fillna("")
     first_row = test_case_details.iloc[0]
     # task_name = updates_task_name if updates_task_name else "task_name"
-    current_task_name = updates_task_name.strip() if updates_task_name else "task_name"
-    task_name = current_task_name
-    task_value_store("task_name", task_name)
-
-    # task_name = first_row.get('updates_task')
+    task_name = (f"{updates_task_name.strip() if updates_task_name else "task_name"}_{random.randint(100000, 999999)}")
+   
     start_date = format_date_if_valid(first_row.get('start_date'))
     due_date = format_date_if_valid(first_row.get('due_date'))
     frequency = first_row.get('frequency')
@@ -136,9 +133,7 @@ def updates_add_task(driver, wait, updates_task_name):
                 risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name,
                 circular_search, test_type, task_type='mandatory', direct_task_creation=True):
                 print("✅ Task creation successful")
-                created_task = task_value_get("task_name")
-                print(f"Generated Unique Task Name: {task_name}")
-
+               
                 # return True
             else:
                 allure.attach("Test case failed for Task Creation", name="Task Creation Validation Failed", attachment_type=allure.attachment_type.TEXT)
@@ -157,7 +152,13 @@ def updates_add_task(driver, wait, updates_task_name):
             total_tab.click()
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(3)
+        except Exception as e:
+            msg = f"Failed to Click Total tab: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Total Tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
+        try:
             search_icon_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_btn)))
             highlight_element(driver, search_icon_btn)
             search_icon_btn.click()
@@ -165,11 +166,17 @@ def updates_add_task(driver, wait, updates_task_name):
             search_input = wait.until(EC.visibility_of_element_located((By.XPATH, task_search_input)))
             highlight_element(driver, search_input)
             search_input.clear()
-            search_input.send_keys(created_task)
+            search_input.send_keys(task_name)
 
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(5)  
-    
+        except Exception as e:
+            msg = f"Failed to Click Search Icon: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Search Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+
+        try:
             task_open_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, task_open_btn)))
             highlight_element(driver, task_open_btn_elem)
             task_open_btn_elem.click()
@@ -177,9 +184,9 @@ def updates_add_task(driver, wait, updates_task_name):
             wait_for_loader_to_disappear(driver, wait)
            
         except Exception as e:
-            msg = f"Failed to Click Total tab: {str(e)}"
+            msg = f"Failed to Click Task Open Button: {str(e)}"
             print(msg)
-            allure.attach(str(e), name="Total Tab Error", attachment_type=allure.attachment_type.TEXT)
+            allure.attach(str(e), name="Task Open Button Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
 
     with allure.step("Click on Update Tab"):

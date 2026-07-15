@@ -50,15 +50,15 @@ def overall_happy_path_check(driver, task_details):
         else:
             allure.attach("Login failed", name="Login Status", attachment_type=allure.attachment_type.TEXT)
             return False
-    # with allure.step("Company Creation"):
-    #     company_name = task_details.get("company_name")
-    #     company_add_success = company_details(driver, wait, company_name)
+    with allure.step("Company Creation"):
+        company_name = task_details.get("company_name")
+        company_add_success = company_details(driver, wait, company_name)
 
-    #     if company_add_success:
-    #         allure.attach("Company add successful", name="Company Creation", attachment_type=allure.attachment_type.TEXT)
-    #     else:
-    #         allure.attach("Company Creation failed", name="Company Creation", attachment_type=allure.attachment_type.TEXT)
-    #         return False
+        if company_add_success:
+            allure.attach("Company add successful", name="Company Creation", attachment_type=allure.attachment_type.TEXT)
+        else:
+            allure.attach("Company Creation failed", name="Company Creation", attachment_type=allure.attachment_type.TEXT)
+            return False
     
     # with allure.step("Create Department Details"):
     #     company_name =  task_details.get("company_name")
@@ -84,20 +84,20 @@ def overall_happy_path_check(driver, task_details):
     #     else: 
     #         allure.attach("Test case failed for Create Designation Details",name="Create Designation Details Validation Failed",attachment_type=allure.attachment_type.TEXT)
     #         return False
-    with allure.step("Invite Team Member"):
-        full_name = task_details.get("full_name")
-        email = task_details.get("email")
-        role = task_details.get("role")
-        department_name = task_details.get("department_name")
-        designation_name = task_details.get("designation_name")
-        full_name_2 = task_details.get("full_name_2")
-        email_2 = task_details.get("email_2")
+    # with allure.step("Invite Team Member"):
+    #     full_name = task_details.get("full_name")
+    #     email = task_details.get("email")
+    #     role = task_details.get("role")
+    #     department_name = task_details.get("department_name")
+    #     designation_name = task_details.get("designation_name")
+    #     full_name_2 = task_details.get("full_name_2")
+    #     email_2 = task_details.get("email_2")
 
-        if invite_team_member(driver, wait, full_name, email, role, department_name, designation_name, full_name_2, email_2,):
-            allure.attach("Invite Team Member successful", name="Invite Team Member", attachment_type=allure.attachment_type.TEXT)
-        else:
-            allure.attach("Invite Team Member failed", name="Invite Team Member", attachment_type=allure.attachment_type.TEXT)
-            return False 
+    #     if invite_team_member(driver, wait, full_name, email, role, department_name, designation_name, full_name_2, email_2,):
+    #         allure.attach("Invite Team Member successful", name="Invite Team Member", attachment_type=allure.attachment_type.TEXT)
+    #     else:
+    #         allure.attach("Invite Team Member failed", name="Invite Team Member", attachment_type=allure.attachment_type.TEXT)
+    #         return False 
     
     # with allure.step("Check License task"):
     #     company_name = task_details.get("company_name")
@@ -110,7 +110,8 @@ def overall_happy_path_check(driver, task_details):
     #         allure.attach("Test case failed for Check License task", name="Check License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
     #         return False
     with allure.step("Create Normal Task"):
-        if normal_task_valid_details(driver, wait):
+        normal_task = task_details.get("normal_task")
+        if normal_task_valid_details(driver, wait, normal_task):
             print("✅ Create Normal Task validation successful")
             # return True
         else:
@@ -127,8 +128,8 @@ def overall_happy_path_check(driver, task_details):
             allure.attach("Test case failed for Create Task Category",name="Create Task Category Validation Failed",attachment_type=allure.attachment_type.TEXT)
             return False
     with allure.step("Create Special Task functionality"):
-       
-        if special_task_valid_details(driver, wait):
+        special_task = task_details.get("special_task")
+        if special_task_valid_details(driver, wait, special_task):
             print("✅Create Special Task  successful")
             # return True
         else:
@@ -154,9 +155,8 @@ def overall_happy_path_check(driver, task_details):
             return False
          
     with allure.step("Create Milestone"):
-        project_name = task_details.get("project_name")
         milestone = task_details.get("milestone")
-        if create_milestone(driver, wait, project_name, milestone):
+        if create_milestone(driver, wait, milestone):
             print("✅ Create Milestone successful")
             # return True
         else:
@@ -164,40 +164,33 @@ def overall_happy_path_check(driver, task_details):
             return False
          
     with allure.step("Create Task List"):
-        project_name = task_details.get("project_name")
-        milestone = task_details.get("milestone")
         task_list = task_details.get("task_list")
-
-        if create_task_list(driver, wait, project_name, milestone, task_list):
+        if create_task_list(driver, wait, task_list):
             print("✅ Create Project successful")
-            return True
+            # return True
         else:
             allure.attach("Test case failed for Create Project",name="Create Project Validation Failed",attachment_type=allure.attachment_type.TEXT)
             return False
     with allure.step("Create Project Task"):
-        project_name = task_details.get("project_name")
         project_task_name = task_details.get("project_task_name")
-        if create_project_task(driver, wait, project_name, project_task_name):
+        if create_project_task(driver, wait, project_task_name):
             print("✅ Create Project successful")
         else:
             allure.attach("Test case failed for Create Project",name="Create Project Validation Failed",attachment_type=allure.attachment_type.TEXT)
             return False         
     
-    # with allure.step("Add Co-owner"):
-    #     coowner_name = task_details.get("coowner_name")
-    #     project_name = task_details.get("project_name")   
-    #     if add_coowner(driver, wait, project_name, coowner_name):
-    #         print("✅ Add Co-owner successful")
-    #         # return True
-    #     else:
-    #         allure.attach("Test case failed for Add Co-owner",name="Add Co-owner Validation Failed",attachment_type=allure.attachment_type.TEXT)
-    #         return False
+    with allure.step("Add Co-owner"):
+        coowner_name = task_details.get("coowner_name")  
+        if add_coowner(driver, wait, coowner_name):
+            print("✅ Add Co-owner successful")
+            # return True
+        else:
+            allure.attach("Test case failed for Add Co-owner",name="Add Co-owner Validation Failed",attachment_type=allure.attachment_type.TEXT)
+            return False
            
     with allure.step("Create Milestone Task"):
         milestone_task_name = task_details.get("milestone_task_name")
-        milestone = task_details.get("milestone")
-        project_name = task_details.get("project_name")
-        if create_milestone_task(driver, wait, project_name, milestone, milestone_task_name):
+        if create_milestone_task(driver, wait, milestone_task_name):
             print("✅ Create Milestone Task successful")
             # return True
         else:
@@ -205,16 +198,9 @@ def overall_happy_path_check(driver, task_details):
             return False
         
     with allure.step("Create Task List"):
-        project_name = task_details.get("project_name")
-        milestone = task_details.get("milestone")
-        task_list = task_details.get("task_list")
         task_list_task_name = task_details.get("task_list_task_name")
-        
-        if not task_list_task_name:
-            task_list_task_name = f"task_list_{task_name}"
-
-        project_name = task_details.get("project_name")
-        if create_task_list_task(driver, wait, project_name, milestone, task_list, task_list_task_name):
+    
+        if create_task_list_task(driver, wait, task_list_task_name):
             print("✅ Create Task List successful")
             # return True
         else:
@@ -222,8 +208,7 @@ def overall_happy_path_check(driver, task_details):
             return False
 
     with allure.step("Delete Task and Restore"):
-        project_name = task_details.get("project_name")
-        if project_task_restore_delete(driver=driver, wait=wait, project_name=project_name):
+        if project_task_restore_delete(driver, wait):
             print("✅ Delete Task and Restore successful")
             # return True
         else:
@@ -232,10 +217,7 @@ def overall_happy_path_check(driver, task_details):
     
       
     with allure.step("Delete Task list and Restore"):
-        project_name = task_details.get("project_name")
-        milestone = task_details.get("milestone")
-        task_list = task_details.get("task_list")
-        if task_list_delete(driver, wait, project_name, milestone, task_list):
+        if task_list_delete(driver, wait):
             print("✅ Delete Task list and Restore successful")
             # return True
         else:
@@ -243,17 +225,14 @@ def overall_happy_path_check(driver, task_details):
             return False
     
     with allure.step("Delete Milestone and Restore"):
-        project_name = task_details.get("project_name")
-        milestone = task_details.get("milestone")
-        if milestone_delete(driver, wait, project_name, milestone):
+        if milestone_delete(driver, wait):
             print("✅ Delete Milestone and Restore successful")
             # return True
         else:
             allure.attach("Test case failed for Delete Milestone and Restore", name="Delete Milestone and Restore Failed", attachment_type=allure.attachment_type.TEXT)
             return False
     with allure.step("Delete Project and Restore"):
-        project_name = task_details.get("project_name")
-        if project_restore_delete(driver, wait, project_name):
+        if project_restore_delete(driver, wait):
             print("✅ Delete Project and Restore successful")
             # return True
         else:
@@ -273,7 +252,7 @@ def overall_happy_path_check(driver, task_details):
         license_name = task_details.get("license_name")
         if mark_circular_as_na(driver, wait, company_name, license_name):
             print("✅ Click Not Applicable successful")
-            return True
+            # return True
         else:
             allure.attach("Test case failed for Click Not Applicable", name="Click Not Applicable Validation Failed", attachment_type=allure.attachment_type.TEXT)
             return False
