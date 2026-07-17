@@ -47,7 +47,7 @@ import time
 def submit_task(driver, submit_button, toast_msg, wait):
     try:
         # with allure.step("Locate and validate submit button"):
-        submit_button_elem = wait.until(EC.presence_of_element_located((By.XPATH, "//div//span[text()='Submit']")))
+        submit_button_elem = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@type='button']//span[text()='Submit']")))
         highlight_element(driver, submit_button_elem)
 
         if submit_button_elem.is_enabled():

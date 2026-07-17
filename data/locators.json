@@ -266,7 +266,7 @@
     "milestone_add_cancel_btn": "//button//span[text()='Cancel']",
     "milestone_cancel_btn": "//div[@class='flex justify-between items-center']//button[contains(@class,'ant-btn-icon-only')]",
     "add_task_list": "//button[@title='Add Tasklist']",
-    "task_list_input_elem": "(//input[contains(@class,'modal-input') and @type='text'])[1]",
+    "task_list_input_elem": "//div[.//div[text()='Add Task List']]//input[contains(@class,'modal-input')]",
     "task_list_submit_btn": "//button//span[text()='Submit']",
     "add_coowner_elem": "//button[@title='Add Co-owner']",
     "add_btn_elem": "(//button[contains(@class,'project-management__small-icon-button')])[1]",

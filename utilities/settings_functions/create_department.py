@@ -61,7 +61,7 @@ def create_department(driver, wait, company_name, department_name, hod_name, ali
 
     with allure.step("Select Company"):
         try:
-            company_file = os.path.join("data", "latest_company.txt")
+            company_file = os.path.join("latest_data", "latest_company.txt")
             with open(company_file, "r") as f:
                 created_company_name = f.read().strip()
             company_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@role='combobox' and .//span[normalize-space()='Select Company']]")))

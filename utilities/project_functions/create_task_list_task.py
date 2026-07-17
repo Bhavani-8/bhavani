@@ -50,6 +50,8 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
         
     with allure.step("Click project icon"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             project_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_icon)))
             highlight_element(driver, project_btn)
             project_btn.click()
@@ -246,7 +248,7 @@ def create_task_list_task(driver, wait, task_list_task_name=None):
             search_input.send_keys(task_name)
 
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(4)  # Extra wait to ensure results load
+            time.sleep(5)  # Extra wait to ensure results load
     
             task_open_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, task_open_btn)))
             highlight_element(driver, task_open_btn_elem)

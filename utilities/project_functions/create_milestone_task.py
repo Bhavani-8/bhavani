@@ -54,6 +54,8 @@ def create_milestone_task(driver, wait, milestone_task_name=None):
         
     with allure.step(" Click project icon"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             project_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_icon)))
             highlight_element(driver, project_btn)
             project_btn.click()
@@ -228,11 +230,11 @@ def create_milestone_task(driver, wait, milestone_task_name=None):
             search_input.send_keys(task_name)
 
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(4)  # Extra wait to ensure results load
+            time.sleep(6)  # Extra wait to ensure results load
     
             task_open_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, task_open_btn)))
             highlight_element(driver, task_open_btn_elem)
-            task_open_btn_elem.click()
+            driver.execute_script("arguments[0].click();", task_open_btn_elem)
             time.sleep(2)
             wait_for_loader_to_disappear(driver, wait)
         except Exception as e:

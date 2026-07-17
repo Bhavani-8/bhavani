@@ -169,7 +169,7 @@ def updates_add_task(driver, wait, updates_task_name):
             search_input.send_keys(task_name)
 
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(5)  
+            time.sleep(6)  
         except Exception as e:
             msg = f"Failed to Click Search Icon: {str(e)}"
             print(msg)

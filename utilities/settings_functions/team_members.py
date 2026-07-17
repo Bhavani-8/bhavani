@@ -86,9 +86,7 @@ def invite_team_member(driver, wait, full_name, email, role, department_name, de
 
             for role_name in role_list:
                 # Open dropdown each time (React dropdown closes after selection)
-                role_dropdown = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'control') and .//div[text()='Select role...']]"))
-                )
+                role_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'control') and .//div[text()='Select role...']]")))
                 highlight_element(driver, role_dropdown)
                 role_dropdown.click()
 
@@ -97,9 +95,7 @@ def invite_team_member(driver, wait, full_name, email, role, department_name, de
                 role_input.send_keys(role_name)
                 time.sleep(1)
 
-                role_option = wait.until(
-                    EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'option') and normalize-space()='{role_name}']"))
-                )
+                role_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'option') and normalize-space()='{role_name}']")))
                 highlight_element(driver, role_option)
                 role_option.click()
 

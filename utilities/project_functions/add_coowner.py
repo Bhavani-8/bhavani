@@ -47,6 +47,8 @@ def add_coowner(driver, wait, coowner_name):
         
     with allure.step("Create New Project"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             project_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_icon)))
             highlight_element(driver, project_btn)
             project_btn.click()
@@ -82,17 +84,17 @@ def add_coowner(driver, wait, coowner_name):
             print(msg)
             allure.attach(msg, name="Add Co-owner button Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
-        try:
-            add_btn = wait.until(EC.element_to_be_clickable((By.XPATH, add_btn_elem)))
-            highlight_element(driver, add_btn)
-            add_btn.click()
-            print("➕ Add User clicked (fallback option)")
+        # try:
+        #     add_btn = wait.until(EC.element_to_be_clickable((By.XPATH, add_btn_elem)))
+        #     highlight_element(driver, add_btn)
+        #     add_btn.click()
+        #     print("➕ Add User clicked (fallback option)")
 
-        except Exception as e:
-            msg = f"Failed to Click Add button: {str(e)}"
-            print(msg)
-            allure.attach(msg, name="Add button Error", attachment_type=allure.attachment_type.TEXT)
-            raise Exception(msg)
+        # except Exception as e:
+        #     msg = f"Failed to Click Add button: {str(e)}"
+        #     print(msg)
+        #     allure.attach(msg, name="Add button Error", attachment_type=allure.attachment_type.TEXT)
+        #     raise Exception(msg)
     with allure.step("Click Dropdown and Select Co-owner"):
         try:
             dropdown_btn = wait.until(EC.presence_of_element_located((By.XPATH, coowner_drop_down_btn)))

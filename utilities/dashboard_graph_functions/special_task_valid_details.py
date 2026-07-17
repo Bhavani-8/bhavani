@@ -205,7 +205,7 @@ def special_task_valid_details(driver, wait, special_task):
                 task_open_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, task_open_btn)))
 
                 highlight_element(driver, task_open_btn_elem)
-                task_open_btn_elem.click()
+                driver.execute_script("arguments[0].click();", task_open_btn_elem)
 
                 wait_for_loader_to_disappear(driver, wait)
                 time.sleep(2)

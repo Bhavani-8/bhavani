@@ -52,6 +52,8 @@ def create_project_task(driver, wait, project_task_name=None):
         
     with allure.step(" Click project icon"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             project_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_icon)))
             highlight_element(driver, project_btn)
             project_btn.click()

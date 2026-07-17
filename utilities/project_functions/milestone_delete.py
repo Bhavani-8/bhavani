@@ -47,6 +47,8 @@ def milestone_delete(driver, wait):
         
     with allure.step(" Click project icon"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             project_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_icon)))
             highlight_element(driver, project_btn)
             project_btn.click()
@@ -92,7 +94,9 @@ def milestone_delete(driver, wait):
         try:
             milestone_input = wait.until(EC.presence_of_element_located((By.XPATH, milestone_input_elem)))
             highlight_element(driver, milestone_input)
-            created_milestone = f"Milestone_delete_check"
+            # created_milestone = f"Milestone_delete_check"
+           
+            created_milestone = f"Milestone_delete_{random.randint(1000, 9999)}"
 
             milestone_input.send_keys(created_milestone)
             milestone_file = os.path.join("latest_data", "latest_milestone.txt")

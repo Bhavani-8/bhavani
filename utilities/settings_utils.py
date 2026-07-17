@@ -238,11 +238,10 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
             except Exception as e:
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
     if module_name == 'mark_circular_as_na'and task_details:
-        company_name =  task_details.get("company_name")
         license_name = task_details.get("license_name")
         with allure.step("Click Not Applicable"):
             try:
-                if mark_circular_as_na(driver, wait, company_name, license_name):
+                if mark_circular_as_na(driver, wait, license_name):
                     print("✅ Click Not Applicable successful")
                     return True
                 else:

@@ -3,7 +3,7 @@ import allure
 import json
 import os
 import time
-import pytest
+import random
 import pandas as pd
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -43,6 +43,8 @@ def task_list_delete(driver, wait):
         
     with allure.step("Click project icon"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             project_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_icon)))
             highlight_element(driver, project_btn)
             project_btn.click()
@@ -84,7 +86,8 @@ def task_list_delete(driver, wait):
         try:
             milestone_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='milestone-title']")))
             highlight_element(driver, milestone_input)
-            created_milestone = f"milestone_restore_check"
+            # created_milestone = f"milestone_restore_check"
+            created_milestone = f"Milestone_delete_{random.randint(1000, 9999)}"
             milestone_input.send_keys(created_milestone)
             milestone_file = os.path.join("latest_data", "latest_milestone.txt")
             with open(milestone_file, "w") as f:
@@ -137,13 +140,14 @@ def task_list_delete(driver, wait):
             allure.attach(msg, name="Add Tasklist button Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
     with allure.step("Enter Task List Name"):
-        
-        
+           
         try:
             task_list_input = wait.until(EC.presence_of_element_located((By.XPATH, "(//input[@class='modal-input'])[2]")))
             highlight_element(driver, task_list_input)
         
-            created_task_list = f"task_list_delete_check"
+            # created_task_list = f"task_list_delete_check"
+            
+            created_task_list = f"task_list_delete_{random.randint(1000, 9999)}"
             task_list_input.send_keys(created_task_list)
             task_list_file = os.path.join("latest_data", "latest_task_list.txt")
             with open(task_list_file, "w") as f:
@@ -328,6 +332,7 @@ def task_list_delete(driver, wait):
             raise Exception(msg)
     with allure.step("Click Dropdown Tasklist"):
         try:
+            time.sleep(1)
             milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:

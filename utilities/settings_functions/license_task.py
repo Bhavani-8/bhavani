@@ -52,6 +52,8 @@ def license_task(driver, wait, company_name, license_name):
 
     with allure.step("Open Dashboard"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             time.sleep(2)
             dashboard_icon_elem = wait.until(EC.presence_of_element_located((By.XPATH, dashboard_icon)))
             highlight_element(driver, dashboard_icon_elem)
@@ -213,12 +215,13 @@ def license_task(driver, wait, company_name, license_name):
         search_input.clear()
         search_input.send_keys(created_company_name)
         wait_for_loader_to_disappear(driver, wait)
-        time.sleep(3)
+        time.sleep(4)
 
     try:
         company_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{created_company_name}']")))
         highlight_element(driver, company_option)
         company_option.click()
+        time.sleep(3)
 
     except Exception as e:
         msg = f"Failed to License Option: {str(e)}"
@@ -251,6 +254,7 @@ def license_task(driver, wait, company_name, license_name):
             search_input.send_keys(license_name)
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(4)
+
         except Exception as e:
             msg = f"Failed to Open License filter: {str(e)}"
             print(msg)
@@ -258,9 +262,9 @@ def license_task(driver, wait, company_name, license_name):
             raise Exception(msg)
 
     try:
-        license_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{license_name}']")))
+        license_option = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{license_name}']")))
         highlight_element(driver, license_option)
-        license_option.click()  
+        driver.execute_script("arguments[0].click();", license_option)  
         time.sleep(3)
     except Exception as e:
         msg = f"Failed to License Option: {str(e)}"

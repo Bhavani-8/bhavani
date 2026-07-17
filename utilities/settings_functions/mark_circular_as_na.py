@@ -16,7 +16,7 @@ from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
 
-def mark_circular_as_na(driver, wait, company_name, license_name):
+def mark_circular_as_na(driver, wait, license_name):
 
     with allure.step("Load locators.json"):
         try:
@@ -54,6 +54,8 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
     
     with allure.step("Open Dashboard"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             time.sleep(2)
             dashboard_icon_elem = wait.until(EC.presence_of_element_located((By.XPATH, dashboard_icon)))
             highlight_element(driver, dashboard_icon_elem)
@@ -203,7 +205,7 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
         search_input.clear()
         search_input.send_keys(license_name)
         wait_for_loader_to_disappear(driver, wait)
-        time.sleep(3)
+        time.sleep(4)
 
     try:
         license_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{license_name}']")))
@@ -246,14 +248,14 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             print(msg)
             allure.attach(msg, name="Task Open Button Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
-    with allure.step("Fetch the License task name from the opened task details page"):
+    with allure.step("Verify License task name Before Marking as Not Applicable"):
         try:
             time.sleep(4)
             license_task_name_btn = wait.until(EC.visibility_of_element_located((By.XPATH, "//p[contains(@class,'task-details-sub-title') and @title]")))
             highlight_element(driver, license_task_name_btn)
             license_task_name = license_task_name_btn.text.strip()
             time.sleep(0.5)
-            print("✅ Project Submit clicked")
+            allure.attach(license_task_name,name="Task Name Before Marking as Not Applicable",attachment_type=allure.attachment_type.TEXT)
         except Exception as e:
             msg = f"Failed to Fetch the License task name: {str(e)}"
             print(msg)
@@ -344,7 +346,6 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             search_close_btn.click()
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(3)
-            print("✅ Project Submit clicked")
         except Exception as e:
             msg = f"Failed to Click Search close button: {str(e)}"
             print(msg)
@@ -352,6 +353,8 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             raise Exception(msg)
     with allure.step("Click Settings"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             settings_btn = wait.until(EC.presence_of_element_located((By.XPATH, settings_icon)))
             highlight_element(driver, settings_btn)
             settings_btn.click()
@@ -376,15 +379,14 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
     
     with allure.step("Click Mark Applicable"):
         try:
-            task_name_elem = wait.until(
-            EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{company_name}']/ancestor::tr//div[contains(@class,'wrap-break-word')]")))
+            task_name_elem = wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'wrap-break-word') and contains(.,'{license_task_name }')]/ancestor::td")))
+            highlight_element(driver, task_name_elem)
             task_name = task_name_elem.text.strip()
-
             print(f"🔹 Task Name: {task_name}")
-
             allure.attach(task_name,name="Task Name Before Mark Applicable",attachment_type=allure.attachment_type.TEXT)
-            applicable_tasks_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{company_name}']/ancestor::tr//button[normalize-space()='Mark Applicable']")))
-            highlight_element(driver,  applicable_tasks_btn)
+            time.sleep(1)
+            applicable_tasks_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{created_company_name}']/ancestor::tr//button[normalize-space()='Mark Applicable']")))
+            highlight_element(driver, applicable_tasks_btn)
             driver.execute_script("arguments[0].scrollIntoView(true);", applicable_tasks_btn)
             applicable_tasks_btn.click()
         except Exception as e:
@@ -442,7 +444,7 @@ def mark_circular_as_na(driver, wait, company_name, license_name):
             search_input.send_keys(license_task_name)
 
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(4)  
+            time.sleep(5)  
         except Exception as e:
             msg = f"failed to Search for the newly created task by name: {str(e)}"
             print(msg)

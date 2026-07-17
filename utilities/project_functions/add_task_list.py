@@ -40,6 +40,8 @@ def create_task_list(driver, wait, task_list):
         
     with allure.step("Click project icon"):
         try:
+            driver.refresh()
+            wait_for_loader_to_disappear(driver, wait)
             project_btn = wait.until(EC.presence_of_element_located((By.XPATH, project_icon)))
             highlight_element(driver, project_btn)
             project_btn.click()
@@ -69,16 +71,19 @@ def create_task_list(driver, wait, task_list):
 
     with allure.step("Click three dots menu"):
         try:
+            
             milestone_file = os.path.join("latest_data", "latest_milestone.txt")
 
             with open(milestone_file, "r") as f:
                 created_milestone = f.read().strip()
 
-            print(f"Using Milestone: {created_milestone}")
+            # print(f"Using Milestone: {created_milestone}")
             milestone_btn = wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[contains(@class,'dx-data-row')][.//div[@title='{created_milestone}']]//button[contains(@class,'ant-btn-icon-only')]")))
             driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", milestone_btn)
+            time.sleep(0.5)
             highlight_element(driver, milestone_btn)
-            milestone_btn.click()
+            driver.execute_script("arguments[0].click();", milestone_btn)
+            # milestone_btn.click()
             time.sleep(2)
         except Exception as e:
             msg = f"Failed to click Milestone Three dots Button: {str(e)}"
@@ -100,18 +105,15 @@ def create_task_list(driver, wait, task_list):
             raise Exception(msg)
     with allure.step("Enter Task List Name"):
         try:
-            task_list_input = wait.until(EC.presence_of_element_located((By.XPATH, task_list_input_elem)))
+            task_list_input = wait.until(EC.element_to_be_clickable((By.XPATH, task_list_input_elem)))
             highlight_element(driver, task_list_input)
             unique_task_list = f"{task_list}_{random.randint(1000, 9999)}"
             # unique_task_list = f"{task_list}_{datetime.now().strftime('%H%M')}"
             task_list_input.send_keys(unique_task_list)
             task_list_file = os.path.join("latest_data", "latest_task_list.txt")
-
             with open(task_list_file, "w") as f:
                 f.write(unique_task_list)
 
-            print(f"Task List Created: {unique_task_list}")
-            time.sleep(3)
         except Exception as e:
             msg = f"Failed to Enter Task List Name: {str(e)}"
             print(msg)

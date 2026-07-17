@@ -99,16 +99,16 @@ def overall_happy_path_check(driver, task_details):
     #         allure.attach("Invite Team Member failed", name="Invite Team Member", attachment_type=allure.attachment_type.TEXT)
     #         return False 
     
-    # with allure.step("Check License task"):
-    #     company_name = task_details.get("company_name")
-    #     license_name =  task_details.get("license_name")
+    with allure.step("Check License task"):
+        company_name = task_details.get("company_name")
+        license_name =  task_details.get("license_name")
 
-    #     if license_task(driver, wait, company_name, license_name):
-    #         print("✅ Check License task successful")
-    #         # return True
-    #     else:
-    #         allure.attach("Test case failed for Check License task", name="Check License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
-    #         return False
+        if license_task(driver, wait, company_name, license_name):
+            print("✅ Check License task successful")
+            # return True
+        else:
+            allure.attach("Test case failed for Check License task", name="Check License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+            return False
     with allure.step("Create Normal Task"):
         normal_task = task_details.get("normal_task")
         if normal_task_valid_details(driver, wait, normal_task):
@@ -166,10 +166,10 @@ def overall_happy_path_check(driver, task_details):
     with allure.step("Create Task List"):
         task_list = task_details.get("task_list")
         if create_task_list(driver, wait, task_list):
-            print("✅ Create Project successful")
+            print("✅ Create Task List successful")
             # return True
         else:
-            allure.attach("Test case failed for Create Project",name="Create Project Validation Failed",attachment_type=allure.attachment_type.TEXT)
+            allure.attach("Test case failed for Create Task List",name="Create Task List Validation Failed",attachment_type=allure.attachment_type.TEXT)
             return False
     with allure.step("Create Project Task"):
         project_task_name = task_details.get("project_task_name")
@@ -248,9 +248,8 @@ def overall_happy_path_check(driver, task_details):
             return False
 
     with allure.step("Click Not Applicable"):
-        company_name = task_details.get("company_name")
         license_name = task_details.get("license_name")
-        if mark_circular_as_na(driver, wait, company_name, license_name):
+        if mark_circular_as_na(driver, wait, license_name):
             print("✅ Click Not Applicable successful")
             # return True
         else:
