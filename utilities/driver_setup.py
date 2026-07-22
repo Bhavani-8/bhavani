@@ -74,9 +74,11 @@ def setup(request):
         # Load locators.json to get URL
         with open(os.path.join('data', 'locators.json'), 'r') as f:
             locators = json.load(f)
-        urls_data = locators['preprod_urls']
-        # if website == "onprem":
-        #     urls_data = locators['onprem_urls']
+        urls_data = locators['new_server_urls']
+        # if website == "new_server":
+        #     urls_data = locators['new_server_urls']
+        #elif website == "onprem"
+            # urls_data == locators['onprem_urls']
         # elif website == "preprod":
         #     urls_data = locators['preprod_urls']
         # else:

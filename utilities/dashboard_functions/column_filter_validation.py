@@ -169,11 +169,7 @@ def column_filter_validation(driver, wait):
                             except Exception as e:
                                 msg = str(e)
                                 print(msg)
-                                allure.attach(
-                                    msg,
-                                    name=f"{col_name} Error",
-                                    attachment_type=allure.attachment_type.TEXT
-                                )
+                                allure.attach(msg,name=f"{col_name} Error",attachment_type=allure.attachment_type.TEXT)
                                 raise Exception(msg)
 
                     # wait_for_loader_to_disappear(driver, wait)

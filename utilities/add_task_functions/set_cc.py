@@ -106,10 +106,12 @@ def set_cc(driver, cc_dropdown, cc, wait):
                 if str(cc).lower() == option.lower() or option.lower() in str(cc).lower():
                     print(f"✅ Found matching option: {option}")
                     cc = option
-                    option_locator = (By.XPATH, f"//div[contains(@class, '-option') and text()='{cc}']")
-                    dropdown_option = wait.until(EC.visibility_of_element_located(option_locator))
+                    option_locator = (By.XPATH, f"//div[contains(@class,'-option')][contains(.,'{cc}')]")
+                    dropdown_option = wait.until(EC.element_to_be_clickable(option_locator))
                     highlight_element(driver, dropdown_option)
-                    dropdown_option.click()
+                    driver.execute_script("arguments[0].scrollIntoView({block:'center'});",dropdown_option)
+                    driver.execute_script("arguments[0].click();",dropdown_option)
+                    # dropdown_option.click()
                     allure.attach(f"Successfully selected: {cc}", name="Selection", attachment_type=allure.attachment_type.TEXT)
                     found = True
                     break

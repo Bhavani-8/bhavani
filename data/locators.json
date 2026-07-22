@@ -424,6 +424,22 @@
         "other_compliance_compliance": "https://preprodreact.compliancesutra.com/other-compliance/your-compliance"
     },
 
+
+    "new_server_urls": {
+        "login":"http://192.168.30.11:8081/login",
+        "dashboard":"http://192.168.30.11:8081/dashboard-view",
+        "special_task_dashboard": "http://192.168.30.11:8081/special-task-dashboard",
+        "calendar_dashboard": "http://192.168.30.11:8081/dashboard",
+        "team_performance": "http://192.168.30.11:8081/team-analytics",
+        "special_team_performance": "http://192.168.30.11:8081/special-task-compliance-submission",
+        "notifications": "http://192.168.30.11:8081/notifications",
+        "compliance_history": "http://192.168.30.11:8081/compliance-history",
+        "project_management": "http://192.168.30.11:8081/project-management",
+        "updates": "http://192.168.30.11:8081/updates",
+        "trash": "http://192.168.30.11:8081/project-trash",
+        "settings": "http://192.168.30.11:8081/settings"
+    },
+
     "onprem_urls": {
         "home": "https://onpremdevreact.compliancesutra.com",
         "pricing": "https://onpremdevreact.compliancesutra.com/pricing",

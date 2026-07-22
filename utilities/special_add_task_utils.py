@@ -141,22 +141,22 @@ def special_task_check(driver, task_name, start_date, due_date, frequency, repea
         # if not "dashboard-view" in driver.current_url:
         target_url = None
         if "project-management" in driver.current_url:
-            target_url = "https://preprodreact.compliancesutra.com/project-management"
+            target_url = "http://192.168.30.11:8081/project-management"
         elif "dashboard-view" in driver.current_url:
-            target_url = "https://preprodreact.compliancesutra.com/dashboard-view"
+            target_url = "http://192.168.30.11:8081/dashboard-view"
         elif "updates" in driver.current_url:
-            target_url = "https://preprodreact.compliancesutra.com/updates"
+            target_url = "http://192.168.30.11:8081/updates"
         elif "settings" in driver.current_url:
-            target_url = "https://preprodreact.compliancesutra.com/settings"
+            target_url = "http://192.168.30.11:8081/settings"
         else:
             # Default target
-            target_url = "https://preprodreact.compliancesutra.com/dashboard-view"
+            target_url = "http://192.168.30.11:8081/dashboard-view"
         if refresh and target_url:driver.get(target_url)
 
     # Only login if not already on dashboard or project page
         if not any(x in driver.current_url for x in ["dashboard-view", "project-management", "updates", "settings"]):
 
-            driver.get("https://preprodreact.compliancesutra.com/login")
+            driver.get("http://192.168.30.11:8081/login")
         # driver.get("https://preprodreact.compliancesutra.com/login")
 
         

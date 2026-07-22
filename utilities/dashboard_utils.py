@@ -47,7 +47,7 @@ from load_test_config_excel_data import load_test_config_excel_data
 
 def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None,task_details=None):
     wait = WebDriverWait(driver, 30)
-    driver.get("https://preprodreact.compliancesutra.com/login")
+    driver.get("http://192.168.30.11:8081/login")
     # ✅ Step 1: Login
     with allure.step("Login with valid credentials"):
 

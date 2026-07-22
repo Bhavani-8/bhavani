@@ -127,9 +127,15 @@ def set_end_time(driver, end_time_input_path, end_time, wait):
         pg.press('Tab')
 
         # Fetch and convert to datetime.time
-        value_after_set = end_input.get_attribute("value")
-        end_time_obj = datetime.strptime(value_after_set, '%I:%M %p').time()
-        print(f"End time fetched: {end_time_obj}")
+        value_after_set = end_input.get_attribute("value").strip()
+        # end_time_obj = datetime.strptime(value_after_set, '%I:%M %p').time()
+        # print(f"End time fetched: {end_time_obj}")
+        print(repr(value_after_set))
+
+        try:
+            end_time_obj = datetime.strptime(value_after_set, "%I:%M %p").time()
+        except ValueError as e:
+            print(f"Time parsing failed: {e}")
 
         # Validate against current time
         now_time = datetime.now().time()
