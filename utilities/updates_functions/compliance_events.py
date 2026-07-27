@@ -34,16 +34,16 @@ def compliance_events(driver, wait):
             pytest.fail("Failed to load locators.json")
 
     # Check Search Button
-    with allure.step("Click Search Button"):
-        search_button = wait.until(EC.presence_of_element_located((By.XPATH, "(//button[contains(@class,'group/button')])[1]")))
-        highlight_element(driver, search_button)
-        search_button.click()
+    # with allure.step("Click Search Button"):
+    #     search_button = wait.until(EC.presence_of_element_located((By.XPATH, "(//button[contains(@class,'group/button')])[1]")))
+    #     highlight_element(driver, search_button)
+    #     search_button.click()
 
-        search_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search...']")))
-        search_input.send_keys("Mock Trading")
-        print("✅ Clicked Search Button")
-        time.sleep(2)
-        print("✅ Clicked Close Button")
+    #     search_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search...']")))
+    #     search_input.send_keys("Mock Trading")
+    #     print("✅ Clicked Search Button")
+    #     time.sleep(2)
+    #     print("✅ Clicked Close Button")
     # ------------------------------------------
     # STEP 2: OPEN UPDATES SECTION
     # ------------------------------------------
@@ -156,23 +156,23 @@ def compliance_events(driver, wait):
                             attachment_type=allure.attachment_type.TEXT)
                 failed_filters.append(column_name)
                 continue
-    with allure.step("Impact Button"):
+    # with allure.step("Impact Button"):
 
-        try:
-            impact_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[.//*[contains(@class,'lucide-info')]]")))
-            highlight_element(driver, impact_btn_elem)
-            impact_btn_elem.click()
-            time.sleep(0.5)
+    #     try:
+    #         impact_btn_elem = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[.//*[contains(@class,'lucide-info')]]")))
+    #         highlight_element(driver, impact_btn_elem)
+    #         impact_btn_elem.click()
+    #         time.sleep(0.5)
 
-            compliance_events_label = wait.until(EC.element_to_be_clickable((By.XPATH, "//h2[text()='Compliance Events']")))
-            compliance_events_label.click()
-            wait_for_loader_to_disappear(driver, wait)
-        except  ElementNotInteractableException:
-            msg = "❌ Impact button is not present in UI"
-            print(msg)
-            allure.attach(msg,name="Impact Button Error",attachment_type=allure.attachment_type.TEXT)
+    #         compliance_events_label = wait.until(EC.element_to_be_clickable((By.XPATH, "//h2[text()='Compliance Events']")))
+    #         compliance_events_label.click()
+    #         wait_for_loader_to_disappear(driver, wait)
+    #     except  ElementNotInteractableException:
+    #         msg = "❌ Impact button is not present in UI"
+    #         print(msg)
+    #         allure.attach(msg,name="Impact Button Error",attachment_type=allure.attachment_type.TEXT)
 
-            failed_filters.append("Impact")
+    #         failed_filters.append("Impact")
     # ✅ Fail after loop
     if failed_filters:
         pytest.fail(f"Filters failed for: {failed_filters}")

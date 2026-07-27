@@ -32,7 +32,7 @@ def create_milestone_task(driver, wait, milestone_task_name=None):
             task_search_btn = elements_details['task_search_btn']
             task_search_input = elements_details['task_search_input']
             task_open_btn = elements_details['task_open_btn']
-            task_close_btn = elements_details['task_close_btn']
+            dash_search_close_btn = elements_details['dash_search_close_btn']
             task_project_close_btn = elements_details['task_project_close_btn']
             task_search_close_btn = elements_details['task_search_close_btn']
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
@@ -270,7 +270,7 @@ def create_milestone_task(driver, wait, milestone_task_name=None):
             raise Exception(msg)
     with allure.step("Click Search close button on task details"):
         try:
-            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH,  task_search_close_btn)))
+            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH,  dash_search_close_btn)))
             highlight_element(driver, search_close_btn)
             search_close_btn.click()
             wait_for_loader_to_disappear(driver, wait)

@@ -39,7 +39,7 @@ def test_special_dashboard_flow(setup, test_case_id, module_name, test_case_desc
         except Exception as e:
             test_failed = True
 
-            time.sleep(7)
+            time.sleep(3)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
             os.makedirs("screenshots", exist_ok=True)

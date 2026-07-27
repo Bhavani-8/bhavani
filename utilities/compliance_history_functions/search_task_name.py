@@ -23,7 +23,7 @@ def search_task_name(driver, wait):
         return False
     with allure.step("Fetch the task name from the task list"):
         try:
-            task_elem = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='text-primary cursor-pointer'])[1]")))
+            task_elem = wait.until(EC.presence_of_element_located((By.XPATH,"(//span[@class='block max-w-40 truncate cursor-pointer text-indigo-600'])[1]")))
             highlight_element(driver, task_elem)
             first_task_name = task_elem.text.strip()
             if not first_task_name:
@@ -42,8 +42,8 @@ def search_task_name(driver, wait):
             search_input.clear()
             search_input.send_keys(first_task_name)
 
-            wait_for_loader_to_disappear(driver, wait)
-            time.sleep(3)  # Extra wait to ensure results load
+            # wait_for_loader_to_disappear(driver, wait)
+            time.sleep(4)  # Extra wait to ensure results load
             print(f"✅ Searched using first task name: {first_task_name}")
         except Exception as e:
             print(f"❌ Failed to search using first task name: {e}")
@@ -51,7 +51,7 @@ def search_task_name(driver, wait):
     
     with allure.step("Verify task name"):
         try:
-            task_elem_after_search = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='text-primary cursor-pointer'])[1]")))
+            task_elem_after_search = wait.until(EC.presence_of_element_located((By.XPATH,"(//span[@class='block max-w-40 truncate cursor-pointer text-indigo-600'])[1]")))
             highlight_element(driver, task_elem_after_search)
             task_elem_after_search.click()
             time.sleep(2)

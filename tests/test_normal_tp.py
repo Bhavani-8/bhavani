@@ -13,8 +13,8 @@ from utilities.screen_recorder import ScreenRecorder
 at_test_case_list = get_test_case_list(module='normal_tp')
 @allure.suite("Normal Team Performance Test Suite")
 @allure.sub_suite("Normal Team Performance Validation")
-@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type,task_details,test_case_execution", at_test_case_list)
-def test_tp_flow(setup, test_case_id, module_name, test_case_description, test_type, task_details, test_case_execution):
+@pytest.mark.parametrize("test_case_id,module_name,test_case_description,test_type, test_case_execution", at_test_case_list)
+def test_tp_flow(setup, test_case_id, module_name, test_case_description, test_type, test_case_execution):
     # allure.dynamic.title(f"Dashboard Validation")
     allure.dynamic.title(f"{test_case_id}_{module_name}")
     allure.dynamic.description(f'{test_case_description}')
@@ -30,7 +30,7 @@ def test_tp_flow(setup, test_case_id, module_name, test_case_description, test_t
     # error_msg = None
     with allure.step(f"Normal Team Performance Flow"):
         try:
-            success = team_performance_dashboard_check(driver, dash_type='QCC', module_name=module_name, test_case_id=test_case_id, task_details=task_details)
+            success = team_performance_dashboard_check(driver, dash_type='QCC', module_name=module_name, test_case_id=test_case_id)
             # if success and test_type == 'positive':
             if test_type == 'positive':
                 # assert True

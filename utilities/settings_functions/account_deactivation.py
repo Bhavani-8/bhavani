@@ -251,7 +251,7 @@ def account_deactivation_module(driver, wait, tm_user, tm_pwd, co_user, co_pwd):
     driver.execute_script("window.sessionStorage.clear();")
 
     with allure.step("1. Login as Team Member"):
-        driver.get("https://preprodreact.compliancesutra.com/login") 
+        driver.get("http://192.168.30.11:8081/login") 
         login_check(driver, waittime=30, trial=1, username=tm_user, password=tm_pwd) 
         time.sleep(1.5) 
 
@@ -288,7 +288,7 @@ def account_deactivation_module(driver, wait, tm_user, tm_pwd, co_user, co_pwd):
         logout(driver, wait)
 
     with allure.step("5. Login as Compliance Officer"):
-        driver.get("https://preprodreact.compliancesutra.com/login") 
+        driver.get("http://192.168.30.11:8081/login") 
         login_check(driver, waittime=30, trial=1, username=co_user, password=co_pwd)
         time.sleep(1.5) 
 

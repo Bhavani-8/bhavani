@@ -31,7 +31,7 @@ def updates_add_task(driver, wait, updates_task_name):
                 task_open_btn = elements_details['task_open_btn']
                 task_search_btn = elements_details['task_search_btn']
                 task_search_input = elements_details['task_search_input']
-                task_search_close_btn = elements_details['task_search_close_btn']
+                dash_search_close_btn = elements_details['dash_search_close_btn']
                 task_close_btn = elements_details['task_close_btn']
                 update_circ_checkbox_label = elements_details['update_circ_checkbox_label']
                 select_circular = elements_details['select_circular']
@@ -248,7 +248,7 @@ def updates_add_task(driver, wait, updates_task_name):
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(3)
         
-            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH,  task_search_close_btn)))
+            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH,  dash_search_close_btn)))
             highlight_element(driver, search_close_btn)
             search_close_btn.click()
             print("✅ Search closed successfully.")

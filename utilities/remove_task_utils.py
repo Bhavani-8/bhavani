@@ -22,7 +22,18 @@ from utilities.remove_task_functions.delete_fortnightly_all_events_task import d
 def remove_task_check(driver, module_name=None):
     
     wait = WebDriverWait(driver, 10)
-    driver.get("https://preprodreact.compliancesutra.com/login")
+    # driver.get("https://preprodreact.compliancesutra.com/login")
+    target_url = None
+    
+    if "192.168.30.11:8081" in driver.current_url:
+        target_url = "http://192.168.30.11:8081/login"
+    elif "preprodreact.compliancesutra.com" in driver.current_url:
+        target_url = "https://preprodreact.compliancesutra.com/login"
+    else:
+        # Default login URL
+        target_url = "https://preprodreact.compliancesutra.com/login"
+
+    driver.get(target_url)
 
     with allure.step("Login with valid credentials"):
         print("🔐 Logging in with valid credentials...")

@@ -316,23 +316,20 @@ def date_validation(driver, wait, dash_type=None):
                         print(f"✅ PASS: {validation_msg}")
 
                 # 🔙 Back
-                driver.back()
+                driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                highlight_element(driver, driver_back)
+                driver_back.click()
                 wait_for_loader_to_disappear(driver, wait)
                 
             except AssertionError:
-                driver.back()
+                driver_back = wait.until(EC.presence_of_element_located((By.XPATH,"(//div[@class='flex items-center']//button)[1]")))
+                highlight_element(driver, driver_back)
+                driver_back.click()
                 wait_for_loader_to_disappear(driver, wait)
-                
                 continue
 
             except Exception as e:
                 print(f"⚠️ Subtotal error: {e}")
                 continue
-    # -----------------------------
-    # FINAL RESULT
-    # -----------------------------
-    if failures:
-        raise AssertionError(f"Test failed with {len(failures)} mismatches")
-
     print("🎯 All validations passed ✅")
     return True

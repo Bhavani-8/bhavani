@@ -173,7 +173,7 @@ def completed_task_bulk_action(driver, wait, task_name='Internal Task'):
             search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
             search_input.clear()
             search_input.send_keys(task_name)
-            time.sleep(3)
+            time.sleep(5)
         except Exception as e:
             msg = f"Failed to Open Company Project filter: {str(e)}"
             print(msg)

@@ -37,7 +37,7 @@ def updates_check(driver, module_name=None, test_case_id=None, task_details=None
     # ------------------------------------------
     # STEP 1: LOGIN
     # ------------------------------------------
-    driver.get("https://preprodreact.compliancesutra.com/login")
+    driver.get("http://192.168.30.11:8081/login")
     with allure.step("Login with valid credentials"):
         try:
             print("🔐 Logging in with valid credentials...")

@@ -87,7 +87,7 @@ def copy_task_link(driver, wait):
             save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, column_chooser_save_btn)))
             highlight_element(driver, save_btn)
             save_btn.click()
-            time.sleep(3)
+            time.sleep(6)
             print("✅ Column Chooser saved")
         except TimeoutException:
             print("❌ 'Company / Project' not found in filter list")
@@ -96,11 +96,30 @@ def copy_task_link(driver, wait):
         try:
             copy_btn = wait.until(EC.presence_of_element_located((By.XPATH, "(//div[contains(@class,'justify-between') and .//p][1]//button[contains(@class,'ant-btn-icon-only')])[2]")))
             copy_btn.click()
-            time.sleep(0.5)
-            print("✅ Clicked Copy Task Link button")
+            try:
+                toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
+                highlight_element(driver, toast)
+                toast_text = toast.text.strip()
+
+                # Attach only if there is an error message
+                if toast_text:
+                    msg = f"❌ Error Toast: {toast_text}"
+                    print(msg)
+                    allure.attach(msg,name="Copy Task Link Error",attachment_type=allure.attachment_type.TEXT)
+                    return False
+
+            except Exception:
+                # No toast found → Copy successful
+                pass
+
+            return True
+
         except Exception as e:
-            print(f"❌ Failed to click Copy button: {e}")
+            msg = str(e)
+            print(msg)
+            allure.attach(msg,name="Copy Task Failed Error",attachment_type=allure.attachment_type.TEXT)
             return False
+        
 
     with allure.step("Get copied task link from clipboard"):
         main_window = driver.current_window_handle

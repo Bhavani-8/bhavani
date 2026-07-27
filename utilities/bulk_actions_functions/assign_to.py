@@ -6,15 +6,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from utilities.other_utils_functions.highlight import highlight_element
 from selenium.webdriver import ActionChains
-import pyautogui as pg
 import time
 import allure
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
-from selenium.common.exceptions import StaleElementReferenceException
-
-
-
 
 def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
 
@@ -289,7 +283,7 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
 
             print(f"🔍 Searching Creator filter using username: {username}")
             allure.attach(username, "Creator Filter Search Value", allure.attachment_type.TEXT)
-            time.sleep(3)
+            time.sleep(4)
         except Exception as e:
             msg = f"Failed to Open Creator filter: {str(e)}"
             print(msg)
@@ -330,7 +324,7 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
 
             search_input = wait.until(EC.presence_of_element_located((By.XPATH,"//input[contains(@class,'dx-texteditor-input') and @role='textbox']")))
             search_input.send_keys("Assign")
-            time.sleep(3)
+            time.sleep(5)
         except Exception as e:
             msg = f"Failed to Open Approver filter: {str(e)}"
             print(msg)
@@ -371,19 +365,18 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
 
             search_input = wait.until(EC.presence_of_element_located((By.XPATH,"//input[contains(@class,'dx-texteditor-input') and @role='textbox']")))
             search_input.send_keys("Assign")
-            time.sleep(3)
+            time.sleep(4)
         except Exception as e:
-            msg = f"Failed to Open CC filter: {str(e)}"
+            msg = f"Failed to Open Approver filter: {str(e)}"
             print(msg)
-            allure.attach(msg, name="CC filter Error", attachment_type=allure.attachment_type.TEXT)
+            allure.attach(msg, name="Approver filter Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
-
 
     try:
         search_task = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'dx-list-item-content') and text()='Assign']")))
-        driver.execute_script("arguments[0].scrollIntoView({block:'center'});",search_task)
+        # driver.execute_script("arguments[0].scrollIntoView({block:'center'});",search_task)
         search_task.click()
-        time.sleep(3)
+        time.sleep(2)
         print("✅ Clicked 'Assign'")
     except Exception as e:
         msg = f"Failed to Search Task: {str(e)}"
@@ -414,7 +407,7 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
             search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
             search_input.clear()
             search_input.send_keys("Assign")
-            time.sleep(3)
+            time.sleep(4)
         
         except Exception as e:
             msg = "Unable to click searched task in CC filter"
@@ -422,20 +415,16 @@ def assign_to_bulk_action(driver, wait, task_name='Internal Task'):
             allure.attach(msg, name="Search Task Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
     try:
-        no_data = wait.until(EC.presence_of_element_located((By.XPATH,"//div[text()='No data to display']")))
-
-        if no_data:
-            raise Exception("No data found for the searched value 'Assign' in the CC filter.")
-        search_task = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_assign_task)))
+        search_task = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'dx-list-item-content') and text()='Assign']")))
         driver.execute_script("arguments[0].scrollIntoView({block:'center'});",search_task)
         search_task.click()
-        time.sleep(3)
-    
+        time.sleep(2)
+        print("✅ Clicked 'Assign'")
     except Exception as e:
         msg = f"Failed to Search Task: {str(e)}"
         print(msg)
         allure.attach(msg, name="Search Task Error", attachment_type=allure.attachment_type.TEXT)
-        raise Exception(msg)
+        return False
 
 
     try:

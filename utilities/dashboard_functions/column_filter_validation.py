@@ -165,6 +165,16 @@ def column_filter_validation(driver, wait):
 
                                 highlight_element(driver, options[0])
                                 options[0].click()
+                                print(f"☑️ Selected first filter option for {col_name}")
+                                time.sleep(2)
+
+                                ok_btn = wait.until(EC.element_to_be_clickable((By.XPATH, dash_col_filter_ok_btn)))
+                                highlight_element(driver, ok_btn)
+                                ok_btn.click()
+                                print(f"✅ Applied filter for {col_name}")
+                                time.sleep(4)
+
+                                wait_for_loader_to_disappear(driver, wait)
 
                             except Exception as e:
                                 msg = str(e)

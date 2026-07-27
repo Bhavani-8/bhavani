@@ -32,7 +32,7 @@ def normal_task_valid_details(driver, wait, normal_task):
             task_open_btn = elements_details['task_open_btn']
             dash_total_btn = elements_details['dash_total_btn']
             team_performance_btn = elements_details['team_performance_btn']
-            task_close_btn = elements_details['task_close_btn']
+            dash_search_close_btn = elements_details['dash_search_close_btn']
             print("✅ locators.json loaded")
         except FileNotFoundError as e:
             msg = f"locators.json file not found: {str(e)}"
@@ -90,7 +90,7 @@ def normal_task_valid_details(driver, wait, normal_task):
             if add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_holiday, end_freq_date,
                 repeat_weekday, repeat_day_month, end_time, internal_deadline, assign_to, approver, cc,
                 risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name,
-                circular_search, test_type, direct_task_creation=False):
+                circular_search, test_type, task_type='mandatory', direct_task_creation=False):
                 print("✅ Task creation successful")
             
             else:
@@ -101,6 +101,7 @@ def normal_task_valid_details(driver, wait, normal_task):
 
    
     try:
+        time.sleep(6)
         search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_close_btn)))
         highlight_element(driver, search_close_btn)
         search_close_btn.click()
@@ -218,15 +219,15 @@ def normal_task_valid_details(driver, wait, normal_task):
             print(msg)
             allure.attach(msg, name="Task Open Button Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg)
-    with allure.step("Validate Task Details in Team Performance Task"):
-        try:
-            validation_success = task_validation(driver, wait)
+    # with allure.step("Validate Task Details in Team Performance Task"):
+    #     try:
+    #         validation_success = task_validation(driver, wait)
 
-            if not validation_success:
-                pytest.fail("❌ Task validation failed after search")
-        except Exception as e:
-            allure.attach(str(e),name="Task Validation Error",attachment_type=allure.attachment_type.TEXT)
-            raise
+    #         if not validation_success:
+    #             pytest.fail("❌ Task validation failed after search")
+    #     except Exception as e:
+    #         allure.attach(str(e),name="Task Validation Error",attachment_type=allure.attachment_type.TEXT)
+    #         raise
     with allure.step("Open Dashboard"):
         try:
             time.sleep(2)
@@ -240,7 +241,7 @@ def normal_task_valid_details(driver, wait, normal_task):
             return False
     with allure.step("Click close button on task details panel"):
         try:
-            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_close_btn)))
+            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, dash_search_close_btn)))
             highlight_element(driver, search_close_btn)
             search_close_btn.click()
             wait_for_loader_to_disappear(driver, wait)

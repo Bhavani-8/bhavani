@@ -314,23 +314,40 @@ def comment_bulk_action(driver, wait, task_name='Internal Task'):
         save_btn = wait.until(EC.element_to_be_clickable((By.XPATH, bulk_comment_save_btn)))
         highlight_element(driver, save_btn)
         save_btn.click()
+        time.sleep(3)
         print("✅ Save button clicked")
     except Exception as e:
         msg = f"Failed to Click Save Button: {str(e)}"
         print(msg)
         allure.attach(msg, name="Comment Save Button Error", attachment_type=allure.attachment_type.TEXT)
         raise Exception(msg)
+    with allure.step("Verify toast message"):
+        try:
+            toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
+            highlight_element(driver, toast)
+            time.sleep(2)
+            toast_text = toast.text.strip()
+            print(f"📢 Toast message: {toast_text}")
 
-    try:
-        toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
-        highlight_element(driver, toast)
-        print(f"📢 Toast message: {toast.text.strip()}")
-        time.sleep(2)
-    except Exception as e:
-        msg = f"Toast message not found: {str(e)}"
-        print(msg)
-        allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
-        raise Exception(msg)
+            # Check for success toast
+            if "Comments added successfully." in toast_text:
+                msg = f"✅ Success Toast: {toast_text}"
+                print(msg)
+                allure.attach(msg,name="Success Toast",attachment_type=allure.attachment_type.TEXT)
+                return True
+
+            else:
+                # Error toast
+                msg = f"❌ Error Toast: {toast_text}"
+                print(msg)
+                allure.attach(msg,name="Comments Error",attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+
+        except Exception as e:
+            msg = f"Toast message not found: {str(e)}"
+            print(msg)
+            allure.attach(msg,name="Toast Message Error",attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Opening task from table"):
         try:

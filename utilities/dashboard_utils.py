@@ -41,14 +41,26 @@ from utilities.dashboard_graph_functions.new_compliances_export_data import new_
 from utilities.dashboard_graph_functions.update_internal_deadline import update_internal_deadline
 from utilities.dashboard_graph_functions.normal_task_valid_details import normal_task_valid_details
 from utilities.dashboard_graph_functions.special_task_valid_details import special_task_valid_details
+from utilities.dashboard_functions.special_comment_task import special_comment_task
 from utilities.search_utils import clear_search
 from load_test_config_excel_data import load_test_config_excel_data
 
 
 def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None,task_details=None):
     wait = WebDriverWait(driver, 30)
-    driver.get("http://192.168.30.11:8081/login")
-    # ✅ Step 1: Login
+    # driver.get("http://192.168.30.11:8081/login")
+    target_url = None
+
+    if "192.168.30.11:8081" in driver.current_url:
+        target_url = "http://192.168.30.11:8081/login"
+    elif "preprodreact.compliancesutra.com" in driver.current_url:
+        target_url = "https://preprodreact.compliancesutra.com/login"
+    else:
+        # Default login URL
+        target_url = "https://preprodreact.compliancesutra.com/login"
+
+    driver.get(target_url)
+        # ✅ Step 1: Login
     with allure.step("Login with valid credentials"):
 
         print("🔐 Logging in with valid credentials...")
@@ -256,6 +268,17 @@ def dashboard_check(driver, dash_type='QCC', module_name=None, test_case_id=None
             except Exception as e:
                 allure.attach(str(e), name="Bulk Action Error", attachment_type=allure.attachment_type.TEXT)
 
+    if module_name == 'special_comment_task':
+            with allure.step("Column Filter Reorder Validation"):
+                try:
+                    if special_comment_task(driver, wait):
+                        print("✅ Comment Task successful")
+                        return True
+                    else:
+                        allure.attach("Test case failed for Comment Task Reorder", name="Column Filter Reorder Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                        return False
+                except Exception as e:
+                    allure.attach(str(e), name="Special comment Task Error", attachment_type=allure.attachment_type.TEXT)
     
     # ✅ Step 10: Export Data Validation
     if module_name == 'export_all_data':

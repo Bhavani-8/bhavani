@@ -18,13 +18,10 @@ def export_all_data(driver, wait):
         try:
             with open(os.path.join("data", 'locators.json'), 'r') as f:
                 elements_details = json.load(f)
-                dash_total_btn = elements_details['dash_total_btn']
                 dash_col_all_selection_btn = elements_details['dash_col_all_selection_btn']
                 export_btn = elements_details['export_btn']
                 export_all_data_btn = elements_details['export_all_data_btn']
                 export_selected_rows_btn = elements_details['export_selected_rows_btn']
-                toast_msg = elements_details['toast_msg']
-                new_compliances_added_btn = elements_details['new_compliances_added_btn']
             print("✅ locators.json loaded successfully")
         except FileNotFoundError as e:
             print("❌ locators.json file not found")

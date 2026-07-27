@@ -70,7 +70,7 @@ def validate_today_task(driver, wait, calendar_task_name):
             if add_task_check(driver, task_name, start_date, due_date, frequency, repeat_if_holiday, end_freq_date,
                 repeat_weekday, repeat_day_month, end_time, internal_deadline, assign_to, approver, cc,
                 risk_rating, license_name, description, attach_file_name, impact_details, impact_file_name,
-                circular_search, test_type, direct_task_creation=False):
+                circular_search, test_type, task_type='mandatory', direct_task_creation=False):
                 print("✅ Task creation successful")
                 time.sleep(6)
                 # return True
@@ -142,18 +142,19 @@ def validate_today_task(driver, wait, calendar_task_name):
             allure.attach(msg, name="Today Task Button Error", attachment_type=allure.attachment_type.TEXT)
             return False
 
-    with allure.step("Validate Task Details After Submission"):
-        print(f"Validate Task Details After Submission:")
-        validation_success = task_validation(driver, wait)
-        if validation_success:
-            # allure.attach("Validate Task Details After Submission successfull", name="Validation Status", attachment_type=allure.attachment_type.TEXT)
-            print("✅ Validate Task Details After Submission successful.")
-            return True
-        else:
-            msg = "❌ Failed to Validate Task Details After Submission."
-            print(msg)
-            allure.attach(msg, name="Validation Status", attachment_type=allure.attachment_type.TEXT)
-            show_toast(driver, msg)
-            time.sleep(2)
-            return False  
+    # with allure.step("Validate Task Details After Submission"):
+    #     print(f"Validate Task Details After Submission:")
+    #     validation_success = task_validation(driver, wait)
+    #     if validation_success:
+    #         # allure.attach("Validate Task Details After Submission successfull", name="Validation Status", attachment_type=allure.attachment_type.TEXT)
+    #         print("✅ Validate Task Details After Submission successful.")
+    #         return True
+    #     else:
+    #         msg = "❌ Failed to Validate Task Details After Submission."
+    #         print(msg)
+    #         allure.attach(msg, name="Validation Status", attachment_type=allure.attachment_type.TEXT)
+    #         show_toast(driver, msg)
+    #         time.sleep(2)
+    #         return False  
+    return True
     

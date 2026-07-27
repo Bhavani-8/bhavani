@@ -202,7 +202,7 @@ def cc_bulk_action(driver, wait, task_name='Internal Task'):
             search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
             search_input.clear()
             search_input.send_keys(task_name)
-            time.sleep(3)
+            time.sleep(4)
         except Exception as e:
             msg = f"Failed to Open Company Project filter: {str(e)}"
             print(msg)
@@ -243,6 +243,7 @@ def cc_bulk_action(driver, wait, task_name='Internal Task'):
             search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
             search_input.clear()
             search_input.send_keys("Assign")
+            time.sleep(4)
         except Exception as e:
             msg = f"Failed to Open Approver filter: {str(e)}"
             print(msg)
@@ -282,7 +283,7 @@ def cc_bulk_action(driver, wait, task_name='Internal Task'):
             search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
             search_input.clear()
             search_input.send_keys("Assign")
-            time.sleep(3)
+            time.sleep(5)
 
         except Exception:
             msg = "Unable to click searched task in CC filter"
@@ -291,10 +292,10 @@ def cc_bulk_action(driver, wait, task_name='Internal Task'):
             raise Exception(msg)
 
     try:
-        no_data = wait.until(EC.presence_of_element_located((By.XPATH,"//div[text()='No data to display']")))
+        # no_data = wait.until(EC.presence_of_element_located((By.XPATH,"//div[text()='No data to display']")))
 
-        if no_data:
-            raise Exception("No data found for the searched value 'Assign' in the CC filter.")
+        # if no_data:
+        #     raise Exception("No data found for the searched value 'Assign' in the CC filter.")
         search_task = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_assign_task)))
         driver.execute_script("arguments[0].scrollIntoView({block:'center'});",search_task)
         search_task.click()

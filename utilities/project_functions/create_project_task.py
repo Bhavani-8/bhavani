@@ -32,7 +32,7 @@ def create_project_task(driver, wait, project_task_name=None):
             task_search_btn = elements_details['task_search_btn']
             task_search_input = elements_details['task_search_input']
             task_open_btn = elements_details['task_open_btn']
-            task_close_btn = elements_details['task_close_btn']
+            dash_search_close_btn = elements_details['dash_search_close_btn']
             task_search_close_btn = elements_details['task_search_close_btn']
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
             add_new_task = elements_details['add_new_task']
@@ -219,7 +219,7 @@ def create_project_task(driver, wait, project_task_name=None):
             search_input.send_keys(task_name)
 
             wait_for_loader_to_disappear(driver, wait)
-            time.sleep(5)  # Extra wait to ensure results load
+            time.sleep(6)  # Extra wait to ensure results load
     
             task_open_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, task_open_btn)))
             highlight_element(driver, task_open_btn_elem)
@@ -261,7 +261,7 @@ def create_project_task(driver, wait, project_task_name=None):
     
     with allure.step("Click search close button"):
         try:
-            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_close_btn)))
+            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, dash_search_close_btn)))
             highlight_element(driver, search_close_btn)
             search_close_btn.click()
             wait_for_loader_to_disappear(driver, wait)

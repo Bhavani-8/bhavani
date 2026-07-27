@@ -38,7 +38,18 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
 
 
     if module_name not in ['account_deactivation']:
-        driver.get("https://preprodreact.compliancesutra.com/login")
+        # driver.get("http://192.168.30.11:8081/login")
+        target_url = None
+        
+        if "192.168.30.11:8081" in driver.current_url:
+            target_url = "http://192.168.30.11:8081/login"
+        elif "preprodreact.compliancesutra.com" in driver.current_url:
+            target_url = "https://preprodreact.compliancesutra.com/login"
+        else:
+            # Default login URL
+            target_url = "https://preprodreact.compliancesutra.com/login"
+    
+        driver.get(target_url)
         
         #  ✅ Step 1: Login Check (For all normal settings tests)
         with allure.step("Login with valid credentials"):
@@ -77,7 +88,18 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
                 allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
 
     if module_name == 'account_deactivation' and task_details:
-        driver.get("https://preprodreact.compliancesutra.com/login")
+        # driver.get("http://192.168.30.11:8081/login")
+        target_url = None
+        
+        if "192.168.30.11:8081" in driver.current_url:
+            target_url = "http://192.168.30.11:8081/login"
+        elif "preprodreact.compliancesutra.com" in driver.current_url:
+            target_url = "https://preprodreact.compliancesutra.com/login"
+        else:
+            # Default login URL
+            target_url = "https://preprodreact.compliancesutra.com/login"
+    
+        driver.get(target_url)
         # Extract the credentials directly from the Excel task_details column!
         tm_user = task_details.get("tm_user")
         tm_pwd = task_details.get("tm_pwd")

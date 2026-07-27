@@ -28,7 +28,18 @@ from utilities.notifications_functions.pending_approval import pending_approval
 
 def notifications_check(driver, module_name=None, test_case_id=None):
     wait = WebDriverWait(driver, 30)
-    driver.get("https://preprodreact.compliancesutra.com/login")
+    # driver.get("https://preprodreact.compliancesutra.com/login")
+    target_url = None
+    
+    if "192.168.30.11:8081" in driver.current_url:
+        target_url = "http://192.168.30.11:8081/login"
+    elif "preprodreact.compliancesutra.com" in driver.current_url:
+        target_url = "https://preprodreact.compliancesutra.com/login"
+    else:
+        # Default login URL
+        target_url = "https://preprodreact.compliancesutra.com/login"
+
+    driver.get(target_url)
     # #  ✅ Step 1: Login Check
     with allure.step("Login with valid credentials"):
         print("🔐 Logging in with valid credentials...")

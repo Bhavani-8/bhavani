@@ -22,7 +22,11 @@ def setup(request):
         df = pd.read_excel(os.path.join('data', 'test_case_selector.xlsx'), sheet_name='credentials')
         print(f'Test Details from setup():\n{df}')
         browser = str(df['browser'].iloc[0])
-        print(f'Selected browser: {browser}')
+        # print(f'Selected browser: {browser}')
+        website = str(df['website'].iloc[0]).strip().lower()
+
+        print(f"Selected browser: {browser}")
+        print(f"Selected website: {website}")
 
         # with open(os.path.join('data', 'test_data.json'), 'r') as f:
         #     test_data = json.load(f)
@@ -74,7 +78,7 @@ def setup(request):
         # Load locators.json to get URL
         with open(os.path.join('data', 'locators.json'), 'r') as f:
             locators = json.load(f)
-        urls_data = locators['new_server_urls']
+        # urls_data = locators['new_server_urls']
         # if website == "new_server":
         #     urls_data = locators['new_server_urls']
         #elif website == "onprem"
@@ -83,6 +87,12 @@ def setup(request):
         #     urls_data = locators['preprod_urls']
         # else:
         #     pytest.fail("Invalid website in config files, please check your configuration.")
+        if website == "new_server":
+            urls_data = locators["new_server_urls"]
+        elif website == "preprod":
+            urls_data = locators["preprod_urls"]
+        else:
+            pytest.fail(f"Invalid website: {website}. Please use 'new_server' or 'preprod'.")
         target_url = urls_data.get(module_marker)   # To select Target URL
 
         if not target_url:

@@ -33,7 +33,7 @@ def mark_circular_as_na(driver, wait, license_name):
             column_filter_company_project = elements_details['column_filter_company_project']
             column_filter_search_input = elements_details['column_filter_search_input']
             column_filter_ok_btn = elements_details['column_filter_ok_btn']
-            column_filter_cancel_btn = elements_details['column_filter_cancel_btn']
+            dash_search_close_btn = elements_details['dash_search_close_btn']
             dash_total_btn = elements_details['dash_total_btn']
             task_search_btn = elements_details['task_search_btn']
             task_search_input = elements_details['task_search_input']
@@ -341,7 +341,7 @@ def mark_circular_as_na(driver, wait, license_name):
             raise Exception(msg)
     with allure.step("Click close button on task details panel"):
         try:
-            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, task_search_close_btn)))
+            search_close_btn = wait.until(EC.presence_of_element_located((By.XPATH, dash_search_close_btn)))
             highlight_element(driver, search_close_btn)
             search_close_btn.click()
             wait_for_loader_to_disappear(driver, wait)

@@ -185,7 +185,7 @@ def upload_file_bulk_action(driver, wait, task_name='Internal Task'):
             search_input = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_search_input)))
             search_input.clear()
             search_input.send_keys(task_name)
-            time.sleep(3)
+            time.sleep(4)
         except Exception as e:
             msg = f"Failed to Open Company Project filter: {str(e)}"
             print(msg)
@@ -243,6 +243,7 @@ def upload_file_bulk_action(driver, wait, task_name='Internal Task'):
             highlight_element(driver, search_input)
             search_input.clear()
             search_input.send_keys(username)
+            time.sleep(3)
 
             print(f"🔍 Searching Creator filter using username: {username}")
             allure.attach(username, "Creator Filter Search Value", allure.attachment_type.TEXT)
