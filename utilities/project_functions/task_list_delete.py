@@ -4,17 +4,11 @@ import json
 import os
 import time
 import random
-import pandas as pd
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
-from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
-from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
-from utilities.add_task_utils import add_task_check
 from selenium.webdriver import ActionChains
-from selenium.common.exceptions import StaleElementReferenceException
-from selenium.common.exceptions import TimeoutException
 
    
 def task_list_delete(driver, wait):

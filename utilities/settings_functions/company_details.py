@@ -3,26 +3,16 @@ import allure
 import os
 import json
 import time
-import pyautogui as pg
 import pytest
 import random
 
 from selenium.webdriver import ActionChains
-from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.keys import Keys
-
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import TimeoutException
 from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.add_task_utils import wait_for_loader_to_disappear
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
 
 def company_details(driver, wait, company_name):
 
@@ -59,8 +49,15 @@ def company_details(driver, wait, company_name):
 
            
             print("✅ locators.json loaded successfully")
-        except Exception as e:
-            allure.attach(str(e), name="Locators Load Error", attachment_type=allure.attachment_type.TEXT)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
             return False
     
     with allure.step("👤 Reading User Title from Dashboard"):
@@ -74,57 +71,88 @@ def company_details(driver, wait, company_name):
             allure.attach(username, "Logged-in Username", allure.attachment_type.TEXT)
 
         except Exception as e:
-            step_fail(driver, "Reading user title failed", e)
+            msg = f"Failed to Reading user title: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Reading user title Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Create Company"):
-        print()
-        print("➤ Starting company creation flow")
-        settings_btn = wait.until(EC.presence_of_element_located((By.XPATH, settings_icon)))
-        highlight_element(driver, settings_btn)
-        settings_btn.click()
-        print("✅ Settings Icon Clicked")
-        time.sleep(2)
-
-        # Click Company 
-        company_btn = wait.until(EC.presence_of_element_located((By.XPATH, select_company_btn)))
-        highlight_element(driver, company_btn)
-        company_btn.click()
-        print("✅ Company Button Clicked")
-        time.sleep(2)
-
-        # Click Add Another Company
-        add_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_another_btn)))
-        highlight_element(driver, add_btn)
-        add_btn.click()
-        print("✅ Add Another Company Button Clicked")
-        time.sleep(1)
+        try:
+            settings_btn = wait.until(EC.presence_of_element_located((By.XPATH, settings_icon)))
+            highlight_element(driver, settings_btn)
+            settings_btn.click()
+            print("✅ Settings Icon Clicked")
+            time.sleep(2)
+        except Exception as e:
+            msg = f"Failed to Click Settings Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Settings Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
+        try: 
+            company_btn = wait.until(EC.presence_of_element_located((By.XPATH, select_company_btn)))
+            highlight_element(driver, company_btn)
+            company_btn.click()
+            print("✅ Company Button Clicked")
+            time.sleep(2)
+        except Exception as e:
+            msg = f"Failed to Click Company button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="company button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
+        try:
+       
+            add_btn = wait.until(EC.presence_of_element_located((By.XPATH, add_another_btn)))
+            highlight_element(driver, add_btn)
+            add_btn.click()
+            print("✅ Add Another Company Button Clicked")
+            time.sleep(1)
+        except Exception as e:
+            msg = f"Failed to Click Add button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Add button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
         
     with allure.step("Enter Company Name"):
-        # Click Add Company Name
-        company_input = wait.until(EC.presence_of_element_located((By.XPATH, company_name_input)))
-        highlight_element(driver, company_input)
-        company_input.click()
-        unique_company_name = f"{company_name}_{random.randint(1000, 9999)}"
-        company_input.send_keys(unique_company_name)
-        # Save latest company name
-        company_file = os.path.join("latest_data", "latest_company.txt")
-        with open(company_file, "w") as f:
-            f.write(unique_company_name)
+        try:
+            company_input = wait.until(EC.presence_of_element_located((By.XPATH, company_name_input)))
+            highlight_element(driver, company_input)
+            company_input.click()
+            unique_company_name = f"{company_name}_{random.randint(1000, 9999)}"
+            company_input.send_keys(unique_company_name)
+            # Save latest company name
+            company_file = os.path.join("latest_data", "latest_company.txt")
+            with open(company_file, "w") as f:
+                f.write(unique_company_name)
 
-        print(f"✅ Company Name Created: {unique_company_name}")
+            print(f"✅ Company Name Created: {unique_company_name}")
 
-        time.sleep(1)
-        print("✅ Company Name Entered")
+            time.sleep(1)
+
+        except Exception as e:
+            msg = f"Failed to Enter Company Name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Company name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
 
     with allure.step("Select Company Type"):
-        company_type_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, company_type_dropdown_btn)))
-        highlight_element(driver, company_type_dropdown)
-        company_type_dropdown.click()
-        time.sleep(0.5)
-        first_option = wait.until(EC.element_to_be_clickable((By.XPATH, select_first_option)))
-        highlight_element(driver, first_option)
-        first_option.click()
-        print("✅ Selected first option from Company Type dropdown")
-
+        try:
+            company_type_dropdown = wait.until(EC.element_to_be_clickable((By.XPATH, company_type_dropdown_btn)))
+            highlight_element(driver, company_type_dropdown)
+            company_type_dropdown.click()
+            time.sleep(0.5)
+            first_option = wait.until(EC.element_to_be_clickable((By.XPATH, select_first_option)))
+            highlight_element(driver, first_option)
+            first_option.click()
+            print("✅ Selected first option from Company Type dropdown")
+        except Exception as e:
+            msg = f"Failed to Click Company Dropdown: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Company Dropdown Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
     with allure.step("Select Country Name"):
         try:
             select_country = wait.until(EC.presence_of_element_located((By.XPATH, select_country_dropdown)))
@@ -136,8 +164,11 @@ def company_details(driver, wait, company_name):
             highlight_element(driver, country_option)
             country_option.click()
         except Exception as e:
-            step_fail(driver, "Select Country Name", e)
-
+            msg = f"Failed to Select Country name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Country name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
     with allure.step("Enter Pincode Number"):
         try:
             pincode_input = wait.until(EC.presence_of_element_located((By.XPATH, country_pincode_input)))
@@ -146,8 +177,11 @@ def company_details(driver, wait, company_name):
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(3)
         except Exception as e:
-            step_fail(driver, "Enter Pincode Number", e)
-                    
+            msg = f"Failed to Enter Pincode number: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Pincode number Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+              
 
     with allure.step("Assign Compliance Officer"):
         try:
@@ -163,8 +197,11 @@ def company_details(driver, wait, company_name):
             compliance_officer_label = wait.until(EC.presence_of_element_located((By.XPATH, co_officer_label)))
             compliance_officer_label.click()
         except Exception as e:
-            step_fail(driver, "Assign Compliance Officer", e)
-
+            msg = f"Failed to select assign name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Assign name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
     
     with allure.step("Add License"):
         try:
@@ -190,8 +227,11 @@ def company_details(driver, wait, company_name):
             print("✅ License Added")
 
         except Exception as e:
-            step_fail(driver, "Add License", e)
-
+            msg = f"Failed to Click License button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="License button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
     with allure.step("Add Company"):
         try:
             add_company_btn = wait.until(EC.element_to_be_clickable((By.XPATH, inside_add_company)))
@@ -205,8 +245,11 @@ def company_details(driver, wait, company_name):
             print("🟦 Add Company clicked")
 
         except Exception as e:
-            step_fail(driver, "Add Company Click Failed", e)
-
+            msg = f"Failed to click add company button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Company button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
 
     with allure.step("Toast Msg"):
         try:
@@ -215,18 +258,21 @@ def company_details(driver, wait, company_name):
             print(f"📢 Toast message: {toast.text.strip()}")
             time.sleep(7)
         except Exception as e:
-            step_fail(driver, "Toast Message Verification", e)
-
+            msg = f"Toast message not found: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+            
     with allure.step("Fetch Company Name from Company Details"):
-
-        company_name_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//td[contains(text(),'{company_name}')]")))
-        driver.execute_script("arguments[0].scrollIntoView({block:'center'});", company_name_elem)
-        highlight_element(driver, company_name_elem, 0.2)
-        fetched_company = company_name_elem.text.strip()
-        print(f"Company Name from Settings: {fetched_company}")
-        allure.attach(fetched_company,name="Settings Company Name",attachment_type=allure.attachment_type.TEXT)
-        
-        time.sleep(2)
+        try:
+            company_name_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//td[contains(text(),'{company_name}')]")))
+            driver.execute_script("arguments[0].scrollIntoView({block:'center'});", company_name_elem)
+            highlight_element(driver, company_name_elem, 0.2)
+            fetched_company = company_name_elem.text.strip()
+            print(f"Company Name from Settings: {fetched_company}")
+            allure.attach(fetched_company,name="Settings Company Name",attachment_type=allure.attachment_type.TEXT)
+            
+            time.sleep(2)
         # personal_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//span[text()='Personal']")))
         # driver.execute_script("arguments[0].scrollIntoView({block:'center'});", personal_btn)
         # highlight_element(driver, personal_btn)
@@ -243,6 +289,12 @@ def company_details(driver, wait, company_name):
         # highlight_element(driver, save_btn)
         # save_btn.click()
         # time.sleep(2)
+    
+        except Exception as e:
+            msg = f"Failed to Fetch company name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Fetch company name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Open Dashboard"):
         try:
             
@@ -253,8 +305,9 @@ def company_details(driver, wait, company_name):
             wait_for_loader_to_disappear(driver, wait)
             print("✅ Dashboard icon clicked")
         except Exception as e:
+            msg = f"Failed to click Dashboard Icon: {str(e)}"
             allure.attach(str(e), name="Dashboard Open Error", attachment_type=allure.attachment_type.TEXT)
-            return False
+            raise Exception(msg)
     with allure.step("Validate License Subscription after login"):
         try:
             if validate_license_subscription(driver):
@@ -272,15 +325,23 @@ def company_details(driver, wait, company_name):
             total_tab.click()
             wait_for_loader_to_disappear(driver, wait)
             time.sleep(2)
-        except Exception as err:
-            allure.attach(str(err), "Total tab error", allure.attachment_type.TEXT)
-            pytest.fail("Failed to click Total tab")
+        except Exception as e:
+            msg = f"Failed to Click Total tab: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Total tab Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Open Column Chooser from task list"):
-        column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
-        highlight_element(driver, column_chooser_btn_elem)
-        driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
-        print("Clicked Column Chooser button")
-        wait_for_loader_to_disappear(driver, wait)
+        try:
+            column_chooser_btn_elem = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_btn)))
+            highlight_element(driver, column_chooser_btn_elem)
+            driver.execute_script("arguments[0].click();", column_chooser_btn_elem)
+            print("Clicked Column Chooser button")
+            wait_for_loader_to_disappear(driver, wait)
+        except Exception as e:
+            msg = f"Failed to Click Column chooser button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Column chooser Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     
         def get_state(elem):
             """
@@ -327,9 +388,12 @@ def company_details(driver, wait, company_name):
 
             print("✅ 'Select All' normalized successfully")
 
-        except StaleElementReferenceException:
-            pytest.fail("❌ Stale element while normalizing Select All")
-    with allure.step("Select 'Company / Project, License' from Column Chooser"): 
+        except Exception as e:
+            msg = f"Failed to Selecting all: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Selecting all Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    with allure.step("Select 'Company / Project from Column Chooser"): 
         try:
             company_project_option_elm = wait.until(EC.presence_of_element_located((By.XPATH, column_chooser_company_project)))
             actions = ActionChains(driver)
@@ -344,39 +408,52 @@ def company_details(driver, wait, company_name):
             print("✅ Column Chooser saved")
             wait_for_loader_to_disappear(driver, wait)
 
-        except TimeoutException:
-            print("❌ 'Company / Project' not found in filter list") 
-
+        except Exception as e:
+            msg = f"Failed to Clicking Company/project option: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Approver Option Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step(f"Click Company/Project and License filter option"): 
-        company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
-        time.sleep(2)
-        highlight_element(driver, company_project_filter_btn)
-        company_project_filter_btn.click()
-        wait_for_loader_to_disappear(driver, wait)
-        
-        search_input = wait.until(EC.visibility_of_element_located((By.XPATH, search_input)))
-        search_input.clear()
-        search_input.send_keys(unique_company_name)
-        wait_for_loader_to_disappear(driver, wait)
-        time.sleep(5)
+        try:
+            company_project_filter_btn = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_company_project)))
+            time.sleep(2)
+            highlight_element(driver, company_project_filter_btn)
+            company_project_filter_btn.click()
+            wait_for_loader_to_disappear(driver, wait)
+            
+            search_input = wait.until(EC.visibility_of_element_located((By.XPATH, search_input)))
+            search_input.clear()
+            search_input.send_keys(unique_company_name)
+            wait_for_loader_to_disappear(driver, wait)
+            time.sleep(5)
 
-        company_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{unique_company_name}']")))
-        highlight_element(driver, company_option)
-        company_option.click()
+            company_option = wait.until(EC.element_to_be_clickable((By.XPATH, f"//div[contains(@class,'dx-list-item-content') and normalize-space()='{unique_company_name}']")))
+            highlight_element(driver, company_option)
+            company_option.click()
         
-        column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
-        column_filter_ok.click()
-        wait_for_loader_to_disappear(driver, wait)
-        time.sleep(5)
+            column_filter_ok = wait.until(EC.presence_of_element_located((By.XPATH, column_filter_ok_btn)))
+            column_filter_ok.click()
+            wait_for_loader_to_disappear(driver, wait)
+            time.sleep(5)
+        except Exception as e:
+            msg = f"Failed to Open Company Project filter: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Company Project filter Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Fetch Company Name from Dashboard"):
-        company_project_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//td//p[contains(normalize-space(),'{unique_company_name}')]")))
-        driver.execute_script("arguments[0].scrollIntoView({block:'center'});", company_project_elem)
-        highlight_element(driver, company_project_elem, 0.2)
-        fetched_dashboard_company = company_project_elem.text.strip()
-        print(f"Company Name from Dashboard: {fetched_dashboard_company}")
-        allure.attach(fetched_dashboard_company,name="Dashboard Company Name",attachment_type=allure.attachment_type.TEXT)
-       
+        try:
+            company_project_elem = wait.until(EC.visibility_of_element_located((By.XPATH, f"//td//p[contains(normalize-space(),'{unique_company_name}')]")))
+            driver.execute_script("arguments[0].scrollIntoView({block:'center'});", company_project_elem)
+            highlight_element(driver, company_project_elem, 0.2)
+            fetched_dashboard_company = company_project_elem.text.strip()
+            print(f"Company Name from Dashboard: {fetched_dashboard_company}")
+            allure.attach(fetched_dashboard_company,name="Dashboard Company Name",attachment_type=allure.attachment_type.TEXT)
+        except Exception as e:
+            msg = f"Failed to Fetch Company name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Fetch Company name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
     with allure.step("Verify Company Name in Dashboard"):
         try:
             # If dashboard text contains extra values like company/license
@@ -390,7 +467,12 @@ def company_details(driver, wait, company_name):
             else:
                 error_msg = (f"❌ Company Name Mismatch!\n"f"Expected: {unique_company_name}\n"f"Settings Company: {fetched_company}\n"f"Dashboard Company: {fetched_dashboard_company}")
                 print(error_msg)
-                step_fail(driver, "Company Name Mismatch", error_msg)
+                allure.attach(error_msg, name="Company name Error", attachment_type=allure.attachment_type.TEXT)
+               
 
         except Exception as e:
-            step_fail(driver, "Verify Company Name in Dashboard", e)
+            msg = f"Failed to Validate company name: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Company name Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+    return True

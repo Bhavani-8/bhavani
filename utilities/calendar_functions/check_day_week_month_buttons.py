@@ -1,16 +1,9 @@
 import allure
-
 import time
-import pyautogui as pg
-import pytest
-import random
 import os
 import json
-
-
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from utilities.other_utils_functions.highlight import highlight_element
 

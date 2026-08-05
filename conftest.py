@@ -3,7 +3,10 @@ import pytest
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from setup_logger import setup_logger
+
+# logger = setup_logger("TA")
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 def pytest_collection_modifyitems(config, items):
     for item in items:
@@ -48,4 +51,32 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.overall_flow_path)
         elif 'test_notification.py' in item.nodeid:
             item.add_marker(pytest.mark.notification)
+        elif 'test_audit.py' in item.nodeid:
+            item.add_marker(pytest.mark.audit)
 
+
+# @pytest.hookimpl(hookwrapper=True)
+# def pytest_runtest_makereport(item, call):
+#     """
+#     Automatically log test execution status.
+#     """
+#     outcome = yield
+#     report = outcome.get_result()
+
+#     if report.when == "setup":
+#         logger.info("=" * 100)
+#         logger.info(f"STARTING TEST : {item.nodeid}")
+
+#     elif report.when == "call":
+#         if report.passed:
+#             logger.info(f"TEST PASSED : {item.nodeid}")
+
+#         elif report.failed:
+#             logger.error(f"TEST FAILED : {item.nodeid}")
+
+#         elif report.skipped:
+#             logger.warning(f"TEST SKIPPED : {item.nodeid}")
+
+#     elif report.when == "teardown":
+#         logger.info(f"FINISHED TEST : {item.nodeid}")
+#         logger.info("=" * 100 + "\n")

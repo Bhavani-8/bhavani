@@ -8,7 +8,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from utilities.other_utils_functions.highlight import highlight_element
 import pyautogui as pg
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 def export_all_data(driver, wait):
     wait_less = WebDriverWait(driver, 5)

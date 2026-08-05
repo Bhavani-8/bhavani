@@ -124,7 +124,7 @@
     "task_company_label": "//div[@class='task-details-title truncate w-3/4']",
     "task_action_log_section": "//p[@class='mb-0! pl-3 holding-list-bold-title truncate']",
     
-    "dashboard_icon": "//button[@title='Dashboard']",
+
     "dash_overdue_btn": "//button[span[text()='Overdue']]",
     "dash_today_btn": "//button[span[text()='Today']]",
     "dash_6_days_btn": "//button[span[text()='Next 6 Days']]",
@@ -361,6 +361,19 @@
     "inside_add_licenses": "(//button[contains(.,'Add License')])[2]",
     "inside_add_company": "(//button[text()='Add Company'])[2]",
     "search_input": "//input[@aria-label='Search' and contains(@class,'dx-texteditor-input')]",
+    "team_members_btn": "//span[text()='Team Members']",
+    "team_add_btn": "//button[normalize-space()='Add New']",
+    "dep_full_name_elem": "//input[@name='full_name']",
+    "designation_email_name": "//input[@name='email']",
+    "team_invite_btn": "//button[.//span[text()='Invite']]",
+    "department_dropdown_btn": "//div[contains(@class,'control') and .//div[text()='Select department...']]",
+    "designation_dropdown_btn":"//div[contains(@class,'control') and .//div[text()='Select designation...']]",
+    "invitations_tab_btn": "//div[text()='Invitations']",
+    "upload_users_btn": "//button[text()='UPLOAD USERS']",
+    "upload_yes_btn": "//button[span[contains(text(),'Yes')]]",
+    "invitations_req_btn": "//div[text()='Invitation Requests']",
+    "bulk_download_template": "//div[@class='add-new-plus mr-1 cursor-pointer']//a",
+
 
     "calendar_day_btn": "//button[.//span[text()='Day']]",
     "calendar_week_btn":"//button[.//span[text()='Week']]",
@@ -368,23 +381,36 @@
     "calendar_filter_btn": "//div[@class='ant-picker-input']",
     "calendar_today_btn":"//td[contains(@class,'ant-picker-cell-today')]//div",
 
-    "special_task_icon": "//button[@title='Special Task']",
-    "calendar_icon": "//button[@title='Calendar']",
-    "notification_icon": "//button[@title='Notifications']",
-    "compliance_hist_icon": "//button[@title='Compliance History']",
-    "project_icon": "//button[@title='Project']",
-    "updates_icon": "//button[@title='Updates']",
-    "trash_icon": "//button[@title='Trash']",
-    "audit_icon": "//button[@title='Audit']",
+
+    "dashboard_icon": "(//img[@alt='Dashboard'])[1]",
+    "special_task_icon": "(//img[@alt='Special Task'])[1]",
+    "calendar_icon": "(//img[@alt='Calendar'])[1]",
+    "notification_icon": "(//img[@alt='Notifications'])[1]",
+    "compliance_hist_icon": "(//img[@alt='Compliance History'])[1]",
+    "project_icon": "(//img[@alt='Project'])[1]",
+    "updates_icon": "(//img[@alt='Updates'])[1]",
+    "trash_icon": "(//img[@alt='Trash'])[1]",
+    "audit_icon": "(//img[@alt='Audit'])[1]",
     "other_compliance_icon": "//button[@title='Other Compliance']",
-    "settings_icon": "//button[@title='Settings']",
+    "settings_icon": "//img[@alt='Settings']",
     "suggestion_icon": "//button[@title='Suggestion']",
-    "logout_icon": "//button[@title='Logout']",
+    "logout_icon": "(//button[@data-base-ui-tooltip-trigger])[12]",
 
 
     "onprem_login_btn": "//button[text()='Login']",
     "onprem_dashboard_icon": "//img[@title='Dashboard']",
+    "onprem_special_task_icon": "//button[@title='Special Task']",
+    "onprem_calendar_icon": "//button[@title='Calendar']",
+    "onprem_notification_icon": "//button[@title='Notifications']",
+    "onprem_compliance_hist_icon": "//button[@title='Compliance History']",
+    "onprem_project_icon": "//button[@title='Project']",
+    "onprem_updates_icon": "//button[@title='Updates']",
+    "onprem_trash_icon": "//button[@title='Trash']",
+    "onprem_audit_icon": "//button[@title='Audit']",
+    "onprem_other_compliance_icon": "//button[@title='Other Compliance']",
     "onprem_settings_icon": "//img[@title='Settings']",
+    "onprem_suggestion_icon": "//button[@title='Suggestion']",
+    "onprem_logout_icon": "//button[@title='Logout']",
     "onprem_task_license_label":"//span[@class='nse-label d-none d-md-block']",
    
     
@@ -413,6 +439,7 @@
         "project_management": "https://preprodreact.compliancesutra.com/project-management",
         "updates": "https://preprodreact.compliancesutra.com/updates",
         "trash": "https://preprodreact.compliancesutra.com/project-trash",
+        "audit": "https://preprodreact.compliancesutra.com/audit/templates",
         "overall_happy_path_flow": "https://preprodreact.compliancesutra.com/dashboard-view",
 
         

@@ -5,7 +5,6 @@ import json
 import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 from utilities.other_utils_functions.highlight import highlight_element
 from selenium.webdriver import ActionChains
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear

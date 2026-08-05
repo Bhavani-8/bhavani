@@ -6,6 +6,7 @@ import pyautogui
 import threading
 import time
 import os
+import ctypes
 
 
 class ScreenRecorder:
@@ -17,12 +18,13 @@ class ScreenRecorder:
 
     def start(self):
        
-        width, height = pyautogui.size()
+        user32 = ctypes.windll.user32
 
-        taskbar_height = 50
-        self.region = (0, 0, width, height - taskbar_height)
-        self.video_size = (width, height - taskbar_height)
+        width = user32.GetSystemMetrics(0)          # Screen width
+        height = user32.GetSystemMetrics(1)         # Screen height
+        work_height = user32.GetSystemMetrics(17)   # Height excluding taskbar
 
+        self.video_size = (width, work_height)
         fourcc = cv2.VideoWriter_fourcc(*"avc1")   
         self.raw_file = self.filename  
 
@@ -44,14 +46,10 @@ class ScreenRecorder:
                 img = pyautogui.screenshot()
                 frame = np.array(img)
 
-                if frame is None or frame.size == 0:
-                    # print("❌ Empty frame")
-                    continue
+                # Remove the taskbar from the bottom
+                frame = frame[:self.video_size[1], :, :]
 
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
-                # ✅ EXACT SIZE MATCH
-                frame = cv2.resize(frame, self.video_size)
 
                 self.out.write(frame)
                 frame_count += 1
@@ -79,7 +77,6 @@ class ScreenRecorder:
                 os.rename(self.raw_file, self.final_file)
                 print("✅ Video saved:", self.final_file)
         except Exception as e:
-            # print("❌ Rename failed:", e)
             pass
 
         return True

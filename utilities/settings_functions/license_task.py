@@ -6,13 +6,11 @@ import os
 import json
 import pytest
 import time
-
-from selenium.common.exceptions import TimeoutException
 from utilities.other_utils_functions.highlight import highlight_element
 from selenium.webdriver import ActionChains
 from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.add_task_utils import wait_for_loader_to_disappear
-from selenium.common.exceptions import StaleElementReferenceException
+
 
 def license_task(driver, wait, company_name, license_name):
     wait_less = WebDriverWait(driver, 5)

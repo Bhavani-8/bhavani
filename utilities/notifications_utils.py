@@ -2,13 +2,11 @@ import allure
 import pandas as pd
 import os
 import pytest
-
 from utilities.login_utils import login_check
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from selenium.webdriver.support.ui import WebDriverWait
-from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.add_task_utils import add_task_check
 from load_test_config_excel_data import load_test_config_excel_data
 # from utilities.add_task_utils import get_test_case_list

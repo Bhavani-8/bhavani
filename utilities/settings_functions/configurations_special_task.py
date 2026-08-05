@@ -2,9 +2,6 @@ import allure
 import os
 import json
 import time
-import pyautogui as pg
-import pytest
-import random
 import pandas as pd
 from utilities.add_task_functions.add_task_common import task_value_store
 from utilities.add_task_functions.add_task_common import task_value_get
@@ -13,15 +10,9 @@ from selenium.webdriver.common.by import By
 from utilities.special_add_task_utils import special_task_check
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
-
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import TimeoutException
-from utilities.add_task_utils import wait_for_loader_to_disappear
 
-def step_fail(driver, step_name, error):
-    allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-    allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-    pytest.fail(f"❌ {step_name} failed")
+
 
 def configurations_special_task(driver, wait, config_special_task_name):
 
@@ -34,8 +25,16 @@ def configurations_special_task(driver, wait, config_special_task_name):
             config_btn_elem = elements_details['config_btn_elem']
             config_submit = elements_details['config_submit']
            
-        except Exception as e:
-            step_fail(driver, "Load locators.json", e)
+        except FileNotFoundError as e:
+            msg = f"locators.json file not found: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators File Missing", attachment_type=allure.attachment_type.TEXT)
+            return False
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON in locators.json: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Locators JSON Error", attachment_type=allure.attachment_type.TEXT)
+            return False
 
     with allure.step("Click Settings"):
         try:
@@ -43,7 +42,10 @@ def configurations_special_task(driver, wait, config_special_task_name):
             highlight_element(driver, settings_btn)
             settings_btn.click()
         except Exception as e:
-            step_fail(driver, "Click Settings", e)
+            msg = f"Failed to Click Settings Icon: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Settings Icon Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     with allure.step("Click on configurations"):
         try:
@@ -51,8 +53,10 @@ def configurations_special_task(driver, wait, config_special_task_name):
             highlight_element(driver, configurations_btn)
             configurations_btn.click()
         except Exception as e:
-            step_fail(driver, "Click configurations", e)
-    
+            msg = f"Failed to Click Configurations: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Confiigurations Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
     normal_switches = [
         {
@@ -112,7 +116,10 @@ def configurations_special_task(driver, wait, config_special_task_name):
         time.sleep(2)
 
     except Exception as e:
-        print(f"❌ Failed to click submit button: {e}")
+        msg = f"Failed to Click Submit button: {str(e)}"
+        print(msg)
+        allure.attach(msg, name="Submit button Error", attachment_type=allure.attachment_type.TEXT)
+        raise Exception(msg)
 
 
     special_switches = [
@@ -169,22 +176,28 @@ def configurations_special_task(driver, wait, config_special_task_name):
             allure.attach(str(e),name=f"{switch['label']} Error",attachment_type=allure.attachment_type.TEXT)
 
     # Submit once after special task switches
-    try:
-        submit_btn = wait.until(EC.element_to_be_clickable((By.XPATH, config_submit)))
-        highlight_element(driver, submit_btn)
-        submit_btn.click()
-        print("✅ Special task configuration submitted successfully.")
-        time.sleep(2)
+        try:
+            submit_btn = wait.until(EC.element_to_be_clickable((By.XPATH, config_submit)))
+            highlight_element(driver, submit_btn)
+            submit_btn.click()
+            print("✅ Special task configuration submitted successfully.")
+            time.sleep(2)
 
-    except Exception as e:
-        print(f"❌ Failed to click submit button: {e}")
-            
+        except Exception as e:
+            msg = f"Failed to Click Submit button: {str(e)}"
+            print(msg)
+            allure.attach(msg, name="Submit button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+                
         try:
             toast = wait.until(EC.presence_of_element_located((By.XPATH, toast_msg)))
             highlight_element(driver, toast)
             print(f"📢 Toast message: {toast.text.strip()}")
-        except Exception:
-            print("❌ No toast message found")
+        except Exception as e:
+            msg = f"Toast message not found: {str(e)}"
+            print(msg)
+            allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
 
 
     test_case_details = pd.read_excel(os.path.join("data", "test_case_selector.xlsx"), sheet_name=f"special_add_task_test_cases").fillna("")

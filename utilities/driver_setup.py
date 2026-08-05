@@ -70,6 +70,8 @@ def setup(request):
             module_marker = "project_management"
         elif "settings" in calling_file:
             module_marker = "settings"
+        elif "audit" in calling_file:
+            module_marker = "audit"
         elif "overall_happy_path_flow" in calling_file:
             module_marker = "dashboard"
         else:
@@ -81,8 +83,7 @@ def setup(request):
         # urls_data = locators['new_server_urls']
         # if website == "new_server":
         #     urls_data = locators['new_server_urls']
-        #elif website == "onprem"
-            # urls_data == locators['onprem_urls']
+        
         # elif website == "preprod":
         #     urls_data = locators['preprod_urls']
         # else:
@@ -91,6 +92,8 @@ def setup(request):
             urls_data = locators["new_server_urls"]
         elif website == "preprod":
             urls_data = locators["preprod_urls"]
+        elif website == "onprem":
+            urls_data = locators['onprem_urls']
         else:
             pytest.fail(f"Invalid website: {website}. Please use 'new_server' or 'preprod'.")
         target_url = urls_data.get(module_marker)   # To select Target URL

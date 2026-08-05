@@ -2,33 +2,13 @@ import os
 import json
 import allure
 from selenium.webdriver.common.by import By
-from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from utilities.other_utils_functions.highlight import highlight_element
 from datetime import datetime, timedelta
 import time
-import pytest
-from selenium.common.exceptions import TimeoutException
-
-import pyautogui as pg
-from selenium.webdriver.common.keys import Keys
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
-# def step_fail(driver, step_name, error):
-#     allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)
-#     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
-#     pytest.fail(f"❌ {step_name} failed")
-# def attach_failure_artifacts(driver, test_name, error):
-#     """Capture screenshot + attach error text to Allure"""
-#     try:
-#         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-#         os.makedirs("screenshots", exist_ok=True)
-#         screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
-#         driver.save_screenshot(screenshot_path)
-#         allure.attach.file(screenshot_path,name=f"Failure Screenshot - {test_name}",attachment_type=allure.attachment_type.PNG)
-#     except Exception as e:
-#         step_fail(driver, "Login failed", e)
 
 def get_outer_element(current_elem, levels_up=1):
     outer_elem = current_elem
@@ -51,9 +31,7 @@ def column_filter_validation(driver, wait):
 
 
     dash_col_filter_button_template = elements_details['dash_col_filter_button_template']
-    dash_col_filter_search_btn = elements_details['dash_col_filter_search_btn']
     dash_col_filter_ok_btn = elements_details['dash_col_filter_ok_btn']
-    dash_col_filter_cancel_btn = elements_details['dash_col_filter_cancel_btn']
     dash_filter_reset_btn = elements_details['dash_filter_reset_btn']
     dash_total_btn = elements_details['dash_total_btn']
     toast_msg = elements_details['toast_msg']

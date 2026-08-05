@@ -5,17 +5,11 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from datetime import datetime, date, time as dt_time
-from dateutil.parser import parse
-from calendar import monthrange
-from dateutil import parser
-import pyautogui as pg
 import pandas as pd
 import pytest
 import allure
-import random
 import time
 import json
-import re
 import os
 from utilities.add_task_functions.show_toast import show_toast
 from utilities.add_task_functions.add_task_common import task_value_get

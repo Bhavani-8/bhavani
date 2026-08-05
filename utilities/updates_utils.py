@@ -10,7 +10,6 @@ import pytest
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.login_utils import login_check
 from utilities.other_utils_functions.highlight import highlight_element
-from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.highlight import highlight_element
 from utilities.updates_functions.send_email import send_circular_to_user
 from utilities.updates_functions.add_task_updates import updates_add_task

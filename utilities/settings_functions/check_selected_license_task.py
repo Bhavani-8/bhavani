@@ -10,8 +10,6 @@ from datetime import datetime
 
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.keys import Keys
 
 from utilities.other_utils_functions.highlight import highlight_element
 from selenium.common.exceptions import TimeoutException

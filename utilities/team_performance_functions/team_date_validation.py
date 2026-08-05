@@ -2,17 +2,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import allure
 import time
-import pytest
-import json
 from datetime import datetime, timedelta
-
-import os
-from selenium.webdriver import ActionChains
 import re
 import pyautogui as pg  
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
-from selenium.webdriver.common.keys import Keys
 
 def date_validation(driver, wait, dash_type=None):
     failures = []

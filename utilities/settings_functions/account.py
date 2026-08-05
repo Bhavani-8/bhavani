@@ -3,18 +3,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 import time
 import json
 import os
-import pyautogui as pg
 import pytest
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.action_chains import ActionChains
 
 def license_subscription(driver, user_validation=False):
     wait = WebDriverWait(driver, 7)

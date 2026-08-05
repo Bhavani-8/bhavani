@@ -1,23 +1,13 @@
-
-
 import allure
 import time
 import re
 import os
 import json
-import pytest
-
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
 
-
-# -----------------------------
-# 🔥 Helper: Apply Search
-# -----------------------------
 def apply_search(driver, wait, username):
     try:
         search_box = wait.until(EC.presence_of_element_located(

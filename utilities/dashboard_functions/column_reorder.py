@@ -2,10 +2,8 @@ import os
 import time
 import json
 import pandas as pd
-import pyautogui as pg
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-import pyautogui as pg
 import allure
 import pytest
 import json
@@ -13,11 +11,9 @@ import time
 import os
 import pandas as pd
 from selenium.webdriver.common.action_chains import ActionChains
-from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from utilities.login_utils import login_check
 from selenium.webdriver import ActionChains

@@ -1,20 +1,12 @@
-import pytest
 import os
 import json
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.webdriver import ActionChains
-import pyautogui as pg
 import time
 import allure
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
-from selenium.common.exceptions import StaleElementReferenceException
-
-
-
 
 
 def approval_not_complied_bulk_action(driver, wait):

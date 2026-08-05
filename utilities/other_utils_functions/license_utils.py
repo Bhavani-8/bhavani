@@ -22,8 +22,8 @@ def step_fail(driver, step_name, error):
     allure.attach(driver.get_screenshot_as_png(), name=f"{step_name} Screenshot", attachment_type=allure.attachment_type.PNG)
     pytest.fail(f"❌ {step_name} failed")
 def validate_license_subscription(driver, user_validation=False):
-    wait = WebDriverWait(driver, 7)
-    wait_less = WebDriverWait(driver, 3)
+    wait = WebDriverWait(driver, 3)
+    # wait_less = WebDriverWait(driver, 3)
     license_expired_count = 0
 
     
@@ -32,9 +32,7 @@ def validate_license_subscription(driver, user_validation=False):
         with allure.step(f"Validating License Subscription"):
             try:
                 # pg.press('esc')
-                expired_licenses = wait_less.until(
-                    EC.presence_of_all_elements_located((By.XPATH, "//button//span[text()='Renew Now']"))
-                )
+                expired_licenses = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//button//span[text()='Renew Now']")))
                 license_expired_count = len(expired_licenses)
                 print(f"✅ Expired Licenses Count: {license_expired_count}")
             # except TimeoutException:

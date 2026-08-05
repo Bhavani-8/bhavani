@@ -7,12 +7,9 @@ import pandas as pd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 from utilities.login_utils import login_check
 from utilities.other_utils_functions.highlight import highlight_element
 from load_test_config_excel_data import load_test_config_excel_data
-
-
 from utilities.notification_functions.search_task import _search_task_flow
 from utilities.notification_functions.notification_filter_flow import execute_filter_and_validate
 

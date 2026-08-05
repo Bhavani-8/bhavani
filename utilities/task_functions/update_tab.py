@@ -7,9 +7,7 @@ import allure
 import time
 import json
 import os
-
 from utilities.other_utils_functions.highlight import highlight_element
-from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.add_task_utils import add_task_check
 from utilities.add_task_utils import load_test_config_excel_data
 from utilities.add_task_utils import get_test_case_list

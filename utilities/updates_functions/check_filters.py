@@ -1,16 +1,11 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 import allure 
-import pandas as pd
-import pyautogui as pg
 import os
 import json
 import pytest
 import time
-from datetime import datetime, timedelta
-
-from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
+from datetime import datetime
 from utilities.other_utils_functions.highlight import highlight_element
 
 

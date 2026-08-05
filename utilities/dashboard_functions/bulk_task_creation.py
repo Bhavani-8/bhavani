@@ -2,16 +2,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-import pandas as pd
 import allure
 import os
 import json
 import pytest
 import time
-
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.highlight import highlight_element
-from utilities.search_utils import perform_search, clear_search
 
 
 def bulk_task_creation_check(driver, wait, bulk_task_name, filename, step_name):

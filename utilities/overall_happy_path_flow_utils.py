@@ -1,14 +1,9 @@
 # login_utils.py
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
 import pandas as pd
 import pytest
-import logging
 import allure
 import time
-import json
 import os
 
 from utilities.login_utils import login_check
@@ -33,7 +28,7 @@ from utilities.project_functions.milestone_delete import milestone_delete
 from utilities.settings_functions.personal_details import personal_details
 from utilities.settings_functions.create_department import create_department
 from utilities.settings_functions.create_designation import create_designation
-from utilities.settings_functions.team_members import invite_team_member
+from utilities.settings_functions.invite_team_members import invite_team_member
 from utilities.settings_functions.mark_circular_as_na import mark_circular_as_na
 
 

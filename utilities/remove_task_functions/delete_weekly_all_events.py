@@ -8,7 +8,6 @@ import json
 import pytest
 import os
 import pandas as pd
-from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid

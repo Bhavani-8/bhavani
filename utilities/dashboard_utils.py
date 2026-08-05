@@ -9,13 +9,11 @@ import allure
 import json
 import os
 import time
-import pyautogui as pg
 
 from utilities.dashboard_functions.search_task_by_non_existing_task_name import search_task_by_non_existing_task_name
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.login_utils import login_check
 from utilities.add_task_utils import wait_for_loader_to_disappear
-from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.dashboard_functions.bulk_task_creation import bulk_task_creation_check
 from utilities.dashboard_functions.upper_dashboard_validation import upper_dashboard_validation
 from utilities.dashboard_functions.lower_dashboard_validation import lower_dashboard_validation

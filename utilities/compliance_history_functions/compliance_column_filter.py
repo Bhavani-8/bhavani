@@ -5,13 +5,9 @@ import pytest
 import allure
 import time
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 from utilities.other_utils_functions.highlight import highlight_element
 from selenium.common.exceptions import TimeoutException
-
-from utilities.add_task_utils import wait_for_loader_to_disappear
 
 def compliance_column_filter(driver, wait):
 

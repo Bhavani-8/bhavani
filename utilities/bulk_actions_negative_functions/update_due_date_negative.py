@@ -9,9 +9,7 @@ from selenium.webdriver import ActionChains
 from datetime import datetime, timedelta
 import time
 import allure
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
-from selenium.common.exceptions import StaleElementReferenceException
 
 
 

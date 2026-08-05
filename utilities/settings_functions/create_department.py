@@ -2,14 +2,9 @@ import allure
 import os
 import json
 import time
-import pyautogui as pg
 import pytest
-import random
-
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 
 from utilities.other_utils_functions.highlight import highlight_element

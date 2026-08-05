@@ -18,7 +18,7 @@ from utilities.settings_functions.check_selected_license_task import check_selec
 from utilities.settings_functions.personal_details import personal_details
 from utilities.settings_functions.create_department import create_department
 from utilities.settings_functions.create_designation import create_designation
-from utilities.settings_functions.team_members import invite_team_member
+from utilities.settings_functions.invite_team_members import invite_team_member
 from utilities.settings_functions.task_category import task_category
 from utilities.settings_functions.mark_circular_as_na import mark_circular_as_na
 from utilities.settings_functions.not_applicable_export_data import not_applicable_export_data
@@ -30,6 +30,8 @@ from utilities.settings_functions.configurations_special_task import configurati
 from utilities.settings_functions.license_task import license_task
 from utilities.settings_functions.account import license_subscription
 from utilities.settings_functions.account_deactivation import account_deactivation_module
+from utilities.settings_functions.bulk_invitations import bulk_invitations
+from utilities.settings_functions.bulk_invitation_download_template import BulkInvitationDownloadTemplate
 
 def settings_check(driver, module_name=None, test_case_id=None, test_type=None, task_details=None):
     wait = WebDriverWait(driver, 30)
@@ -311,41 +313,39 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
             except Exception as e:
                 allure.attach(str(e), name="Configurations Special Task Button Error", attachment_type=allure.attachment_type.TEXT)
     if module_name == 'not_applicable_search_task':
-        with allure.step("Add Team Members in License task"):
+        with allure.step("Not Applicable Search Task"):
             try:
                 if not_applicable_search_task(driver, wait):
-                    print("✅ Add Team Members in License task successful")
+                    print("✅ Not Applicable Search Task successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Add Team Members in License task", name="Add Team Members in License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Not Applicable Search Task", name="Not Applicable Search Task Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(str(e), name="Not Applicable Search Task", attachment_type=allure.attachment_type.TEXT)
     
     if module_name == 'not_applicable_view':
-        with allure.step("Add Team Members in License task"):
+        with allure.step("Not Applicable View"):
             try:
                 if not_applicable_view(driver, wait):
-                    print("✅ Add Team Members in License task successful")
+                    print("✅ Not Applicable View successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Add Team Members in License task", name="Add Team Members in License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Not Applicable View", name="Not Applicable View Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(str(e), name="Not Applicable View", attachment_type=allure.attachment_type.TEXT)
     if module_name == 'not_applicable_export_data':
-        with allure.step("Add Team Members in License task"):
+        with allure.step("Not Applicable Export Data"):
             try:
                 if not_applicable_export_data(driver, wait):
-                    print("✅ Add Team Members in License task successful")
+                    print("✅ Not Applicable Export Data successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Add Team Members in License task", name="Add Team Members in License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Not Applicable Export Data", name="Not Applicable Export Data Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
-    
-    
+                allure.attach(str(e), name="Not Applicable Export Data", attachment_type=allure.attachment_type.TEXT)
     
    
     if module_name == 'license_task' and task_details:
@@ -360,8 +360,33 @@ def settings_check(driver, module_name=None, test_case_id=None, test_type=None, 
                     allure.attach("Test case failed for Add Team Members in License task", name="Add Team Members in License task Validation Failed", attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                allure.attach(str(e), name="Delete Task and Restore", attachment_type=allure.attachment_type.TEXT)
-    
+                allure.attach(str(e), name="License task", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'bulk_invitations':
+        with allure.step("Add Team Members in License task"):
+            try:
+                if bulk_invitations(driver, wait):
+                    print("✅ Bulk Invitations successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Bulk Invitations", name="Bulk Invitations Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Bulk Invitations", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'bulk_invitation_download_template':
+        with allure.step("Bulk Invitation Download Template"):
+            try:
+                bulk_download = BulkInvitationDownloadTemplate(driver, wait)
+                if bulk_download.bulk_invitation_download_template():
+                    print("✅ Bulk Invitation Download Template successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Bulk Invitation Download Template", name="Bulk Invitation Download Template Validation Failed", attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Bulk Invitation Download Template", attachment_type=allure.attachment_type.TEXT)
+        
     # if module_name == 'license_subscrption' and task_details:
        
     #     with allure.step("Check License Inactive and Active"):

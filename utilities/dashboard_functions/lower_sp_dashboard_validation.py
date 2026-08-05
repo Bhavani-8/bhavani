@@ -3,7 +3,6 @@ import os
 import allure
 import json
 import time
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.add_task_utils import wait_for_loader_to_disappear

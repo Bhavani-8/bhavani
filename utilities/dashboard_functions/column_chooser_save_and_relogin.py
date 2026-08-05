@@ -1,6 +1,5 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 import pyautogui as pg
 import allure
@@ -9,8 +8,6 @@ import json
 import time
 import os
 import pandas as pd
-
-from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.login_utils import login_check

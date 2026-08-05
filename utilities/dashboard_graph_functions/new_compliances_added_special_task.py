@@ -10,8 +10,6 @@ import random
 import pandas as pd
 import pyautogui as pg
 import glob
-from utilities.add_task_functions.add_task_common import task_value_store
-from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.special_add_task_utils import special_task_check

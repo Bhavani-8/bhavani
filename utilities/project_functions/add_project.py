@@ -2,13 +2,10 @@ import allure
 import json
 import os
 import time
-import pytest
-
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
-from datetime import datetime
 import random
 
 def create_project(driver, wait, project_name, project_description):

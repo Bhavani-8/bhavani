@@ -3,14 +3,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import allure 
 import pandas as pd
-import pyautogui as pg
 import os
 import json
-import pytest
 import time
 import random
-from utilities.add_task_functions.add_task_common import task_value_store
-from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.add_task_utils import add_task_check

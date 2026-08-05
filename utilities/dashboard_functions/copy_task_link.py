@@ -1,5 +1,4 @@
 
-from selenium.webdriver import ActionChains
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from utilities.other_utils_functions.highlight import highlight_element
 import json, os, time, pyperclip

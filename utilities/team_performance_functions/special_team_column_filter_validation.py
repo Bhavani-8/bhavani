@@ -2,15 +2,11 @@ import os
 import json
 import allure
 from selenium.webdriver.common.by import By
-from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from utilities.other_utils_functions.highlight import highlight_element
-from datetime import datetime, timedelta
 import time
 from selenium.common.exceptions import TimeoutException
-import pyautogui as pg
-from selenium.webdriver.common.keys import Keys
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
 

@@ -2,19 +2,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import allure 
-import pandas as pd
-import pyautogui as pg
 import os
 import json
 import pytest
 import time
-
-
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import TimeoutException, ElementNotInteractableException
-from utilities.add_task_utils import add_task_check
-from utilities.add_task_utils import get_test_case_list
-from utilities.add_task_utils import load_test_config_excel_data
+from selenium.common.exceptions import TimeoutException
 from utilities.add_task_utils import wait_for_loader_to_disappear
 def compliance_events(driver, wait):
     wait_less = WebDriverWait(driver, 5)

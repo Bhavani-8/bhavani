@@ -4,10 +4,8 @@ import allure
 import json
 import os
 import time
-
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.other_utils_functions.highlight import highlight_element
-from utilities.search_utils import clear_search
 
 
 def safe_click(driver, wait, xpath, description):
@@ -32,11 +30,7 @@ def safe_click(driver, wait, xpath, description):
    
 def wait_for_loader_to_disappear(driver, wait):
     try:
-        wait.until(
-            EC.invisibility_of_element_located(
-                (By.XPATH, "//div[contains(@class,'dx-loadpanel-wrapper')]")
-            )
-        )
+        wait.until(EC.invisibility_of_element_located((By.XPATH, "//div[contains(@class,'dx-loadpanel-wrapper')]")))
     except:
         pass
 def upper_dashboard_validation(driver, wait):
@@ -116,11 +110,7 @@ def upper_dashboard_validation(driver, wait):
                             f"Select All Count : No Tasks"
                         )
                         print(success_msg)
-                        allure.attach(
-                            success_msg,
-                            name=f"{btn_name}-{title}-Matched",
-                            attachment_type=allure.attachment_type.TEXT
-                        )
+                        allure.attach(success_msg,name=f"{btn_name}-{title}-Matched",attachment_type=allure.attachment_type.TEXT)
                         continue
 
                     # If dashboard and header counts differ, fail immediately
@@ -131,9 +121,7 @@ def upper_dashboard_validation(driver, wait):
                             f"Header Count    : {expected_value}"
                         )
                         print(error_msg)
-                        allure.attach(
-                        error_msg,
-                        name=f"{btn_name}-{title}-Mismatch",
+                        allure.attach(error_msg,name=f"{btn_name}-{title}-Mismatch",
                         attachment_type=allure.attachment_type.TEXT
                     )
                         raise AssertionError(error_msg)
@@ -161,11 +149,7 @@ def upper_dashboard_validation(driver, wait):
 
                         print(success_msg)
 
-                        allure.attach(
-                            success_msg,
-                            name=f"{btn_name}-{title}-Matched",
-                            attachment_type=allure.attachment_type.TEXT
-                        )
+                        allure.attach(success_msg,name=f"{btn_name}-{title}-Matched",attachment_type=allure.attachment_type.TEXT)
 
                     else:
                         error_msg = (
@@ -175,16 +159,13 @@ def upper_dashboard_validation(driver, wait):
                             f"Select All Count: {selected_count}"
                         )
                         print(error_msg)
-                        allure.attach(
-                            error_msg,
-                            name=f"{btn_name}-{title}-Mismatch",
-                            attachment_type=allure.attachment_type.TEXT
-                        )
+                        allure.attach(error_msg,name=f"{btn_name}-{title}-Mismatch",attachment_type=allure.attachment_type.TEXT)
                         raise AssertionError(error_msg)
             except Exception as e:
                 print(f"❌ {btn_name} - {title} validation failed: {e}")
                 # allure.attach(str(e), f"{btn_name}-{title} Error", allure.attachment_type.TEXT)
                 raise
+                # continue
 
        
         try:
@@ -218,11 +199,7 @@ def upper_dashboard_validation(driver, wait):
                         f"Select All Count : No Tasks"
 
                     )
-                    allure.attach(
-                        success_msg,
-                        name=f"{btn_name}-Total-Matched",
-                        attachment_type=allure.attachment_type.TEXT
-                    )
+                    allure.attach(success_msg,name=f"{btn_name}-Total-Matched",attachment_type=allure.attachment_type.TEXT)
                     continue
 
                 # Dashboard and Header mismatch
@@ -233,22 +210,14 @@ def upper_dashboard_validation(driver, wait):
                         f"Header Count : {expected_sum}"
                     )
                     print(error_msg)
-                    allure.attach(
-                        error_msg,
-                        name=f"{btn_name}- Total -Mismatch",
-                        attachment_type=allure.attachment_type.TEXT
-                    )
+                    allure.attach(error_msg,name=f"{btn_name}- Total -Mismatch",attachment_type=allure.attachment_type.TEXT)
                     raise AssertionError(error_msg)
 
                 select_all_elem = wait.until(EC.presence_of_element_located((By.XPATH, dash_select_all_checkbox)))
                 driver.execute_script("arguments[0].click();", select_all_elem)
                 wait_for_loader_to_disappear(driver, wait)
 
-                selected_count_elem = wait.until(
-                        EC.presence_of_element_located(
-                            (By.XPATH, '//div[contains(text(),"selected")]')
-                        )
-                    )
+                selected_count_elem = wait.until(EC.presence_of_element_located((By.XPATH, '//div[contains(text(),"selected")]')))
                 highlight_element(driver, selected_count_elem, duration=0.2)
 
                 selected_text = selected_count_elem.text.strip()
@@ -265,11 +234,7 @@ def upper_dashboard_validation(driver, wait):
 
                     print(success_msg)
 
-                    allure.attach(
-                        success_msg,
-                        name=f"{btn_name}-Total-Matched",
-                        attachment_type=allure.attachment_type.TEXT
-                    )
+                    allure.attach(success_msg,name=f"{btn_name}-Total-Matched",attachment_type=allure.attachment_type.TEXT)
                    
                 else:
                     error_msg = (
@@ -279,11 +244,7 @@ def upper_dashboard_validation(driver, wait):
                         f"Select All Count: {selected_count}"
                     )
                     print(error_msg)
-                    allure.attach(
-                        error_msg,
-                        name=f"{btn_name}-{title}-Mismatch",
-                        attachment_type=allure.attachment_type.TEXT
-                    )
+                    allure.attach(error_msg,name=f"{btn_name}-{title}-Mismatch",attachment_type=allure.attachment_type.TEXT)
                     raise AssertionError(error_msg)
 
         except Exception as e:

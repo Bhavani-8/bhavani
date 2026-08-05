@@ -5,13 +5,11 @@ import time
 import pytest
 import json
 from datetime import datetime, timedelta
-
 import os
-import pyautogui as pg  
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from selenium.webdriver.common.keys import Keys
-import pyperclip
+
 
 
 

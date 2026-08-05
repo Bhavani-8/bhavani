@@ -34,7 +34,6 @@ from utilities.add_task_functions.add_circulars import add_circulars
 from utilities.add_task_functions.submit_task import submit_task
 from utilities.add_task_functions.validate_search_task import validate_search_task
 from utilities.add_task_functions.task_validation import task_validation
-from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.login_utils import login_check
 from load_test_config_excel_data import load_test_config_excel_data

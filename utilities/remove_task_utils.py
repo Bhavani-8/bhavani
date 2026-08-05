@@ -3,7 +3,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 import pytest
 import os
 import pandas as pd
-import json
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from utilities.login_utils import login_check
 from load_test_config_excel_data import load_test_config_excel_data

@@ -1,20 +1,12 @@
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from datetime import datetime, timedelta
-
+from datetime import datetime
 import time
 import allure
 import os
 import json
 import pytest
-import pyautogui as pg  
-from utilities.add_task_utils import wait_for_loader_to_disappear
-from utilities.login_utils import login_check
 from utilities.other_utils_functions.highlight import highlight_element
-from utilities.add_task_utils import wait_for_loader_to_disappear
-from utilities.other_utils_functions.license_utils import validate_license_subscription
 from utilities.highlight import highlight_element
 
 

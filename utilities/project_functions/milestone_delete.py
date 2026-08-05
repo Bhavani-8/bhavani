@@ -3,19 +3,13 @@ import allure
 import json
 import os
 import time
-import pytest
-import pyautogui as pg
 import random
-import pandas as pd
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
-from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
-from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
-from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import StaleElementReferenceException
+
 
 def milestone_delete(driver, wait):
 
@@ -23,11 +17,8 @@ def milestone_delete(driver, wait):
         try:
             with open(os.path.join("data", "locators.json"), "r") as f:
                 elements_details = json.load(f)
-            scroller_xpath = elements_details['scroller']
             project_icon = elements_details["project_icon"]
             trash_icon = elements_details['trash_icon']
-            toast_msg = elements_details['toast_msg']
-            column_chooser_btn = elements_details['column_chooser_btn']
             milestone_cancel_btn = elements_details['milestone_cancel_btn']
             add_new_milestone = elements_details['add_new_milestone']
             milestone_input_elem = elements_details['milestone_input_elem']

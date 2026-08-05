@@ -4,11 +4,8 @@ import json
 import os
 import time
 import pytest
-import pyautogui as pg
 import pandas as pd
 import random
-from utilities.add_task_functions.add_task_common import task_value_store
-from utilities.add_task_functions.add_task_common import task_value_get
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element

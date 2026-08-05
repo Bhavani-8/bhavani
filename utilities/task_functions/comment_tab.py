@@ -10,10 +10,8 @@ import os
 
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import add_task_check
-from utilities.special_add_task_utils import special_task_check
 from utilities.add_task_utils import load_test_config_excel_data
 from utilities.add_task_utils import get_test_case_list
-from utilities.add_task_functions.set_task_category import set_task_category
 from utilities.add_task_functions.show_toast import show_toast
 from utilities.add_task_functions.set_task_name import set_task_name
 from utilities.add_task_functions.set_start_date import set_start_date

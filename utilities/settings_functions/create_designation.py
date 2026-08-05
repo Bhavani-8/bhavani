@@ -11,7 +11,6 @@ from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver import ActionChains
 
 
 def step_fail(driver, step_name, error):

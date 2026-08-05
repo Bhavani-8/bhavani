@@ -2,14 +2,11 @@ import allure
 import json
 import os
 import time
-import pytest
 from datetime import datetime, timedelta
-from selenium.webdriver import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import TimeoutException
-from utilities.add_task_utils import wait_for_loader_to_disappear
+
 
    
 def project_filter(driver, wait):

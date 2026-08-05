@@ -11,7 +11,6 @@ import pandas as pd
 import pyautogui as pg
 import glob
 import random
-from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid

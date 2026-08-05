@@ -4,19 +4,13 @@ import allure
 import json
 import os
 import time
-import pytest
 from datetime import datetime, timedelta
-
 import pandas as pd
-import pyautogui as pg
-import glob
 from utilities.add_task_functions.add_task_common import task_value_store
 from utilities.add_task_functions.add_task_common import task_value_get
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
-from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.add_task_utils import add_task_check
 from utilities.other_utils_functions.highlight import highlight_element
-from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
 
 

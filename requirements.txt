@@ -8,3 +8,7 @@ openpyxl
 requests
 pytest
 pandas
+requests
+webdriver-manager
+opencv-python
+mss

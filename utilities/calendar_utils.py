@@ -4,16 +4,10 @@ import os
 import json
 import pytest
 import allure
-import time
-
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from utilities.other_utils_functions.highlight import highlight_element
 from utilities.login_utils import login_check
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 from selenium.webdriver.support.ui import WebDriverWait
 from load_test_config_excel_data import load_test_config_excel_data
-from utilities.project_functions.add_project import create_project
 from utilities.calendar_functions.check_day_week_month_buttons import check_day_week_month_buttons
 from utilities.calendar_functions.calendar_task_validation import validate_today_task
 

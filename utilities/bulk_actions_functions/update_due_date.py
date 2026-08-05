@@ -1,14 +1,11 @@
 import pytest
 import os
 import json
-from utilities.add_task_functions.show_toast import show_toast
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from utilities.other_utils_functions.highlight import highlight_element
 from selenium.webdriver import ActionChains
-from selenium.common.exceptions import StaleElementReferenceException
-import pyautogui as pg
 from datetime import datetime, timedelta
 import time
 import allure
@@ -18,11 +15,7 @@ import os
 import time
 import pytest
 from datetime import datetime
-
-import pandas as pd
 import pyautogui as pg
-import glob
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
 

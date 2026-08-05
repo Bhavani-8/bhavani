@@ -1,14 +1,10 @@
 import os
 import time
 import json
-import pandas as pd
-import pyautogui as pg
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-import pyautogui as pg
 import allure
 import pytest
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import StaleElementReferenceException

@@ -4,11 +4,9 @@ import os
 import json
 import pytest
 import time
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from utilities.other_utils_functions.highlight import highlight_element
-
 from utilities.login_utils import login_check
 from load_test_config_excel_data import load_test_config_excel_data
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear

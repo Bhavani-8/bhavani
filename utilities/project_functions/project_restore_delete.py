@@ -1,21 +1,12 @@
-
-
 import allure
 import json
 import os
 import time
-import pytest
-import pyautogui as pg
-import pandas as pd
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from selenium.webdriver import ActionChains
-from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
-from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
-from utilities.add_task_utils import add_task_check
 
 
 def project_restore_delete(driver, wait):

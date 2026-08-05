@@ -5,11 +5,9 @@ import allure
 import pytest
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-import pyautogui as pg
 from utilities.other_utils_functions.highlight import highlight_element
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.keys import Keys
 from utilities.add_task_functions.wait_for_loader_to_disappear import wait_for_loader_to_disappear
 
 def search_task_by_existing_task_name(driver, wait):

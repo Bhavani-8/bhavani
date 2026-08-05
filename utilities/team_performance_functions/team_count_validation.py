@@ -1,14 +1,7 @@
-
-
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver import ActionChains
-from selenium.common.exceptions import TimeoutException
-import pytest
 import allure
 import time
-import json
-import os
 import re
 
 from utilities.add_task_utils import wait_for_loader_to_disappear

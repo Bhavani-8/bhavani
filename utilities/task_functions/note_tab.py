@@ -2,22 +2,17 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
 import pytest
 import allure
 import time
-import pandas as pd
 import json
 import os
 
 from utilities.other_utils_functions.highlight import highlight_element
-from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.add_task_utils import add_task_check
 from utilities.add_task_utils import load_test_config_excel_data
 from utilities.add_task_utils import get_test_case_list
 from utilities.add_task_functions.show_toast import show_toast
-from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
-from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.set_task_name import set_task_name
 from utilities.add_task_functions.set_start_date import set_start_date
 from utilities.add_task_functions.set_due_date import set_due_date

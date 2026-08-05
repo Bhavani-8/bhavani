@@ -1,21 +1,12 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 import allure 
-import pandas as pd
-import pyautogui as pg
 import os
 import json
 import pytest
 import time
-
-
 from utilities.other_utils_functions.highlight import highlight_element
-from selenium.common.exceptions import TimeoutException
 from utilities.add_task_utils import wait_for_loader_to_disappear
-from utilities.add_task_utils import add_task_check
-from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
-from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 
 def step_fail(driver, step_name, error):
     allure.attach(str(error), name=f"{step_name} Error", attachment_type=allure.attachment_type.TEXT)

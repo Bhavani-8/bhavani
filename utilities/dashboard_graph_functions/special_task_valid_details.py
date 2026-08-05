@@ -1,24 +1,16 @@
 import allure
 import pandas as pd
 import os
-import pytest
 import json
 import time
-import glob
 import random
-from utilities.add_task_functions.add_task_common import task_value_store
-from utilities.add_task_functions.add_task_common import task_value_get
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from utilities.add_task_functions.show_toast import show_toast
 from utilities.other_utils_functions.highlight import highlight_element
 from utilities.add_task_utils import wait_for_loader_to_disappear
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.special_add_task_utils import special_task_check
-from utilities.add_task_functions.special_task_validation import special_task_validation
-from utilities.login_utils import login_check
-
 
 def special_task_valid_details(driver, wait, special_task):
     with allure.step("Load locators.json"):

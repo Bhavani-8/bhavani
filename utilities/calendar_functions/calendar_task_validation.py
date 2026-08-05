@@ -1,16 +1,12 @@
 import allure
 import time
-import pyautogui as pg
 import pytest
-import random
 import os
 import json
 from datetime import datetime
 import pandas as pd
-from utilities.add_task_functions.show_toast import show_toast
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from utilities.add_task_functions.task_validation import task_validation
 from utilities.add_task_functions.format_time_if_valid import format_time_if_valid
 from utilities.add_task_functions.format_date_if_valid import format_date_if_valid
 from utilities.add_task_utils import add_task_check
