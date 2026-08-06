@@ -11,7 +11,8 @@ from load_test_config_excel_data import load_test_config_excel_data
 from utilities.audit_company_functions.audit_company import AuditCompanyTask
 from utilities.audit_company_functions.new_branch import AuditBranchTask
 from utilities.audit_company_functions.export_data import ExportData
-from utilities.audit_company_functions.search_company_name import SearchCompanyName
+from utilities.audit_company_functions.search_company_name import SearchCompanyTask
+from utilities.audit_company_functions.view_company import ViewColumnHeaders
 
 
 def audit_check(driver, module_name=None, task_details=None):
@@ -89,18 +90,31 @@ def audit_check(driver, module_name=None, task_details=None):
 
 
     if module_name == 'search_company_name':
-            with allure.step("Verify Search Company name"):
-                try:
-                    search_company_task = SearchCompanyName(driver, wait)
-                    if search_company_task.search_company_name():
-                        print("✅ Search company name successful")
-                        return True
-                    else:
-                        allure.attach("Test case failed for Search company name",name="Search company name Validation Failed",attachment_type=allure.attachment_type.TEXT)
-                        return False
-                except Exception as e:
-                        allure.attach(str(e), name="Search company name", attachment_type=allure.attachment_type.TEXT)
-    
+        with allure.step("Verify Search Company name"):
+            try:
+                search_company_task = SearchCompanyTask(driver, wait)
+                if search_company_task.search_company_name():
+                    print("✅ Search company name successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Search company name",name="Search company name Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Search company name", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'view_column_headers':
+        with allure.step("Verify Column Headers"):
+            try:
+                view_column_header = ViewColumnHeaders(driver, wait)
+                if view_column_header.view_column_headers():
+                    print("✅ View column headers name successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for View column headers",name="View column headers name Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="View column headers name", attachment_type=allure.attachment_type.TEXT)
+        
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)

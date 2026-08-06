@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
 
 
-class SearchCompanyName:
+class SearchCompanyTask:
 
     def __init__(self, driver, wait):
         self.driver = driver
@@ -56,22 +56,24 @@ class SearchCompanyName:
         with allure.step("Fetch the task name from the task list"):
             try:
                 company_name_elem = self.wait.until(EC.visibility_of_element_located((By.XPATH,"//tbody/tr[1]/td[2]")))
-                highlight_element(self.driver, company_name_elem)
+                # highlight_element(self.driver, company_name_elem)
                 company_name = company_name_elem.text.strip()
                 print(f"🔹 Company Name: {company_name}")
+                return company_name
             except Exception as e:
                 msg = f"Failed to Fetch company name: {str(e)}"
                 allure.attach(msg, name = 'Fetch Company name Error', attachment_type = allure.attachment_type.TEXT)
                 raise Exception(msg)
             
-    def search_company_name(self, company_name): 
-        with allure.step(f"Search using task name: {company_name}"):
+    def search_company_elem(self, company_name): 
+        with allure.step(f"Search using company name: {company_name}"):
             try:
                 search_input = self.wait.until(EC.visibility_of_element_located((By.XPATH, "//input[@placeholder='Search records...']")))
                 highlight_element(self.driver, search_input)
                 search_input.clear()
                 search_input.send_keys(company_name)
-                time.sleep(3)  # Extra wait to ensure results load
+                time.sleep(3) 
+                allure.attach(company_name, name="Searched Company name", attachment_type=allure.attachment_type.TEXT) 
             except Exception as e:
                 msg = f"Failed to Search company name: {str(e)}"
                 allure.attach(msg, name = 'Search Company name Error', attachment_type = allure.attachment_type.TEXT)
@@ -82,8 +84,8 @@ class SearchCompanyName:
     def search_company_name(self):
         self.click_audit()
         self.click_company()
-        self.fetch_company_name()
-        self.search_company_name()
+        company_name = self.fetch_company_name()
+        self.search_company_name(company_name)
         
 
         return True
