@@ -13,6 +13,8 @@ from utilities.audit_company_functions.new_branch import AuditBranchTask
 from utilities.audit_company_functions.export_data import ExportData
 from utilities.audit_company_functions.search_company_name import SearchCompanyTask
 from utilities.audit_company_functions.view_company import ViewColumnHeaders
+from utilities.audit_template_functions.create_template import CreateTemplate
+from utilities.audit_template_functions.search_template import SearchTemplateTask
 
 
 def audit_check(driver, module_name=None, task_details=None):
@@ -114,7 +116,34 @@ def audit_check(driver, module_name=None, task_details=None):
                     return False
             except Exception as e:
                     allure.attach(str(e), name="View column headers name", attachment_type=allure.attachment_type.TEXT)
-        
+    if module_name == "create_template":
+        with allure.step("Create Template"):
+            try:
+                create_template_task = CreateTemplate(driver, wait)
+                if create_template_task.create_template():
+                    print("✅ Create Template successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Create Template",name="Create Template Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+
+            except Exception as e:
+                allure.attach(str(e),name="Create Template Error",attachment_type=allure.attachment_type.TEXT)
+                return False
+
+    if module_name == 'search_template_name':
+        with allure.step("Verify Search Template name"):
+            try:
+                search_template_task = SearchTemplateTask(driver, wait)
+                if search_template_task.search_template_name():
+                    print("✅ Search template name successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Search template name",name="Search company name Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Search template name", attachment_type=allure.attachment_type.TEXT)
+    
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)
