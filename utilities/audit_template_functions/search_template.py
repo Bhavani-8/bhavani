@@ -51,7 +51,17 @@ class SearchTemplateTask:
                 msg = f"Failed to click Template button: {str(e)}"
                 allure.attach(msg, name = 'Template Error', attachment_type = allure.attachment_type.TEXT)
                 raise Exception(msg)
-
+    
+    def custom_btn(self):
+        with allure.step("Click Custom Button"):
+            try:
+                click_custom_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Custom']")))
+                highlight_element(self.driver, click_custom_btn)
+                click_custom_btn.click()
+            except Exception as e:
+                msg = f"Failed to click Custom button: {str(e)}"
+                allure.attach(msg, name = 'Custom Button Error', attachment_type = allure.attachment_type.TEXT)
+                raise Exception(msg)
     def fetch_template_name(self):
         with allure.step("Fetch the task name from the task list"):
             try:
@@ -84,6 +94,7 @@ class SearchTemplateTask:
     def search_template_name(self):
         self.click_audit()
         self.template_btn()
+        self.custom_btn()
         template_name = self.fetch_template_name()
         self.search_template_elem(template_name)
         
