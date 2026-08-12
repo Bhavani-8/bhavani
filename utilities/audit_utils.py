@@ -183,7 +183,7 @@ def audit_check(driver, module_name=None, task_details=None):
                     allure.attach("Test case failed for Create Assignment",name="Create Assignment Validation Failed",attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                    allure.attach(str(e), name="View column headers name", attachment_type=allure.attachment_type.TEXT)
+                    allure.attach(str(e), name="Create Assignment", attachment_type=allure.attachment_type.TEXT)
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)

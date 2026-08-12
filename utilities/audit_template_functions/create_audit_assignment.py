@@ -77,6 +77,7 @@ class CreateAssignment:
                 expected_template_name = audit_template.text.strip()
                 print(f"Fetched Template name : {expected_template_name}")
                 allure.attach(expected_template_name, name = "Audit Template", attachment_type=allure.attachment_type.TEXT)
+                return expected_template_name
             except Exception as e:
                 msg = f"Failed to Fetch Assign Template: {str(e)}"
                 allure.attach(msg, name = 'Assign Template Error', attachment_type = allure.attachment_type.TEXT)
@@ -113,7 +114,7 @@ class CreateAssignment:
                 time.sleep(0.5)
 
                 selected_date = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='start_date']")))
-                date_value = selected_date.text.strip()
+                date_value = selected_date.get_attribute("value").strip()
                 print(f"Selected Start Date: {date_value}")
                 allure.attach(date_value,name="Selected Start Date",attachment_type=allure.attachment_type.TEXT)
             except Exception as e:
@@ -132,11 +133,11 @@ class CreateAssignment:
                 company_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'whitespace-normal') and text()='{created_company_name}']")))
                 highlight_element(self.driver, company_name)
                 company_name.click()
-                expected_company_name = company_name.get_attribute("value").strip()
-                print(f"Company Name: {expected_company_name}")
+                expected_company_name = company_name.text.strip()
+                print(f"Expected Company Name: {expected_company_name}")
                 time.sleep(1)
                 allure.attach(company_name.text, name='Company Name', attachment_type=allure.attachment_type.TEXT)
-                    
+                return expected_company_name
             except Exception as e:
                 msg = f"failed to Select Company Name: {str(e)}"
                 allure.attach(msg, name = "Company Name Error", attachment_type=allure.attachment_type.TEXT)
@@ -149,14 +150,15 @@ class CreateAssignment:
                 branch_droprdown.click()
                 time.sleep(2)
                 
-                branch_name = self.wait.until(EC.visibility_of_element_located((By.XPATH, f"//div[contains(@class,'whitespace-normal') and normalize-space()='Automation location - Test Audit 76']")))
+                branch_name = self.wait.until(EC.visibility_of_element_located((By.XPATH, f"//div[contains(@class,'whitespace-normal') and normalize-space()='Test Location 272 - Test Audit 4706']")))
                 self.scroll_to_element(branch_name)
                 highlight_element(self.driver, branch_name)
                 self.driver.execute_script("arguments[0].click();",branch_name)
                 expected_branch_name = branch_name.text.strip()
                 print(f"Expected Branch name : {expected_branch_name}")
                 time.sleep(2)
-                allure.attach(branch_name.text.strip(), name='Branch Name', attachment_type=allure.attachment_type.TEXT)         
+                allure.attach(expected_branch_name, name='Branch Name', attachment_type=allure.attachment_type.TEXT)
+                return expected_branch_name         
             except Exception as e:
                 msg = f"failed to Select Branch Name: {str(e)}"
                 allure.attach(msg, name = "Branch Name Error", attachment_type=allure.attachment_type.TEXT)
@@ -167,9 +169,10 @@ class CreateAssignment:
             try:
                 manager_email = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='manager_email']")))
                 self.scroll_to_element(manager_email)
-                manager_email_value = manager_email.text.strip()
-                print(f"Manager Email: {manager_email_value}")
-                allure.attach(manager_email_value, name = 'Manager Email', attachment_type=allure.attachment_type.TEXT)
+                expected_manager_email = manager_email.get_attribute("value").strip()
+                print(f"Manager Email: {expected_manager_email}")
+                allure.attach(expected_manager_email, name = 'Manager Email', attachment_type=allure.attachment_type.TEXT)
+                return expected_manager_email
             except Exception as e:
                 msg = f"failed to Fetch Manager email: {str(e)}"
                 allure.attach(msg, name = "Manager email Error", attachment_type=allure.attachment_type.TEXT)
@@ -179,9 +182,10 @@ class CreateAssignment:
             try:
                 manager_name = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='manager_name']")))
                 self.scroll_to_element(manager_name)
-                expected_manager_name = manager_name.text.strip()
+                expected_manager_name = manager_name.get_attribute("value").strip()
                 print(f"Manager Name: {expected_manager_name}")
                 allure.attach(expected_manager_name, name = 'Manager Name', attachment_type=allure.attachment_type.TEXT)
+                return expected_manager_name
             except Exception as e:
                 msg = f"failed to Fetch Manager name: {str(e)}"
                 allure.attach(msg, name = "Manager name Error", attachment_type=allure.attachment_type.TEXT)
@@ -211,10 +215,10 @@ class CreateAssignment:
                 highlight_element(self.driver, enter_name)
                 unique_auditor_name = f"Audit Name {random.randint(1000, 9999)}"
                 enter_name.send_keys(unique_auditor_name)
-                expected_enter_name = enter_name.get_attribute("value").strip()
-                print(f"Expected Enter name: {expected_enter_name}")
-                allure.attach(expected_enter_name, name='Auditor name', attachment_type=allure.attachment_type.TEXT)
-                return expected_enter_name
+                expected_auditor_name = enter_name.get_attribute("value").strip()
+                print(f"Expected Enter name: {expected_auditor_name}")
+                allure.attach(expected_auditor_name, name='Auditor name', attachment_type=allure.attachment_type.TEXT)
+                return expected_auditor_name
             except Exception as e:
                 msg = f"failed to Enter Auditor name: {str(e)}"
                 allure.attach(msg, name = "Enter Auditor name Error", attachment_type=allure.attachment_type.TEXT)
@@ -249,101 +253,243 @@ class CreateAssignment:
                 allure.attach(msg, name = "Save Button Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def validate_assignment_details(self, expected_template_name, expected_audit_name, expected_manager_name, expected_company_name,
-        expected_enter_name, expected_branch_name):
-        with allure.step("Validate Created company details"):
+
+    def validate_assignment_details(self,expected_template_name,expected_audit_name,expected_manager_name,expected_company_name,expected_auditor_name,expected_branch_name):
+        all_matched = True
+
+        with allure.step("Validate Template Name"):
             try:
-                actual_template_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//td[contains(normalize-space(),'{expected_company_name}')]")))
-                time.sleep(0.5)
+                actual_template_name = self.wait.until(EC.presence_of_element_located((By.XPATH,f"//tr[.//td[normalize-space()='{expected_auditor_name}']]//td[2]")))
                 highlight_element(self.driver, actual_template_name)
                 actual_template = actual_template_name.text.strip()
-                print(f"expected_template_name     : {expected_template_name}")
-                print(f"Actual Template Name       : {actual_template}")
-                # self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", actual_company_name)
-                actual_audit_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{expected_enter_name}']/ancestor::tr//td[normalize-space()='{expected_audit_name}']")))
+                print(f"Expected Template : {expected_template_name}")
+                print(f"Actual Template   : {actual_template}")
+
+                if expected_template_name == actual_template:
+                    allure.attach(
+                        f"Expected : {expected_template_name}\n"
+                        f"Actual   : {actual_template}\n",
+                        name="Template Name - PASS",attachment_type=allure.attachment_type.TEXT)
+                else:
+                    all_matched = False
+
+                    allure.attach(
+                        f"Expected : {expected_template_name}\n"
+                        f"Actual   : {actual_template}\n",
+                        name="Template Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+            except Exception as e:
+                all_matched = False
+
+                allure.attach(
+                    f"Expected : {expected_template_name}\n"
+                    f"Actual   : Not Found\n",
+                    name="Template Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+        with allure.step("Validate Audit Name"):
+            try:
+                actual_audit_name = self.wait.until(EC.presence_of_element_located((By.XPATH,f"//tr[.//td[normalize-space()='{expected_auditor_name}']]//td[3]")))
                 highlight_element(self.driver, actual_audit_name)
                 actual_audit = actual_audit_name.text.strip()
-                print(f"Expected Register ID      : {expected_audit_name}")
-                print(f"Actual Register ID        : {actual_audit}")
+                print(f"Expected Audit : {expected_audit_name}")
+                print(f"Actual Audit   : {actual_audit}")
 
-                actual_manager_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_company_name}']]//td[normalize-space()='{expected_manager_name}']")))
+                if expected_audit_name == actual_audit:
+                    allure.attach(
+                        f"Expected : {expected_audit_name}\n"
+                        f"Actual   : {actual_audit}\n",
+                        name="Audit Name - PASS",attachment_type=allure.attachment_type.TEXT)
+                else:
+                    all_matched = False
+
+                    allure.attach(
+                        f"Expected : {expected_audit_name}\n"
+                        f"Actual   : {actual_audit}\n",
+                        name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+            except Exception as e:
+                all_matched = False
+
+                error_msg = str(e).split("Stacktrace:")[0].strip()
+
+                allure.attach(
+                    f"Expected : {expected_audit_name}\n"
+                    f"Actual   : Not Found\n",
+                    name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+        with allure.step("Validate Manager Name"):
+            try:
+                actual_manager_name = self.wait.until(EC.presence_of_element_located((By.XPATH,f"//tr[.//td[normalize-space()='{expected_auditor_name}']]//td[4]")))
                 highlight_element(self.driver, actual_manager_name)
                 actual_manager = actual_manager_name.text.strip()
-                print(f"Expected Company Category : {expected_manager_name}")
-                print(f"Actual Company Category   : {actual_manager}")
+                print(f"Expected Manager : {expected_manager_name}")
+                print(f"Actual Manager   : {actual_manager}")
 
-                actual_head_auditor_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_company_name}']]//td[normalize-space()='{expected_enter_name}']")))
+                if expected_manager_name == actual_manager:
+                    allure.attach(
+                        f"Expected : {expected_manager_name}\n"
+                        f"Actual   : {actual_manager}\n",
+                        name="Manager Name - PASS",attachment_type=allure.attachment_type.TEXT)
+                else:
+                    all_matched = False
+
+                    allure.attach(
+                        f"Expected : {expected_manager_name}\n"
+                        f"Actual   : {actual_manager}\n",
+                        name="Manager Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+            except Exception as e:
+                all_matched = False
+
+                error_msg = str(e).split("Stacktrace:")[0].strip()
+
+                allure.attach(
+                    f"Expected : {expected_manager_name}\n"
+                    f"Actual   : Not Found\n",
+                    name="Manager Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+        with allure.step("Validate Auditor Name"):
+            try:
+                actual_head_auditor_name = self.wait.until(EC.presence_of_element_located((By.XPATH,f"//td[normalize-space()='{expected_auditor_name}']")))
                 highlight_element(self.driver, actual_head_auditor_name)
                 actual_head_auditor = actual_head_auditor_name.text.strip()
-                print(f"Expected Email ID         : {expected_enter_name}")
-                print(f"Actual Email ID           : {actual_head_auditor}")
+                print(f"Expected Auditor : {expected_auditor_name}")
+                print(f"Actual Auditor   : {actual_head_auditor}")
 
-                actual_company = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//td[contains(normalize-space(),'{expected_company_name}')]")))
-                time.sleep(0.5)
+                if expected_auditor_name == actual_head_auditor:
+                    allure.attach(
+                        f"Expected : {expected_auditor_name}\n"
+                        f"Actual   : {actual_head_auditor}\n",
+                        name="Auditor Name - PASS",attachment_type=allure.attachment_type.TEXT)
+                else:
+                    all_matched = False
+
+                    allure.attach(
+                        f"Expected : {expected_auditor_name}\n"
+                        f"Actual   : {actual_head_auditor}\n",
+                        name="Auditor Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+            except Exception as e:
+                all_matched = False
+
+                error_msg = str(e).split("Stacktrace:")[0].strip()
+
+                allure.attach(
+                    f"Expected : {expected_auditor_name}\n"
+                    f"Actual   : Not Found\n",
+                    name="Auditor Name - FAIL",
+                    attachment_type=allure.attachment_type.TEXT
+            )
+        with allure.step("Validate Company Name"):
+            try:
+                actual_company = self.wait.until(EC.presence_of_element_located((By.XPATH,f"//tr[.//td[normalize-space()='{expected_auditor_name}']]//td[7]")))
                 highlight_element(self.driver, actual_company)
                 actual_company_name = actual_company.text.strip()
-                print(f"Expected Company Name     : {expected_company_name}")
-                print(f"Actual Company Name       : {actual_company_name}")
+                print(f"Expected Company : {expected_company_name}")
+                print(f"Actual Company   : {actual_company_name}")
 
-                actual_location_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_company_name}']]//td[normalize-space()='{expected_branch_name}']")))
+                if expected_company_name == actual_company_name:
+                    allure.attach(
+                        f"Expected : {expected_company_name}\n"
+                        f"Actual   : {actual_company_name}\n",
+                        name="Company Name - PASS", attachment_type=allure.attachment_type.TEXT)
+                else:
+                    all_matched = False
+
+                    allure.attach(
+                        f"Expected : {expected_company_name}\n"
+                        f"Actual   : {actual_company_name}\n",
+                        name="Company Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+            except Exception as e:
+                all_matched = False
+
+                # error_msg = str(e).split("Stacktrace:")[0].strip()
+
+                allure.attach(
+                    f"Expected : {expected_company_name}\n"
+                    f"Actual   : Not Found\n",
+                    name="Company Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+        with allure.step("Validate Branch Name"):
+            try:
+                actual_location_name = self.wait.until(EC.presence_of_element_located((By.XPATH,f"//tr[.//td[normalize-space()='{expected_auditor_name}']]//td[9]")))
                 highlight_element(self.driver, actual_location_name)
-                actual_location_name_text = actual_location_name.text.strip()
-                print(f"Expected Contact Number   : {expected_branch_name}")
-                print(f"Actual Contact Number     : {actual_location_name_text}")                
 
-                # Validate all details
-                all_matched = (
-                    expected_company_name == actual_company_name
-                    and expected_template_name == actual_template
-                    and expected_audit_name == actual_audit
-                    and expected_manager_name == actual_manager
-                    and expected_enter_name == actual_head_auditor
-                    and expected_branch_name == actual_location_name_text
-                )
-                if all_matched:
-                    result = (
-                        "AUDIT COMPANY CREATED SUCCESSFULLY\n\n"
-                        f"Company Name     : {expected_company_name} == {actual_company_name}\n"
-                        f"Register ID      : {expected_template_name} == {actual_template}\n"
-                        f"Company Category : {expected_audit_name} == {actual_audit}\n"
-                        f"Email ID         : {expected_manager_name} == {actual_manager}\n"
-                        f"Contact Number   : {expected_enter_name} == {actual_head_auditor}\n"
-                        f"Branch Name       : {expected_branch_name} == {actual_location_name_text}\n"
+                actual_location_name_text = actual_location_name.text.strip()
+
+                print(f"Expected Branch : {expected_branch_name}")
+                print(f"Actual Branch   : {actual_location_name_text}")
+
+                if expected_branch_name == actual_location_name_text:
+                    allure.attach(
+                        f"Expected : {expected_branch_name}\n"
+                        f"Actual   : {actual_location_name_text}\n",
+                        name="Branch Name - PASS",
+                        attachment_type=allure.attachment_type.TEXT
                     )
                 else:
-                    result = (
-                        "AUDIT COMPANY VALIDATION FAILED\n\n"
-                        f"Company Name     : {expected_company_name} == {actual_company_name}\n"
-                        f"Register ID      : {expected_template_name} == {actual_template}\n"
-                        f"Company Category : {expected_audit_name} == {actual_audit}\n"
-                        f"Email ID         : {expected_manager_name} == {actual_manager}\n"
-                        f"Contact Number   : {expected_enter_name} == {actual_head_auditor}\n"
-                        f"Branch Name       : {expected_branch_name} == {actual_location_name_text}\n"
-                    )
-                allure.attach(result,name="Audit Company Validation",attachment_type=allure.attachment_type.TEXT)
+                    all_matched = False
 
-                assert all_matched, result
+                    allure.attach(
+                        f"Expected : {expected_branch_name}\n"
+                        f"Actual   : {actual_location_name_text}\n",
+                        name="Branch Name - FAIL",
+                        attachment_type=allure.attachment_type.TEXT
+                    )
+
             except Exception as e:
-                msg = f"Validation Failed: {str(e)}"
-                allure.attach(msg,name="Validation Error",attachment_type=allure.attachment_type.TEXT,)
-                raise Exception(msg)
-                        
+                all_matched = False
+
+                error_msg = str(e).split("Stacktrace:")[0].strip()
+
+                allure.attach(
+                    f"Expected : {expected_branch_name}\n"
+                    f"Actual   : Not Found\n",
+                    name="Branch Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+        with allure.step("Final Assignment Validation"):
+
+            if all_matched:
+                allure.attach(
+                    "All Assignment Details Matched Successfully",
+                    name="FINAL RESULT - PASS",
+                    attachment_type=allure.attachment_type.TEXT
+                )
+            else:
+                allure.attach(
+                    "Failed",
+                    name="FINAL RESULT - FAIL",
+                    attachment_type=allure.attachment_type.TEXT
+                )
+
+        assert all_matched, "Assignment validation failed"
+
     def create_audit_assignment(self):
         self.click_audit()
         self.template_btn()
         self.click_assignment_btn()
-        self.fetch_audit_template()
-        self.enter_audit_name()
+
+        expected_template_name = self.fetch_audit_template()
+        expected_audit_name = self.enter_audit_name()
+
         self.enter_start_date()
-        self.click_company_name()
-        self.click_branch_name()
-        self.branch_manager_email()
-        self.branch_manager_name()
+
+        expected_company_name = self.click_company_name()
+        expected_branch_name = self.click_branch_name()
+        expected_manager_name = self.branch_manager_name()
         self.head_of_auditor_email()
-        self.head_of_auditor_name()
+        expected_auditor_name = self.head_of_auditor_name()
         self.click_contact_number()
         self.click_save_button()
-        
+
+        self.validate_assignment_details(
+            expected_template_name,
+            expected_audit_name,
+            expected_manager_name,
+            expected_company_name,
+            expected_auditor_name,
+            expected_branch_name,
+        )
 
         return True
 

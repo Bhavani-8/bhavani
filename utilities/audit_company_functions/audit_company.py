@@ -188,74 +188,178 @@ class AuditCompanyTask:
                 allure.attach(msg, name = "Submit button Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def validate_company_details(self,expected_company_name,expected_register_id,expected_company_category,expected_enter_email_id,expected_contact_number):
-        with allure.step("Validate Created company details"):
+    def validate_company_details(self,expected_company_name,expected_register_id,expected_company_category,expected_contact_number,expected_enter_email_id):
+        all_matched = True
+        with allure.step("Validate company name"):
             try:
-                print("Text")
-                actual_company = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//td[contains(normalize-space(),'{expected_company_name}')]")))
-                time.sleep(0.5)
+               
+                actual_company = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_register_id}']]//td[2]")))
                 highlight_element(self.driver, actual_company)
                 actual_company_name = actual_company.text.strip()
                 print(f"Expected Company Name     : {expected_company_name}")
                 print(f"Actual Company Name       : {actual_company_name}")
-                # self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", actual_company_name)
-                actual_register_id = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_company_name}']]//td[normalize-space()='{expected_register_id}']")))
+
+                if expected_company_name == actual_company_name:
+                    allure.attach(
+                        f"Expected : {expected_company_name}\n"
+                        f"Actual   : {actual_company_name}\n",
+                        name="Template Name - PASS",attachment_type=allure.attachment_type.TEXT)
+                else:
+                    all_matched = False
+
+                    allure.attach(
+                        f"Expected : {expected_company_name}\n"
+                        f"Actual   : {actual_company_name}\n",
+                        name="Template Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+            except Exception as e:
+                all_matched = False
+                allure.attach(
+                    f"Expected : {expected_company_name}\n"
+                    f"Actual   : Not Found\n",
+                    name="Template Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+        with allure.step("Validate Register ID"):
+            try:
+                actual_register_id = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{expected_register_id}']")))
                 highlight_element(self.driver, actual_register_id)
                 actual_register_id_text = actual_register_id.text.strip()
                 print(f"Expected Register ID      : {expected_register_id}")
                 print(f"Actual Register ID        : {actual_register_id_text}")
 
-                actual_company_category = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_company_name}']]//td[normalize-space()='{expected_company_category}']")))
+                if expected_register_id == actual_register_id_text:
+                    allure.attach(
+                        f"Expected : {expected_register_id}\n"
+                        f"Actual   : {actual_register_id_text}\n",
+                        name="Audit Name - PASS",attachment_type=allure.attachment_type.TEXT)
+                else:
+                    all_matched = False
+
+                    allure.attach(
+                        f"Expected : {expected_register_id}\n"
+                        f"Actual   : {actual_register_id_text}\n",
+                        name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+            except Exception as e:
+                all_matched = False
+
+                error_msg = str(e).split("Stacktrace:")[0].strip()
+
+                allure.attach(
+                    f"Expected : {expected_register_id}\n"
+                    f"Actual   : Not Found\n",
+                    name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+        with allure.step("Validate Company Category"):
+            try:
+                actual_company_category = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_register_id}']]//td[4]")))
                 highlight_element(self.driver, actual_company_category)
                 actual_company_category_text = actual_company_category.text.strip()
                 print(f"Expected Company Category : {expected_company_category}")
                 print(f"Actual Company Category   : {actual_company_category_text}")
 
-                actual_enter_email_id = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_company_name}']]//td[normalize-space()='{expected_enter_email_id}']")))
+                if expected_company_category == actual_company_category_text:
+                    allure.attach(
+                        f"Expected : {expected_company_category}\n"
+                        f"Actual   : {actual_company_category_text}\n",
+                        name="Audit Name - PASS",attachment_type=allure.attachment_type.TEXT)
+                else:
+                    all_matched = False
+
+                    allure.attach(
+                        f"Expected : {expected_company_category}\n"
+                        f"Actual   : {actual_company_category_text}\n",
+                        name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+            except Exception as e:
+                all_matched = False
+
+                error_msg = str(e).split("Stacktrace:")[0].strip()
+
+                allure.attach(
+                    f"Expected : {expected_company_category}\n"
+                    f"Actual   : Not Found\n",
+                                    name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+        with allure.step("Validate Contact number"):
+            try:
+                actual_contact_number = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_register_id}']]//td[5]")))
+                highlight_element(self.driver, actual_contact_number)
+                actual_contact_number_text = actual_contact_number.text.strip()
+                print(f"Expected Contact Number   : {expected_contact_number}")
+                print(f"Actual Contact Number     : {actual_contact_number_text}")   
+
+                
+                if expected_contact_number == actual_contact_number_text:
+                    allure.attach(
+                        f"Expected : {expected_contact_number}\n"
+                        f"Actual   : {actual_contact_number_text}\n",
+                        name="Audit Name - PASS",attachment_type=allure.attachment_type.TEXT)
+                else:
+                    all_matched = False
+
+                    allure.attach(
+                        f"Expected : {expected_contact_number}\n"
+                        f"Actual   : {actual_contact_number_text}\n",
+                        name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
+            except Exception as e:
+                all_matched = False
+
+                error_msg = str(e).split("Stacktrace:")[0].strip()
+
+                allure.attach(
+                    f"Expected : {expected_contact_number}\n"
+                    f"Actual   : Not Found\n",
+                    name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+        with allure.step("Validate Email ID"):
+            try:
+                actual_enter_email_id = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_register_id}']]//td[6]")))
                 highlight_element(self.driver, actual_enter_email_id)
                 actual_enter_email_id_text = actual_enter_email_id.text.strip()
                 print(f"Expected Email ID         : {expected_enter_email_id}")
                 print(f"Actual Email ID           : {actual_enter_email_id_text}")
 
-                actual_contact_number = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_company_name}']]//td[normalize-space()='{expected_contact_number}']")))
-                highlight_element(self.driver, actual_contact_number)
-                actual_contact_number_text = actual_contact_number.text.strip()
-                print(f"Expected Contact Number   : {expected_contact_number}")
-                print(f"Actual Contact Number     : {actual_contact_number_text}")                
-
-                # Validate all details
-                all_matched = (
-                    expected_company_name == actual_company_name
-                    and expected_register_id == actual_register_id_text
-                    and expected_company_category == actual_company_category_text
-                    and expected_enter_email_id == actual_enter_email_id_text
-                    and expected_contact_number == actual_contact_number_text
-                )
-                if all_matched:
-                    result = (
-                        "AUDIT COMPANY CREATED SUCCESSFULLY\n\n"
-                        f"Company Name     : {expected_company_name} == {actual_company_name}\n"
-                        f"Register ID      : {expected_register_id} == {actual_register_id_text}\n"
-                        f"Company Category : {expected_company_category} == {actual_company_category_text}\n"
-                        f"Email ID         : {expected_enter_email_id} == {actual_enter_email_id_text}\n"
-                        f"Contact Number   : {expected_contact_number} == {actual_contact_number_text}\n"
-                    )
+                
+                if expected_enter_email_id == actual_enter_email_id_text:
+                    allure.attach(
+                        f"Expected : {expected_enter_email_id}\n"
+                        f"Actual   : {actual_enter_email_id_text}\n",
+                        name="Audit Name - PASS",attachment_type=allure.attachment_type.TEXT)
                 else:
-                    result = (
-                        "AUDIT COMPANY VALIDATION FAILED\n\n"
-                        f"Company Name     : {expected_company_name} == {actual_company_name}\n"
-                        f"Register ID      : {expected_register_id} == {actual_register_id_text}\n"
-                        f"Company Category : {expected_company_category} == {actual_company_category_text}\n"
-                        f"Email ID         : {expected_enter_email_id} == {actual_enter_email_id_text}\n"
-                        f"Contact Number   : {expected_contact_number} == {actual_contact_number_text}\n"
-                    )
-                allure.attach(result,name="Audit Company Validation",attachment_type=allure.attachment_type.TEXT)
+                    all_matched = False
 
-                assert all_matched, result
+                    allure.attach(
+                        f"Expected : {expected_enter_email_id}\n"
+                        f"Actual   : {actual_enter_email_id_text}\n",
+                        name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+
             except Exception as e:
-                msg = f"Validation Failed: {str(e)}"
-                allure.attach(msg,name="Validation Error",attachment_type=allure.attachment_type.TEXT,)
-                raise Exception(msg)
+                all_matched = False
+
+                error_msg = str(e).split("Stacktrace:")[0].strip()
+
+                allure.attach(
+                    f"Expected : {expected_enter_email_id}\n"
+                    f"Actual   : Not Found\n",
+                    name="Audit Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+        with allure.step("Final Assignment Validation"):
+        
+            if all_matched:
+                allure.attach(
+                    "All Assignment Details Matched Successfully",
+                    name="FINAL RESULT - PASS",
+                    attachment_type=allure.attachment_type.TEXT
+                )
+            else:
+                allure.attach(
+                    "Failed",
+                    name="FINAL RESULT - FAIL",
+                    attachment_type=allure.attachment_type.TEXT
+                )
+
+        assert all_matched, "Assignment validation failed"
+
+    
         
     def audit_company(self):
 
@@ -282,8 +386,8 @@ class AuditCompanyTask:
             expected_company_name,
             expected_register_id,
             expected_company_category,
-            expected_enter_email_id,
-            expected_contact_number
+            expected_contact_number,
+            expected_enter_email_id
         )
 
         return True
