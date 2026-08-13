@@ -18,6 +18,7 @@ from utilities.audit_template_functions.search_template import SearchTemplateTas
 from utilities.audit_template_functions.template_export_data import CustomExportData
 from utilities.audit_template_functions.custom_view import CustomViewColumnHeaders
 from utilities.audit_template_functions.create_audit_assignment import CreateAssignment
+from utilities.audit_company_functions.edit_company import EditCompanyTask
 
 def audit_check(driver, module_name=None, task_details=None):
     wait = WebDriverWait(driver, 30)
@@ -184,6 +185,19 @@ def audit_check(driver, module_name=None, task_details=None):
                     return False
             except Exception as e:
                     allure.attach(str(e), name="Create Assignment", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'edit_company_name':
+        with allure.step("Verify Edit Company"):
+            try:
+                edit_company_name = EditCompanyTask(driver, wait)
+                if edit_company_name.edit_company():
+                    print("Edit Company name successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for edit company",name="Edit Company name Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Edit Company name", attachment_type=allure.attachment_type.TEXT)
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)
