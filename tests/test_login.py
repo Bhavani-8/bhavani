@@ -39,7 +39,7 @@ def test_login_flow(setup, test_case_id, test_case_description, username, passwo
             test_failed = True
             # recorder.stop()
 
-            time.sleep(0.5) 
+            time.sleep(0.3) 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
             os.makedirs("screenshots", exist_ok=True)

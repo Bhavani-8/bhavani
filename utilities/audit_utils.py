@@ -19,7 +19,10 @@ from utilities.audit_template_functions.template_export_data import CustomExport
 from utilities.audit_template_functions.custom_view import CustomViewColumnHeaders
 from utilities.audit_template_functions.create_audit_assignment import CreateAssignment
 from utilities.audit_company_functions.edit_company import EditCompanyTask
-
+from utilities.audit_assignment_functions.search_assignment import SearchAssignmentTask
+from utilities.audit_assignment_functions.assignment_export import AssignExportData
+from utilities.audit_assignment_functions.view_assign import AssignViewColumnHeaders
+from utilities.audit_template_functions.edit_template import EditTemplate
 def audit_check(driver, module_name=None, task_details=None):
     wait = WebDriverWait(driver, 30)
 
@@ -80,11 +83,11 @@ def audit_check(driver, module_name=None, task_details=None):
             except Exception as e:
                     allure.attach(str(e), name="Audit Branch details", attachment_type=allure.attachment_type.TEXT)
 
-    if module_name == 'export_data':
+    if module_name == 'company_export_data':
         with allure.step("Verify Export Data"):
             try:
-                audit_branch_task = ExportData(driver, wait)
-                if audit_branch_task.export_data():
+                company_export = ExportData(driver, wait)
+                if company_export.export_data():
                     print("✅ Export data details successful")
                     return True
                 else:
@@ -198,6 +201,59 @@ def audit_check(driver, module_name=None, task_details=None):
                     return False
             except Exception as e:
                     allure.attach(str(e), name="Edit Company name", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'assignment_name':
+        with allure.step("Verify Assignment"):
+            try:
+                assignment_task = SearchAssignmentTask(driver, wait)
+                if assignment_task.assigment_name():
+                    print("Assignment successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for ",name="Edit Company name Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Edit Company name", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'assign_export_data':
+        with allure.step("Verify Assign Export Data"):
+            try:
+                assign_export = AssignExportData(driver, wait)
+                if assign_export.assign_export_data():
+                    print("Assign Export data details successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Assign Export data details",name="Assign Export data details Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Assign Export data details", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'assign_view_column_headers':
+        with allure.step("Verify Column Headers"):
+            try:
+                assign_view_column_header = AssignViewColumnHeaders(driver, wait)
+                if assign_view_column_header.assing_view_column_headers():
+                    print("✅ View column headers name successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for View column headers",name="View column headers name Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="View column headers name", attachment_type=allure.attachment_type.TEXT)
+    
+    if module_name == 'edit_inside_template':
+        with allure.step("Verify Edit Inside Template"):
+            try:
+                edit_inside_template = EditTemplate(driver, wait)
+                if edit_inside_template.edit_inside_template_name():
+                    print("✅ View column headers name successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for View column headers",name="View column headers name Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="View column headers name", attachment_type=allure.attachment_type.TEXT)
+        
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)

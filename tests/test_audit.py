@@ -43,14 +43,12 @@ def test_audit_flow(setup, test_case_id, module_name, test_case_description, tes
 
         except Exception as e:
             test_failed = True
-            time.sleep(4) 
+            time.sleep(3) 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             screenshot_path = f"screenshots/{test_name}_{timestamp}.png"
             os.makedirs("screenshots", exist_ok=True)
             time.sleep(1)
             driver.save_screenshot(screenshot_path) 
-
-
             # ✅ Attach to Allure report
             allure.attach.file(screenshot_path, name="Failure Screenshot", attachment_type=allure.attachment_type.PNG)
     
@@ -68,11 +66,7 @@ def test_audit_flow(setup, test_case_id, module_name, test_case_description, tes
             allure.attach(driver.current_url, name="Final URL", attachment_type=allure.attachment_type.TEXT)
             if test_failed:
                 if os.path.exists(video_path) and os.path.getsize(video_path) > 0:
-                    allure.attach.file(
-                        video_path,
-                        name="Failure Video",
-                        attachment_type=allure.attachment_type.MP4
-                    )
+                    allure.attach.file(video_path,name="Failure Video",attachment_type=allure.attachment_type.MP4)
                 else:
                     print("❌ Video missing or empty")
             else:

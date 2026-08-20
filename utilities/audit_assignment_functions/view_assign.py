@@ -8,7 +8,7 @@ from utilities.other_utils_functions.highlight import highlight_element
 from selenium.webdriver.common.keys import Keys
 
 
-class ViewColumnHeaders:
+class AssignViewColumnHeaders:
 
     def __init__(self, driver, wait):
         self.driver = driver
@@ -41,15 +41,15 @@ class ViewColumnHeaders:
                 allure.attach(msg, name = "Audit Icon Error", attachment_type = allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def click_company(self):
-        with allure.step("Click Company"):
+    def click_assignment(self):
+        with allure.step("Click Assignment"):
             try:
-                audit_company_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//span[text() = 'Company']")))
-                highlight_element(self.driver, audit_company_btn)
-                audit_company_btn.click()
+                audit_assignment_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//span[text() = 'Assignments']")))
+                highlight_element(self.driver, audit_assignment_btn)
+                audit_assignment_btn.click()
             except Exception as e:
-                msg = f"Failed to click Company button: {str(e)}"
-                allure.attach(msg, name = 'Audit Company Error', attachment_type = allure.attachment_type.TEXT)
+                msg = f"Failed to click Assignment button: {str(e)}"
+                allure.attach(msg, name = 'Audit Assignment Error', attachment_type = allure.attachment_type.TEXT)
                 raise Exception(msg)
 
     def view_filter(self):
@@ -98,7 +98,7 @@ class ViewColumnHeaders:
                 raise Exception(msg)
     
     def fetch_column_headers(self):
-        with allure.step("Verify all visible columns headers"):
+        with allure.step("Fecth all visible columns headers"):
             try:
                 column_headers = ["Company Name", "Actions"]
                 for column_header in column_headers:
@@ -146,7 +146,7 @@ class ViewColumnHeaders:
                 raise Exception(msg)
     
     def fetch_column_headers_again(self):
-        with allure.step("Verify all visible columns headers"):
+        with allure.step("Fecth all visible columns headers"):
             try:
 
                 column_headers = ["Company Name", "Registration No.", "Company Category", "Contact No.", "Email Id", "Branches", "Actions"]
@@ -170,9 +170,9 @@ class ViewColumnHeaders:
 
    
         
-    def view_column_headers(self):
+    def assign_view_column_headers(self):
         self.click_audit()
-        self.click_company()
+        self.click_assignment()
         self.view_filter()
         self.deselect_all_cloumns()
         self.fetch_column_headers()

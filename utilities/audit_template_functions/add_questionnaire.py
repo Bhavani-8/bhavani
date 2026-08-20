@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from utilities.other_utils_functions.highlight import highlight_element
 
 
-class CreateTemplate:
+class EditTemplate:
 
     def __init__(self, driver, wait):
         self.driver = driver
@@ -20,6 +20,7 @@ class CreateTemplate:
             with open(os.path.join("data", "locators.json"), "r") as f:
                 locators = json.load(f)
             self.audit_icon = locators["audit_icon"]
+            self.toast_msg = locators["toast_msg"]
         except FileNotFoundError as e:
             allure.attach(str(e),name="Locators File Missing",attachment_type=allure.attachment_type.TEXT)
             raise
@@ -51,47 +52,66 @@ class CreateTemplate:
                 allure.attach(msg, name = 'Template Error', attachment_type = allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def update_template_btn(self):
-        with allure.step("Click Update Template Button"):
+    def edit_template_btn(self):
+        with allure.step("Click Edit Template Button"):
             try:
                 template_file = os.path.join("latest_data", "latest_template.txt")
                 with open(template_file, "r") as f:
                     created_template_name = f.read().strip()
-                update_template_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//*[contains(normalize-space(),'{created_template_name}')]]//button[.//*[contains(@class,'lucide-pencil')]]")))
-                highlight_element(self.driver, update_template_elem)
-                update_template_elem.click()
+                edit_template_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//*[contains(normalize-space(),'{created_template_name}')]]//button[.//*[contains(@class,'lucide-pencil')]]")))
+                highlight_element(self.driver, edit_template_elem)
+                edit_template_elem.click()
             except Exception as e:
-                msg = f"Failed to click Update Template button: {str(e)}"
-                allure.attach(msg, name ="Update Template button Error", attachment_type=allure.attachment_type.TEXT)
+                msg = f"Failed to click Edit Template button: {str(e)}"
+                allure.attach(msg, name ="Edit Template button Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
-       
-    def enter_template_name(self):
-        with allure.step("Click Add Section"):
-            try:
-                question_section = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Section']")))
-                highlight_element(self.driver, question_section)
-                question_section.click()
-                time.sleep(1)
-            except Exception as e:
-                msg = f"failed to Enter Template name: {str(e)}"
-                allure.attach(msg, name = "Template name Error", attachment_type=allure.attachment_type.TEXT)
-                raise Exception(msg) 
 
+    def click_add_section(self):
+        with allure.step("Click Add Section button"):
+            try:
+                add_section_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Section']")))
+                highlight_element(self.driver, add_section_btn)
+                add_section_btn.click()
+            except Exception as e:
+                msg = f"Failed to click Add Section Button : {str(e)}"
+                allure.attach(msg, name="Add Section Button Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+    
     def enter_template_name(self):
         with allure.step("Enter Template Details"):
             try:
                 unique_questionnaire_name = f"Test Automation Question {random.randint(1000, 9999)}"
-                question_section = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='checklist_section']")))
+                question_section = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='questionnaire_section']")))
                 highlight_element(self.driver, question_section)
                 question_section.send_keys(unique_questionnaire_name)
-                template_file = os.path.join("latest_data", "latest_template.txt")
-                with open(template_file, "w") as f:
-                    f.write(unique_questionnaire_name)
+
+                
             except Exception as e:
                 msg = f"failed to Enter Template name: {str(e)}"
                 allure.attach(msg, name = "Template name Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg) 
-            
+    def submit_btn(self):
+        try:
+            submit_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "(//div[@class='flex items-center flex-row gap-1']//button[@type='submit'])[2]")))
+            highlight_element(self.driver, submit_btn)
+            submit_btn.click()
+
+        except Exception as e:
+            msg = f"failed to Click Submit Button: {str(e)}"
+            allure.attach(msg, name = "Submit Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg) 
+
+    def click_q_button(self):
+        try:
+            q_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space(text())='Q']")))
+            highlight_element(self.driver, q_btn)
+            q_btn.click()
+
+        except Exception as e:
+            msg = f"failed to Click Q Button: {str(e)}"
+            allure.attach(msg, name = "Q Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg) 
+    
     def enter_duration(self):
         with allure.step("Enter Duration"):
             try:
@@ -182,51 +202,47 @@ class CreateTemplate:
                 allure.attach(msg, name = "Save button Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def validate_all_details(self,expected_template_name):
-        with allure.step("Validate Created Template"):
+
+    def validate_updated_template_name(self, expected_fetch_template):
+        with allure.step("Validate Updated Template name"):
             try:
-                actual_template = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{expected_template_name}']")))
+                actual_template = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//td[contains(normalize-space(),'{expected_fetch_template}')]")))
                 highlight_element(self.driver, actual_template)
                 actual_template_name = actual_template.text.strip()
-                print(f"Expected Template : {expected_template_name}")
+                print(f"Expected Template : {expected_fetch_template}")
                 print(f"Actual Template   : {actual_template_name}")
-                if expected_template_name == actual_template_name:
+                if expected_fetch_template == actual_template_name:
                     result = (
                         "TEMPLATE CREATED SUCCESSFULLY\n\n"
-                        f"Expected : {expected_template_name}\n"
+                        f"Expected : {expected_fetch_template}\n"
                         f"Actual   : {actual_template_name}\n\n"
                     )
                 else:
                     result = (
                         "TEMPLATE VALIDATION FAILED\n\n"
-                        f"Expected : {expected_template_name}\n"
+                        f"Expected : {expected_fetch_template}\n"
                         f"Actual   : {actual_template_name}\n\n"
                     )
 
                 allure.attach(result,name="Template Validation",attachment_type=allure.attachment_type.TEXT)
 
-                assert expected_template_name == actual_template_name, result
+                assert expected_fetch_template == actual_template_name, result
             except Exception as e:
                 msg = f"Validation Failed: {str(e)}"
                 allure.attach(msg,name="Validation Error",attachment_type=allure.attachment_type.TEXT,)
                 raise Exception(msg)
     
-
-    def create_template(self):
+    
+    def edit_inside_template_name(self):
         self.click_audit()
         self.template_btn()
-
-        # Create template and store its name
-        self.update_template_btn()
+        self.edit_template_btn()
+        self.edit_inside_template()
         self.enter_template_name()
-        self.enter_buffer()
-        self.document_file()
-        self.add_attachment_file()
         self.save_button()
+        expected_template_name = self.fetch_template_name()
         self.done_button()
-
-       
-        
+        self.validate_updated_template_name(expected_template_name,)
         
 
         return True
