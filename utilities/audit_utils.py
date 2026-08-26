@@ -23,6 +23,7 @@ from utilities.audit_assignment_functions.search_assignment import SearchAssignm
 from utilities.audit_assignment_functions.assignment_export import AssignExportData
 from utilities.audit_assignment_functions.view_assign import AssignViewColumnHeaders
 from utilities.audit_template_functions.edit_template import EditTemplate
+from utilities.audit_template_functions.add_questionnaire import CreateQuestionnaire
 def audit_check(driver, module_name=None, task_details=None):
     wait = WebDriverWait(driver, 30)
 
@@ -246,14 +247,28 @@ def audit_check(driver, module_name=None, task_details=None):
             try:
                 edit_inside_template = EditTemplate(driver, wait)
                 if edit_inside_template.edit_inside_template_name():
-                    print("✅ View column headers name successful")
+                    print("✅ View Edit Template successful")
                     return True
                 else:
-                    allure.attach("Test case failed for View column headers",name="View column headers name Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Edit Template",name="Edit Template Validation Failed",attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                    allure.attach(str(e), name="View column headers name", attachment_type=allure.attachment_type.TEXT)
-        
+                    allure.attach(str(e), name="Edit Template name", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'add_questionnaire':
+        with allure.step("Verify Questionnaire"):
+            try:
+                create_add_questionnaire = CreateQuestionnaire(driver, wait)
+                if create_add_questionnaire.add_questionnaire():
+                    print("✅ View Creating Questionnaire successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Creating Questionnaire",name="Creating Questionnaire Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Creating Questionnaire", attachment_type=allure.attachment_type.TEXT)
+
+            
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)
