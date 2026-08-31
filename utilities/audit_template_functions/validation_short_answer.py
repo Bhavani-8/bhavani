@@ -38,7 +38,53 @@ class QuestionnaireShortAnswer:
                 msg = f"Failed to Enter Short Answer Section validation: {str(e)}"
                 allure.attach(msg,name="Short Answer Section validation Error",attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
-        
+
+    def select_short_answer(self, scenario=None):
+        with allure.step("Long Answer Section Question Without Validation"):
+            try:
+                if scenario == "max":
+                    unique_text = "Test Automation short answer Max count Validation"
+                elif scenario == "min":
+                    unique_text = "Test Automation short answer Min Character Count Validation"
+                elif scenario == "between":
+                    unique_text = "Test Automation short answer Between Count Validation"
+                elif scenario == "contains":
+                    unique_text = "Test Automation short answer Contains Text Validation"
+                elif scenario == "doesn't match":
+                    unique_text = "Test Automation short answer Doesn't match Text Validation"
+                elif scenario == "matches":
+                    unique_text = "Test Automation short answer matches Text Validation" 
+                elif scenario == "doesn't match":
+                    unique_text = "Test Automation short answer doesn't match Text Validation" 
+                elif scenario == "greater than":
+                    unique_text = "Test Automation short answer Greater Than Validation"
+                elif scenario == "greater than or equal":
+                    unique_text = "Test Automation short answer Greater Than Or Equal Validation"
+                elif scenario == "less than":
+                    unique_text = "Test Automation short answer Less Than Validation"
+                elif scenario == "less than or equal":
+                    unique_text = "Test Automation short answer Less Than Or Equal Validation"
+                elif scenario == "equal to":
+                    unique_text = "Test Automation short answer Equal To Validation"
+                elif scenario == "not equal to":
+                    unique_text = "Test Automation short answer Not Equal To Validation"
+                elif scenario == "is number":
+                    unique_text = "Test Automation short answer Is Number Validation"
+                elif scenario == "whole number":
+                    unique_text = "Test Automation short answer Whole Number Validation"
+                elif scenario == "number between":
+                    unique_text = "Test Automation short answer Number Between Validation"
+                else:
+                    unique_text = "Test Automation TEXT Validation"
+                enter_text = self.wait.until(EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Enter your question here...']")))
+                highlight_element(self.driver, enter_text)
+                enter_text.click()
+                enter_text.send_keys(unique_text)
+
+            except Exception as e:
+                msg = f"Failed to Enter short Answer Validation: {str(e)}"
+                allure.attach(msg, name="Short Answer validation Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
     def select_length(self):
     
         with allure.step("Select Length"):
@@ -57,7 +103,7 @@ class QuestionnaireShortAnswer:
                 allure.attach(msg, name = "Select Length Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def select_max_char_count(self):
+    def select_max_char_count(self, max_num="100"):
         with allure.step("Select Maximum Character Count"):
             try:
                 select_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
@@ -71,14 +117,15 @@ class QuestionnaireShortAnswer:
 
                 enter_max_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
                 highlight_element(self.driver, enter_max_count)
-                enter_max_count.click()
+                enter_max_count.send_keys(max_num)
+                
         
             except Exception as e:
                 msg = f"failed to Attach PDF Document File: {str(e)}"
                 allure.attach(msg, name = "Attach PDF Document File Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
-
-    def select_min_char_count(self):
+        
+    def select_min_char_count(self, min_num="50"):
         with allure.step("Select Minimum Character Count"):
             try:
                 select_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
@@ -92,8 +139,8 @@ class QuestionnaireShortAnswer:
 
                 enter_min_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
                 highlight_element(self.driver, enter_min_count)
-                enter_min_count.click()
-        
+                enter_min_count.send_keys(min_num)
+            
             except Exception as e:
                 msg = f"failed to Attach PDF Document File: {str(e)}"
                 allure.attach(msg, name = "Attach PDF Document File Error", attachment_type=allure.attachment_type.TEXT)
@@ -126,7 +173,7 @@ class QuestionnaireShortAnswer:
                 enter_from_num.send_keys(from_num)
                 time.sleep(1)
     
-                enter_to_num = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter max size']")))
+                enter_to_num = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='To']")))
                 highlight_element(self.driver, enter_to_num)
                 enter_to_num.click()
                 enter_to_num.send_keys(to_num)
@@ -263,48 +310,50 @@ class QuestionnaireShortAnswer:
                 allure.attach(msg, name = "Select Number Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def select_all_validation_types(self, validation_types=None):
+    def select_all_validation_types(self, validation_types):
 
-        if validation_types is None:
-            validation_types = [
-                "Greater than", "Greater than or equal to", "Less than", "Less than or equal to",
-                "Equal to", "Not equal to", "Is number", "Whole number", "Between"
-            ]
+        # if validation_types is None:
+        #     validation_types = [
+        #         "Greater than", "Greater than or equal to", "Less than", "Less than or equal to",
+        #         "Equal to", "Not equal to", "Is number", "Whole number", "Between"
+        #     ]
 
         with allure.step(f"Select validation types: {validation_types}"):
             try:
-                for validation_type in validation_types:
+                # for validation_type in validation_types:
 
-                    validation_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
-                    highlight_element(self.driver, validation_dropdown)
-                    validation_dropdown.click()
+                validation_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
+                highlight_element(self.driver, validation_dropdown)
+                validation_dropdown.click()
+                time.sleep(1)
+
+                validation_option = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//div[text()='{validation_types}']")))
+                self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", validation_option)
+                time.sleep(0.5)
+                highlight_element(self.driver, validation_option)
+                validation_option.click()
+
+                if validation_types in ["Is number", "Whole number"]:
                     time.sleep(1)
+                    # continue
+                    return
 
-                    validation_option = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//div[text()='{validation_type}']")))
-                    validation_option = self.scroll_to_option_with_arrow_keys(validation_option)
-                    highlight_element(self.driver, validation_option)
-                    validation_option.click()
+                elif validation_types == "Between":
+                    from_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='From']")))
+                    highlight_element(self.driver, from_value)
+                    from_value.send_keys("50")
 
-                    if validation_type in ["Is number", "Whole number"]:
-                        time.sleep(1)
-                        continue
+                    to_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='To']")))
+                    highlight_element(self.driver, to_value)
+                    to_value.send_keys("100")
 
-                    elif validation_type == "Between":
-                        from_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='From']")))
-                        highlight_element(self.driver, from_value)
-                        from_value.send_keys("50")
+                else:
+                    enter_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
+                    highlight_element(self.driver, enter_value)
+                    enter_value.click()
+                    enter_value.send_keys("1")
 
-                        to_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter max size']")))
-                        highlight_element(self.driver, to_value)
-                        to_value.send_keys("100")
-
-                    else:
-                        enter_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
-                        highlight_element(self.driver, enter_value)
-                        enter_value.click()
-                        enter_value.send_keys("1")
-
-                    time.sleep(1)
+                time.sleep(1)
 
             except Exception as e:
                 msg = f"Failed to select validation types: {str(e)}"

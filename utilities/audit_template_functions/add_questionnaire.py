@@ -3,6 +3,7 @@ import time
 import os
 import json
 import random
+from functools import partial
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -148,9 +149,7 @@ class CreateQuestionnaire:
 
                 select_option = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//div[text()='{field_type}']")))
                 
-                self.driver.execute_script(
-                "arguments[0].scrollIntoView({block: 'center'});", select_option
-            )
+                self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", select_option)
                 time.sleep(0.5)
 
                 highlight_element(self.driver, select_option)
@@ -203,26 +202,24 @@ class CreateQuestionnaire:
                 raise Exception(msg)
 
     def attachment_feild(self):
-        try:
-    
-            attach_type_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='attachment_file_types']")))
-            highlight_element(self.driver, attach_type_dropdown)
-            attach_type_dropdown.click()
-            time.sleep(1)
+        with allure.step("Select Attachment Field"):
+            try:
+        
+                attach_type_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='attachment_file_types']")))
+                highlight_element(self.driver, attach_type_dropdown)
+                attach_type_dropdown.click()
+                time.sleep(1)
 
-            select_option = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//div[text()='PDF']")))
-            highlight_element(self.driver, select_option)
-            select_option.click()
-            time.sleep(1)
+                select_option = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@role='option' and normalize-space()='PDF']")))
+                highlight_element(self.driver, select_option)
+                select_option.click()
+                time.sleep(1)
+                self.driver.find_element(By.TAG_NAME, "body").send_keys(Keys.ESCAPE)
 
-            add_question_label = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//h2[text()='Add Questionnaire']")))
-            highlight_element(self.driver, add_question_label)
-            add_question_label.click()
-            time.sleep(2)
-        except Exception as e:
-            msg = f"Failed to click Attach type': {str(e)}"
-            allure.attach(msg, name="Attach Type Error", attachment_type=allure.attachment_type.TEXT)
-            raise Exception(msg)
+            except Exception as e:
+                msg = f"Failed to select Attachment type': {str(e)}"
+                allure.attach(msg, name="Attach Type Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
 
     def max_num(self, max_files="1", max_size_mb="5"):
         try:
@@ -246,7 +243,7 @@ class CreateQuestionnaire:
 
         try:
             unique_radio = f"Test Radio: {random.randint(1000, 9999)}"
-            enter_checkbox = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter radio option']")))
+            enter_checkbox = self.wait.until(EC.presence_of_element_located((By.XPATH, "(//input[@placeholder='Enter radio option'])[1]")))
             highlight_element(self.driver, enter_checkbox)
             enter_checkbox.click()
             enter_checkbox.send_keys(unique_radio)
@@ -257,7 +254,7 @@ class CreateQuestionnaire:
             click_add_more.click()
 
             unique_radio2 = f"Test Radio2: {random.randint(1000, 9999)}"
-            enter_checkbox2 = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter radio option']")))
+            enter_checkbox2 = self.wait.until(EC.presence_of_element_located((By.XPATH, "(//input[@placeholder='Enter radio option'])[2]")))
             highlight_element(self.driver, enter_checkbox2)
             enter_checkbox2.click()
             enter_checkbox2.send_keys(unique_radio2)
@@ -291,73 +288,12 @@ class CreateQuestionnaire:
                 apply_button = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Apply']")))
                 highlight_element(self.driver, apply_button)
                 apply_button.click()
-                time.sleep(1)
+                time.sleep(2)
             except Exception as e:
                 msg = f"failed to click Apply button: {str(e)}"
                 allure.attach(msg, name = "Apply button Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def add_questions_for_all_field_types(self, field_types=None):
-        if field_types is None:
-            field_types = [
-                "Text Field", "Date Range", "Checkbox", "Attachment", "Date",
-                "Radio", "Long Answer", "Short Answer", "Drop Down", "First/Last Name",
-                "Phone Number", "Price", "Address", "URL", "PAN", "Email"
-            ]
-
-        text_entry_map = {
-        "Text Field":       self.validation_text_field.add_text,
-        "Date Range":       self.other_fields.add_date_range,
-        "Checkbox":         self.validation_checkbox.add_checkbox,
-        "Attachment":       self.other_fields.add_attachment,
-        "Date":             self.validation_date.add_date,
-        "Radio":            self.other_fields.add_radio,
-        "Long Answer":      self.validation_long_answer.add_long_answer,
-        "Short Answer":     self.validation_short_answer.add_short_answer,
-        "Drop Down":        self.validation_drop_down.add_drop_down,
-        "First/Last Name":  self.validation_first_last_name.add_name,
-        "Phone Number":     self.other_fields.add_phone_number,
-        "Price":            self.validation_price.add_price,
-        "Address":          self.other_fields.add_address,
-        "URL":              self.other_fields.add_url,
-        "PAN":              self.other_fields.add_pan,
-        "Email":            self.other_fields.add_email,   
-        }
-
-        with allure.step(f"Add questions (without validation) for field types: {field_types}"):
-            for field_type in field_types:
-                with allure.step(f"Add question with field type: {field_type}"):
-                    try:
-                        entry_fn = text_entry_map.get(field_type)
-                        if entry_fn is None:
-                            msg = f"No text-entry method mapped for field type '{field_type}'"
-                            allure.attach(msg, name=f"{field_type} Not Implemented", attachment_type=allure.attachment_type.TEXT)
-                            raise Exception(msg)
-
-                        self.click_q_button()
-                        entry_fn()
-                        self.select_field_type(field_type)
-                        self.enter_description()
-                        self.document_file()
-
-                        if field_type == "Attachment":
-                            self.attachment_feild()
-                            self.max_num()
-                        
-                        elif field_type == "Checkbox":
-                            self.validation_checkbox.checkbox_options()
-                        elif field_type == "Radio":
-                            self.radio()          # this is separate from other_fields.add_radio (question text)
-                        elif field_type == "Drop Down":
-                            self.validation_drop_down.dropdown_options()
-                        
-                        self.apply_button()
-
-                    except Exception as e:
-                        msg = f"Failed processing field type '{field_type}': {str(e)}"
-                        allure.attach(msg, name=f"{field_type} Loop Error", attachment_type=allure.attachment_type.TEXT)
-                        raise Exception(msg)
-                                 
     def done_button(self):
         with allure.step("Click Done Button"):
             try:
@@ -370,8 +306,269 @@ class CreateQuestionnaire:
                 allure.attach(msg, name = "Save button Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    
-    
+    # -----------------------------------------------------------
+    # ADD THIS AS A REGULAR CLASS METHOD, NOT NESTED
+    # -----------------------------------------------------------
+    def _run_single_validation(self, field_type, entry_function, step_label, *validation_steps):
+        """Open a fresh question, fill it, run the given validation steps in order, then Apply."""
+        with allure.step(f"{field_type}: {step_label}"):
+            try:
+                self.click_q_button()
+                entry_function()
+                self.select_field_type(field_type)
+                self.enter_description()
+                
+               
+                if field_type == "Checkbox":
+                    self.validation_checkbox.checkbox_options()
+                elif field_type == "Drop Down":
+                    self.validation_drop_down.dropdown_options()
+                self.validation()
+                
+
+                for step in validation_steps:
+                    step()
+
+                self.apply_button()
+                time.sleep(1)
+
+            except Exception as e:
+                msg = f"Failed validation step '{step_label}' for '{field_type}': {str(e)}"
+                allure.attach(msg, name=f"{field_type} {step_label} Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+
+    def add_questions_for_all_field_types(self, field_types=None):
+        if field_types is None:
+            field_types = [
+                "Text Field", "Date Range", "Checkbox", "Attachment", "Date", "Radio", "Long Answer", "Short Answer", "Drop Down", "First/Last Name",
+                "Phone Number", "Price", "Address", "URL", "PAN", "Email"
+            ]
+
+        without_validation = {
+            "Text Field": self.validation_text_field.add_text,
+            "Date Range": self.other_fields.add_date_range,
+            "Checkbox": self.validation_checkbox.add_checkbox,
+            "Attachment": self.other_fields.add_attachment,
+            "Date": self.validation_date.add_date,
+            "Radio": self.other_fields.add_radio,
+            "Long Answer": self.validation_long_answer.add_long_answer,
+            "Short Answer": self.validation_short_answer.add_short_answer,
+            "Drop Down": self.validation_drop_down.add_drop_down,
+            "First/Last Name": self.validation_first_last_name.add_name,
+            "Phone Number": self.other_fields.add_phone_number,
+            "Price": self.validation_price.add_price,
+            "Address": self.other_fields.add_address,
+            "URL": self.other_fields.add_url,
+            "PAN": self.other_fields.add_pan,
+            "Email": self.other_fields.add_email,
+        }
+
+        field_validation = [
+            "Text Field", "Checkbox", "Date", "Long Answer", "Short Answer", "Drop Down",
+            "First/Last Name", "Price"
+        ]
+
+        with_validation = {
+            "Text Field": self.validation_text_field.validation_text,
+            "Checkbox": self.validation_checkbox.validation_checkbox,
+            "Date": self.validation_date.validation_date,
+            "Long Answer": self.validation_long_answer.validation_long_answer,
+            "Short Answer": self.validation_short_answer.validation_short_answer,
+            "Drop Down": self.validation_drop_down.validation_drop_down,
+            "First/Last Name": self.validation_first_last_name.validation_name,
+            "Price": self.validation_price.validation_price,
+        }
+
+        # ==========================================================
+# 1. COMPLETE ALL QUESTIONS WITHOUT VALIDATION
+# ==========================================================
+
+        with allure.step("Create all questionnaire fields without validation"):
+
+            for field_type in field_types:
+
+                with allure.step(f"Add question without validation: {field_type}"):
+
+                    try:
+                        entry_function = without_validation.get(field_type)
+
+                        if entry_function is None:
+                            msg = f"No text-entry method mapped for field type '{field_type}'"
+                            allure.attach(msg, name=f"{field_type} Not Implemented", attachment_type=allure.attachment_type.TEXT)
+                            raise Exception(msg)
+
+                        self.click_q_button()
+                        entry_function()
+                        self.select_field_type(field_type)
+                        self.enter_description()
+                        self.document_file()
+
+                        if field_type == "Attachment":
+                            self.attachment_feild()
+                            self.max_num()
+                        elif field_type == "Checkbox":
+                            self.validation_checkbox.checkbox_options()
+                        elif field_type == "Radio":
+                            self.radio()
+                        elif field_type == "Drop Down":
+                            self.validation_drop_down.dropdown_options()
+
+                        self.apply_button()
+
+                    except Exception as e:
+                        msg = f"Failed processing without-validation field '{field_type}': {str(e)}"
+                        allure.attach(msg, name=f"{field_type} Without Validation Error", attachment_type=allure.attachment_type.TEXT)
+                        raise Exception(msg)
+
+
+
+        # 2. VALIDATION loop — remove the nested def, just call self._run_single_validation directly
+        with allure.step("Start validation for supported questionnaire fields"):
+            for field_type in field_validation:
+                with allure.step(f"Add validation for: {field_type}"):
+                    try:
+                        entry_function = without_validation.get(field_type)
+                        validation_function = with_validation.get(field_type)
+
+                        if entry_function is None:
+                            msg = f"No question-entry method mapped for field type '{field_type}'"
+                            allure.attach(msg, name=f"{field_type} Entry Error", attachment_type=allure.attachment_type.TEXT)
+                            raise Exception(msg)
+
+                        if validation_function is None:
+                            msg = f"No validation method mapped for field type '{field_type}'"
+                            allure.attach(msg, name=f"{field_type} Validation Error", attachment_type=allure.attachment_type.TEXT)
+                            raise Exception(msg)
+
+                        if field_type == "Text Field":
+                            tf = self.validation_text_field
+
+                            self._run_single_validation(field_type, partial(tf.max_min_counts, "max"), "Max Char Count",
+                                tf.select_length, tf.select_max_char_count, tf.error_message)
+                            self._run_single_validation(field_type, partial(tf.max_min_counts, "min"), "Min Char Count",
+                                tf.select_length, tf.select_min_char_count, tf.error_message)
+                            self._run_single_validation(field_type, partial(tf.max_min_counts, "between"), "Between",
+                                tf.select_length, tf.select_between, tf.enter_from_to, tf.error_message)
+                            self._run_single_validation(field_type, partial(tf.max_min_counts, "contains"), "Contains",
+                                tf.select_regular_text, tf.select_contains, tf.error_message)
+                            self._run_single_validation(field_type, partial(tf.max_min_counts, "doesn't contains"), "Doesn't Contain",
+                                tf.select_regular_text, tf.select_doesnt_contain, tf.error_message)
+                            self._run_single_validation(field_type, partial(tf.max_min_counts, "matche's"), "Matches",
+                                tf.select_regular_text, tf.select_matches, tf.error_message)
+                            self._run_single_validation(field_type, partial(tf.max_min_counts, "doesn't match"), "Doesn't Match",
+                                tf.select_regular_text, tf.select_doesnt_match, tf.error_message)
+                            
+                        elif field_type == "Checkbox":
+                            cb = self.validation_checkbox
+                            self._run_single_validation(field_type, partial(cb.checkbox_sections, "at least"), "At Least",
+                                cb.select_at_least, cb.error_message)
+                            self._run_single_validation(field_type, partial(cb.checkbox_sections, "at most"), "At Most",
+                                cb.select_at_most, cb.error_message)
+                            self._run_single_validation(field_type, partial(cb.checkbox_sections, "exactly"), "Exactly",
+                                cb.select_exactly, cb.error_message)
+
+                        elif field_type == "Date":
+                            d = self.validation_date
+                            self._run_single_validation(field_type, partial(d.date_sections, "past date"), "Past Date",
+                                d.select_past_date, d.error_message)
+                            self._run_single_validation(field_type, partial(d.date_sections, "current date"), "Current Date",
+                                d.select_current_date, d.error_message)
+                            self._run_single_validation(field_type, partial(d.date_sections, "future date"), "Future Date",
+                                d.select_future_date, d.error_message)
+
+                        elif field_type == "Long Answer":
+                            la = self.validation_long_answer
+                            self._run_single_validation(field_type, partial(la.select_long_answer, "max"), "Max Char Count",
+                                la.select_length, la.select_max_char_count, la.error_message)
+                            self._run_single_validation(field_type, partial(la.select_long_answer, "min"), "Min Char Count",
+                                la.select_length, la.select_min_char_count, la.error_message)
+                            self._run_single_validation(field_type, partial(la.select_long_answer, "between"), "Between",
+                                la.select_length, la.select_between, la.enter_from_to, la.error_message)
+                            self._run_single_validation(field_type, partial(la.select_long_answer, "contains"), "Contains",
+                                la.select_regular_text, la.select_contains, la.error_message)
+                            self._run_single_validation(field_type, partial(la.select_long_answer, "doesn't contains"), "Doesn't Contain",
+                                la.select_regular_text, la.select_doesnt_contain, la.error_message)
+                            self._run_single_validation(field_type, partial(la.select_long_answer, "matches"), "Matches",
+                                la.select_regular_text, la.select_matches, la.error_message)
+                            self._run_single_validation(field_type, partial(la.select_long_answer, "doesn't match"), "Doesn't Match",
+                                tf.select_regular_text, tf.select_doesnt_match, tf.error_message)
+                                                        
+
+                        elif field_type == "Short Answer":
+                            sa = self.validation_short_answer
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "max"), "Max Char Count",
+                                sa.select_length, sa.select_max_char_count, sa.error_message)
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "min"), "Min Char Count",
+                                sa.select_length, sa.select_min_char_count, sa.error_message)
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "between"), "Between",
+                                sa.select_length, sa.select_between, sa.enter_from_to, sa.error_message)
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "contains"), "Contains",
+                                sa.select_regular_text, sa.select_contains, sa.error_message)
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "doesn't contains"), "Doesn't Contain",
+                                sa.select_regular_text, sa.select_doesnt_contain, sa.error_message)
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "matches"), "Matches",
+                                sa.select_regular_text, sa.select_matches, sa.error_message)
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "doesn't match"), "Doesn't Match",
+                                sa.select_regular_text, sa.select_doesnt_match, sa.error_message)
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "greater than"), "Greater Than",
+                                sa.select_number, partial(sa.select_all_validation_types, "Greater than"), sa.error_message)
+
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "greater than or equal"), "Greater Than Or Equal To",
+                                sa.select_number, partial(sa.select_all_validation_types, "Greater than or equal to"), sa.error_message)
+
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "less than"), "Less Than",
+                                sa.select_number, partial(sa.select_all_validation_types, "Less than"), sa.error_message)
+
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "less than or equal"), "Less Than Or Equal To",
+                                sa.select_number, partial(sa.select_all_validation_types, "Less than or equal to"), sa.error_message)
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "equal to"), "Equal To",
+                                sa.select_number, partial(sa.select_all_validation_types, "Equal to"), sa.error_message)
+
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "not equal to"), "Not Equal To",
+                                sa.select_number, partial(sa.select_all_validation_types, "Not equal to"), sa.error_message)
+
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "is number"), "Is Number",
+                                sa.select_number, partial(sa.select_all_validation_types, "Is number"), sa.error_message)
+
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "whole number"), "Whole Number",
+                                sa.select_number, partial(sa.select_all_validation_types, "Whole number"), sa.error_message)
+                            self._run_single_validation(field_type, partial(sa.select_short_answer, "number between"), "Number Between",
+                                sa.select_number, partial(sa.select_all_validation_types, "Between"), sa.error_message)
+                        
+
+                        elif field_type == "Drop Down":
+                            dd = self.validation_drop_down
+                            self._run_single_validation(field_type, partial(dd.drop_down_sections, "at least"), "At Least",
+                                dd.select_at_least, dd.error_message)
+                            self._run_single_validation(field_type, partial(dd.drop_down_sections, "at most"), "At Most",
+                                dd.select_at_most, dd.error_message)
+                            self._run_single_validation(field_type, partial(dd.drop_down_sections, "exactly"), "Exactly",
+                                dd.select_exactly, dd.error_message)
+
+                        elif field_type == "First/Last Name":
+                            fl = self.validation_first_last_name
+                            self._run_single_validation(field_type, partial(fl.first_last_name, "max"), "Max Char Count",
+                                fl.select_length, fl.select_max_char_count, fl.error_message)
+                            self._run_single_validation(field_type, partial(fl.first_last_name, "min"), "Min Char Count",
+                                fl.select_length, fl.select_min_char_count, fl.error_message)
+                            self._run_single_validation(field_type, partial(fl.first_last_name, "between"), "Between",
+                                fl.select_length, fl.select_between, fl.enter_from_to, fl.error_message)
+
+                        elif field_type == "Price":
+                            p = self.validation_price
+                            self._run_single_validation(field_type, partial(p.price_section, "maximum value"), "Maximun value",
+                                p.select_value, p.select_max_char_count, p.error_message)
+                            self._run_single_validation(field_type, partial(p.price_section, "minimum value"), "Minimum value",
+                                p.select_value, p.select_min_char_count, p.error_message)
+                            self._run_single_validation(field_type, partial(p.price_section, "between"), "Between",
+                                p.select_value, p.select_between, fl.enter_from_to, p.error_message)
+
+
+                    except Exception as e:
+                        msg = f"Failed processing validation field '{field_type}': {str(e)}"
+                        allure.attach(msg, name=f"{field_type} Validation Loop Error", attachment_type=allure.attachment_type.TEXT)
+                        raise Exception(msg)
+
     def add_questionnaire(self, field_types=None):
         self.click_audit()
         self.template_btn()
@@ -381,9 +578,4 @@ class CreateQuestionnaire:
         self.submit_btn()
         self.add_questions_for_all_field_types(field_types)
         self.done_button()
-        
-        
-
         return True
-
-                

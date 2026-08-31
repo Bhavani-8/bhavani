@@ -38,7 +38,28 @@ class QuestionnaireFirstLastName:
                 allure.attach(msg,name="First Last Name Section Validation Error",attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
+    def first_last_name(self, scenario=None):
+        with allure.step("First/Last Name Section Question Validation"):
+            try:
+                if scenario == "max":
+                    unique_text = "Test Automation Name Max Character Count Validation"
+                elif scenario == "min":
+                    unique_text = "Test Automation Name Text Min Character Count Validation"
+                elif scenario == "between":
+                    unique_text = "Test Automation Name Text Between Count Validation"
+                
+                else:
+                    unique_text = "Test Automation TEXT Validation"
+    
+                enter_text = self.wait.until(EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Enter your question here...']")))
+                highlight_element(self.driver, enter_text)
+                enter_text.click()
+                enter_text.send_keys(unique_text)
 
+            except Exception as e:
+                msg = f"Failed to Enter Name Validation: {str(e)}"
+                allure.attach(msg, name="Name validation Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
     def select_length(self):
     
         with allure.step("Select Length"):
@@ -127,7 +148,7 @@ class QuestionnaireFirstLastName:
                 enter_from_num.send_keys(from_num)
                 time.sleep(1)
     
-                enter_to_num = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter max size']")))
+                enter_to_num = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='To']")))
                 highlight_element(self.driver, enter_to_num)
                 enter_to_num.click()
                 enter_to_num.send_keys(to_num)

@@ -16,7 +16,7 @@ class QuestionnaireLongAnswer:
     def add_long_answer(self):
         with allure.step("Long Answer Section Without Validation"):
             try:
-                unique_long = "Test Automation Long without Validation"
+                unique_long = "Test Automation Long Answer without Validation"
                 enter_long_answer = self.wait.until(EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Enter your question here...']")))
                 highlight_element(self.driver, enter_long_answer)
                 enter_long_answer.click()
@@ -38,31 +38,38 @@ class QuestionnaireLongAnswer:
                 msg = f"Failed to Enter Long Section Section Validation: {str(e)}"
                 allure.attach(msg,name="Long Section Section Validation Error",attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
+
+    
             
-    def long_answer(self):
-        try:
-            unique_checkbox = f"Test Checkbox: {random.randint(1000, 9999)}"
-            enter_checkbox = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter checkbox option']")))
-            highlight_element(self.driver, enter_checkbox)
-            enter_checkbox.click()
-            enter_checkbox.send_keys(unique_checkbox)
-            time.sleep(1)
+    def select_long_answer(self, scenario=None):
+        with allure.step("Long Answer Section Question Without Validation"):
+            try:
+                if scenario == "max":
+                    unique_text = "Test Automation long answer Max count Validation"
+                elif scenario == "min":
+                    unique_text = "Test Automation long answer Min Character Count Validation"
+                elif scenario == "between":
+                    unique_text = "Test Automation long answer Between Count Validation"
+                elif scenario == "contains":
+                    unique_text = "Test Automation long answer Contains Text Validation"
+                elif scenario == "doesn't match":
+                    unique_text = "Test Automation long answer Doesn't match Text Validation"
+                elif scenario == "matches":
+                    unique_text = "Test Automation long answer matche's Text Validation" 
+                elif scenario == "doesn't match":
+                    unique_text = "Test Automation long answer doesn't match Text Validation" 
+                else:
+                    unique_text = "Test Automation TEXT Validation"
 
-            click_add_more = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Add More']")))
-            highlight_element(self.driver, click_add_more)
-            click_add_more.click()
+                enter_text = self.wait.until(EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Enter your question here...']")))
+                highlight_element(self.driver, enter_text)
+                enter_text.click()
+                enter_text.send_keys(unique_text)
 
-            unique_checkbox2 = f"Test Checkbox : {random.randint(1000, 9999)}"
-            enter_checkbox2 = self.wit.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter checkbox option']")))
-            highlight_element(self.driver, enter_checkbox2)
-            enter_checkbox2.click()
-            enter_checkbox2.send_keys(unique_checkbox2)
-            time.sleep(1)
-        except Exception as e:
-            msg = f"Failed to Enter Checkbox: {str(e)}"
-            allure.attach(msg,name="Enter Checbox Error",attachment_type=allure.attachment_type.TEXT)
-            raise Exception(msg)
-        
+            except Exception as e:
+                msg = f"Failed to Enter Long Answer Validation: {str(e)}"
+                allure.attach(msg, name="Long Answer validation Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
     def select_length(self):
     
         with allure.step("Select Length"):
@@ -81,7 +88,8 @@ class QuestionnaireLongAnswer:
                 allure.attach(msg, name = "Select Length Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def select_max_char_count(self):
+   
+    def select_max_char_count(self, max_num="100"):
         with allure.step("Select Maximum Character Count"):
             try:
                 select_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
@@ -95,14 +103,15 @@ class QuestionnaireLongAnswer:
 
                 enter_max_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
                 highlight_element(self.driver, enter_max_count)
-                enter_max_count.click()
+                enter_max_count.send_keys(max_num)
+                
         
             except Exception as e:
                 msg = f"failed to Attach PDF Document File: {str(e)}"
                 allure.attach(msg, name = "Attach PDF Document File Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
-
-    def select_min_char_count(self):
+    
+    def select_min_char_count(self, min_num="50"):
         with allure.step("Select Minimum Character Count"):
             try:
                 select_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
@@ -116,13 +125,12 @@ class QuestionnaireLongAnswer:
 
                 enter_min_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
                 highlight_element(self.driver, enter_min_count)
-                enter_min_count.click()
-        
+                enter_min_count.send_keys(min_num)
+            
             except Exception as e:
                 msg = f"failed to Attach PDF Document File: {str(e)}"
                 allure.attach(msg, name = "Attach PDF Document File Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
-
     def select_between(self):
         with allure.step("Select Between Length"):
             try:
@@ -150,7 +158,7 @@ class QuestionnaireLongAnswer:
                 enter_from_num.send_keys(from_num)
                 time.sleep(1)
     
-                enter_to_num = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter max size']")))
+                enter_to_num = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='To']")))
                 highlight_element(self.driver, enter_to_num)
                 enter_to_num.click()
                 enter_to_num.send_keys(to_num)
@@ -216,6 +224,8 @@ class QuestionnaireLongAnswer:
 
                 enter_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
                 highlight_element(self.driver, enter_value)
+                enter_value.click()
+                enter_value.send_keys(2)
                 time.sleep(1)
         
             except Exception as e:

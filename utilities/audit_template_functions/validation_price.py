@@ -38,6 +38,29 @@ class QuestionnairePrice:
                 allure.attach(msg,name="Price Section Setion Validation Error",attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
+    def price_section(self, scenario=None):
+        with allure.step("Price Section Question Validation"):
+            try:
+                if scenario == "maximum value":
+                    unique_text = "Test Automation Price Max Character Count Validation"
+                elif scenario == "minimum value":
+                    unique_text = "Test Automation Price Text Min Character Count Validation"
+                elif scenario == "between":
+                    unique_text = "Test Automation Price Text Between Count Validation"
+                
+                else:
+                    unique_text = "Test Automation TEXT Validation"
+    
+                enter_text = self.wait.until(EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Enter your question here...']")))
+                highlight_element(self.driver, enter_text)
+                enter_text.click()
+                enter_text.send_keys(unique_text)
+
+            except Exception as e:
+                msg = f"Failed to Enter Price Validation: {str(e)}"
+                allure.attach(msg, name="Price validation Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+
     def select_value(self):
     
         with allure.step("Select Value"):
@@ -56,7 +79,86 @@ class QuestionnairePrice:
                 allure.attach(msg, name = "Select Length Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-   
+    def select_max_char_count(self):
+        with allure.step("Select Maximum Character Count"):
+            try:
+                select_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
+                highlight_element(self.driver, select_dropdown)
+                select_dropdown.click()
+                time.sleep(1)
+
+                max_char_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Maximum Character Count']")))
+                highlight_element(self.driver, max_char_count)
+                max_char_count.click()
+
+                enter_max_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
+                highlight_element(self.driver, enter_max_count)
+                enter_max_count.send_keys(100)
+                
+        
+            except Exception as e:
+                msg = f"failed to Attach PDF Document File: {str(e)}"
+                allure.attach(msg, name = "Attach PDF Document File Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+        
+    def select_min_char_count(self):
+        with allure.step("Select Minimum Character Count"):
+            try:
+                select_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
+                highlight_element(self.driver, select_dropdown)
+                select_dropdown.click()
+                time.sleep(1)
+
+                min_char_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Minimum Character Count']")))
+                highlight_element(self.driver, min_char_count)
+                min_char_count.click()
+
+                enter_min_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
+                highlight_element(self.driver, enter_min_count)
+                enter_min_count.send_keys(50)
+        
+            except Exception as e:
+                msg = f"failed to Attach PDF Document File: {str(e)}"
+                allure.attach(msg, name = "Attach PDF Document File Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+        
+    def select_between(self):
+        with allure.step("Select Between Length"):
+            try:
+                select_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
+                highlight_element(self.driver, select_dropdown)
+                select_dropdown.click()
+                time.sleep(1)
+
+                between = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Between']")))
+                highlight_element(self.driver, between)
+                between.click()
+        
+            except Exception as e:
+                msg = f"failed to Attach PDF Document File: {str(e)}"
+                allure.attach(msg, name = "Attach PDF Document File Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+        
+        
+    def enter_from_to(self, from_num="50", to_num="100"):
+        with allure.step("Enter From and To"):
+            try:
+                enter_from_num = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='From']")))
+                highlight_element(self.driver, enter_from_num)
+                enter_from_num.click()
+                enter_from_num.send_keys(from_num)
+                time.sleep(1)
+    
+                enter_to_num = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='To']")))
+                highlight_element(self.driver, enter_to_num)
+                enter_to_num.click()
+                enter_to_num.send_keys(to_num)
+                
+            except Exception as e:
+                msg = f"Failed to Enter Maximum number': {str(e)}"
+                allure.attach(msg, name="Maximum Number Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+    
     def error_message(self):
 
         try:

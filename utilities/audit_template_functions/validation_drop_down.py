@@ -29,7 +29,7 @@ class QuestionnaireDropDownField:
         
         try:
             unique_dropdown = "Test Dropdown1"
-            enter_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter dropdown option']")))
+            enter_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "(//input[@placeholder='Enter dropdown option'])[1]")))
             highlight_element(self.driver, enter_dropdown)
             enter_dropdown.click()
             enter_dropdown.send_keys(unique_dropdown)
@@ -40,7 +40,7 @@ class QuestionnaireDropDownField:
             click_add_more.click()
 
             unique_dropdown2 = "Test Dropdown2"
-            enter_dropdown2 = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter dropdown option']")))
+            enter_dropdown2 = self.wait.until(EC.presence_of_element_located((By.XPATH, "(//input[@placeholder='Enter dropdown option'])[2]")))
             highlight_element(self.driver, enter_dropdown2)
             enter_dropdown2.click()
             enter_dropdown2.send_keys(unique_dropdown2)
@@ -64,10 +64,32 @@ class QuestionnaireDropDownField:
                 allure.attach(msg,name="Drop Down Section Validation Error",attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
+    def drop_down_sections(self, scenario=None):
+        with allure.step("Drop Down Section Question Validation"):
+            try:
+                if scenario == "at least":
+                    unique_text = "Test Automation Drop Down At least Validation"
+                elif scenario == "at most":
+                    unique_text = "Test Automation Drop Down At most Validation"
+                elif scenario == "exactly":
+                    unique_text = "Test Automation Drop Down exactly Validation"
+                else:
+                    unique_text = "Test Automation Drop Down Validation"
+    
+                enter_text = self.wait.until(EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Enter your question here...']")))
+                highlight_element(self.driver, enter_text)
+                enter_text.click()
+                enter_text.send_keys(unique_text)
+
+            except Exception as e:
+                msg = f"Failed to Enter Drop Down Without Validation: {str(e)}"
+                allure.attach(msg, name="Drop Down without validation Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+
 
      
         
-    def select_at_least(self, at_least="3"):
+    def select_at_least(self, at_least="2"):
     
         with allure.step("Select Length"):
             try:
@@ -90,7 +112,7 @@ class QuestionnaireDropDownField:
                 allure.attach(msg, name = "At least Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def select_at_most(self, at_most="3"):
+    def select_at_most(self, at_most="2"):
     
         with allure.step("Select Length"):
             try:
@@ -114,7 +136,7 @@ class QuestionnaireDropDownField:
                 raise Exception(msg)
     
 
-    def select_exactly(self, exactly="3"):
+    def select_exactly(self, exactly="2"):
         
         with allure.step("Select Exactly"):
             try:

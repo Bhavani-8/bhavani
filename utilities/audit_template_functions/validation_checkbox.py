@@ -63,12 +63,33 @@ class QuestionnaireCheckboxField:
                 allure.attach(msg,name="Checkbox Section Validation Error",attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
+    def checkbox_sections(self, scenario=None):
+        with allure.step("Checkbox Section Question Validation"):
+            try:
+                if scenario == "at least":
+                    unique_text = "Test Automation Checkbox At least Validation"
+                elif scenario == "at most":
+                    unique_text = "Test Automation Checkbox At Most Validation"
+                elif scenario == "exactly":
+                    unique_text = "Test Automation Checkbox exactly Validation"
+                else:
+                    unique_text = "Test Automation TEXT Validation"
+    
+                enter_text = self.wait.until(EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Enter your question here...']")))
+                highlight_element(self.driver, enter_text)
+                enter_text.click()
+                enter_text.send_keys(unique_text)
+
+            except Exception as e:
+                msg = f"Failed to Enter Checkbox Without Validation: {str(e)}"
+                allure.attach(msg, name="Checkbox without validation Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
 
     
         
-    def select_at_least(self, at_least="3"):
+    def select_at_least(self, at_least="2"):
 
-         with allure.step("Select Length"):
+         with allure.step("Select At Least"):
             try:
                 at_least_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_type']")))
                 highlight_element(self.driver, at_least_dropdown)
@@ -89,9 +110,9 @@ class QuestionnaireCheckboxField:
                 allure.attach(msg, name = "At least Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def select_at_most(self, at_most="3"):
+    def select_at_most(self, at_most="2"):
     
-        with allure.step("Select Length"):
+        with allure.step("Select At Most"):
             try:
                 at_most_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_type']")))
                 highlight_element(self.driver, at_most_dropdown)
@@ -113,7 +134,7 @@ class QuestionnaireCheckboxField:
                 raise Exception(msg)
     
 
-    def select_exactly(self, exactly="3"):
+    def select_exactly(self, exactly="2"):
         
         with allure.step("Select Exactly"):
             try:

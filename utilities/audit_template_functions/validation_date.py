@@ -38,31 +38,28 @@ class QuestionnaireDateField:
                 allure.attach(msg,name="Date Section Validation Error",attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
+    def date_sections(self, scenario=None):
+        with allure.step("Date Section Question Validation"):
+            try:
+                if scenario == "past date":
+                    unique_text = "Test Automation Date Past date Validation"
+                elif scenario == "current date":
+                    unique_text = "Test Automation Date current date Validation"
+                elif scenario == "future date":
+                    unique_text = "Test Automation Date Future Date Validation"
+                else:
+                    unique_text = "Test Automation TEXT Validation"
+    
+                enter_text = self.wait.until(EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Enter your question here...']")))
+                highlight_element(self.driver, enter_text)
+                enter_text.click()
+                enter_text.send_keys(unique_text)
 
-    def date(self):
-        try:
-            unique_date = f"Test date: {random.randint(1000, 9999)}"
-            enter_date = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter checkbox option']")))
-            highlight_element(self.driver, enter_date)
-            enter_date.click()
-            enter_date.send_keys(unique_date)
-            time.sleep(1)
-
-            click_add_more = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[normalize-space()='Add More']")))
-            highlight_element(self.driver, click_add_more)
-            click_add_more.click()
-
-            unique_checkbox2 = f"Test Checkbox : {random.randint(1000, 9999)}"
-            enter_checkbox2 = self.wit.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter checkbox option']")))
-            highlight_element(self.driver, enter_checkbox2)
-            enter_checkbox2.click()
-            enter_checkbox2.send_keys(unique_checkbox2)
-            time.sleep(1)
-        except Exception as e:
-            msg = f"Failed to Enter Checkbox: {str(e)}"
-            allure.attach(msg,name="Enter Checbox Error",attachment_type=allure.attachment_type.TEXT)
-            raise Exception(msg)
-        
+            except Exception as e:
+                msg = f"Failed to Enter Date Validation: {str(e)}"
+                allure.attach(msg, name="Date validation Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+     
     def select_past_date(self):
 
          with allure.step("Select Past Date"):
