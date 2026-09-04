@@ -557,9 +557,9 @@ class CreateQuestionnaire:
                         elif field_type == "Price":
                             p = self.validation_price
                             self._run_single_validation(field_type, partial(p.price_section, "maximum value"), "Maximun value",
-                                p.select_value, p.select_max_char_count, p.error_message)
+                                p.select_value, p.select_max_value, p.error_message)
                             self._run_single_validation(field_type, partial(p.price_section, "minimum value"), "Minimum value",
-                                p.select_value, p.select_min_char_count, p.error_message)
+                                p.select_value, p.select_min_value, p.error_message)
                             self._run_single_validation(field_type, partial(p.price_section, "between"), "Between",
                                 p.select_value, p.select_between, fl.enter_from_to, p.error_message)
 

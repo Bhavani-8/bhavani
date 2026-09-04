@@ -270,13 +270,16 @@ class CreateChecklist:
     def checklist_document_file(self):
         with allure.step("Attach PDF Document File"):
             try:
+                
                 drag_document_file = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@type='file']")))
                 highlight_element(self.driver, drag_document_file)
                 # drag_document_file.click()
                 file_path = os.path.abspath(os.path.join("data", "dummy_use_file.pdf"))
                 drag_document_file.send_keys(file_path)
                 time.sleep(3)
-                expected_file = file_path
+                fetch_file = self.wait.until(EC.presence_of_element_located((By.XPATH, "//p[@class='text-xs text-gray-500 line-clamp-1 grow']")))
+                highlight_element(self.driver, fetch_file)
+                expected_file = fetch_file.text.strip()
                 allure.attach(expected_file,name="Entered Checklist Name",attachment_type=allure.attachment_type.TEXT)               
                 print(f"File Selected : {expected_file}")
                 return expected_file
@@ -568,7 +571,10 @@ class CreateChecklist:
                                                            
         with allure.step("Validate Reference Documents"):
             try:
-                ref_doc_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_file}']]//td[9]")))
+                ref_file = os.path.join("latest_data", "latest_question.txt")
+                with open(ref_file, "r") as f:
+                    created_ref_doc = f.read().strip()
+                ref_doc_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{created_ref_doc}']]//td[9]")))
                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", ref_doc_name)
                 highlight_element(self.driver, ref_doc_name)
                 ref_doc_name.click()

@@ -79,21 +79,21 @@ class QuestionnairePrice:
                 allure.attach(msg, name = "Select Length Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def select_max_char_count(self):
-        with allure.step("Select Maximum Character Count"):
+    def select_max_value(self):
+        with allure.step("Select Maximum Value"):
             try:
                 select_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
                 highlight_element(self.driver, select_dropdown)
                 select_dropdown.click()
                 time.sleep(1)
 
-                max_char_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Maximum Character Count']")))
-                highlight_element(self.driver, max_char_count)
-                max_char_count.click()
+                max_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Maximum value']")))
+                highlight_element(self.driver, max_value)
+                max_value.click()
 
-                enter_max_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
-                highlight_element(self.driver, enter_max_count)
-                enter_max_count.send_keys(100)
+                enter_max_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
+                highlight_element(self.driver, enter_max_value)
+                enter_max_value.send_keys(100)
                 
         
             except Exception as e:
@@ -101,21 +101,21 @@ class QuestionnairePrice:
                 allure.attach(msg, name = "Attach PDF Document File Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
         
-    def select_min_char_count(self):
-        with allure.step("Select Minimum Character Count"):
+    def select_min_value(self):
+        with allure.step("Select Minimum Value"):
             try:
                 select_dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@id='validation_option']")))
                 highlight_element(self.driver, select_dropdown)
                 select_dropdown.click()
                 time.sleep(1)
 
-                min_char_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Minimum Character Count']")))
-                highlight_element(self.driver, min_char_count)
-                min_char_count.click()
+                min_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[text()='Minimum value']")))
+                highlight_element(self.driver, min_value)
+                min_value.click()
 
-                enter_min_count = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
-                highlight_element(self.driver, enter_min_count)
-                enter_min_count.send_keys(50)
+                enter_min_value = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter value']")))
+                highlight_element(self.driver, enter_min_value)
+                enter_min_value.send_keys(50)
         
             except Exception as e:
                 msg = f"failed to Attach PDF Document File: {str(e)}"

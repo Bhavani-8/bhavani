@@ -464,7 +464,7 @@
         "compliance_history": "http://192.168.30.11:8081/compliance-history",
         "project_management": "http://192.168.30.11:8081/project-management",
         "updates": "http://192.168.30.11:8081/updates",
-        "trash": "http://192.168.30.11:8081/project-trash",
+        "trash": "http://192.168.30.11:8081/project-trash", 
         "settings": "http://192.168.30.11:8081/settings"
     },
 

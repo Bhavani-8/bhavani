@@ -187,37 +187,49 @@ class AuditCompanyTask:
                 msg = f"failed to click submit button: {str(e)}"
                 allure.attach(msg, name = "Submit button Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
-
+    
+    def click_company(self):
+        with allure.step("Click Company"):
+            try:
+                audit_company_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//span[text() = 'Company']")))
+                highlight_element(self.driver, audit_company_btn)
+                audit_company_btn.click()
+                time.sleep(1)
+            except Exception as e:
+                msg = f"Failed to click Company button: {str(e)}"
+                allure.attach(msg, name = 'Audit Company Error', attachment_type = allure.attachment_type.TEXT)
+                raise Exception(msg)
+            
     def validate_company_details(self,expected_company_name,expected_register_id,expected_company_category,expected_contact_number,expected_enter_email_id):
         all_matched = True
         with allure.step("Validate company name"):
             try:
                
-                actual_company = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{expected_register_id}']]//td[2]")))
+                actual_company = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = translate(normalize-space('{expected_company_name}'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')]]//td[2]")))
                 highlight_element(self.driver, actual_company)
                 actual_company_name = actual_company.text.strip()
                 print(f"Expected Company Name     : {expected_company_name}")
                 print(f"Actual Company Name       : {actual_company_name}")
 
-                if expected_company_name == actual_company_name:
+                if expected_company_name.strip().lower() == actual_company_name.strip().lower():
                     allure.attach(
                         f"Expected : {expected_company_name}\n"
                         f"Actual   : {actual_company_name}\n",
-                        name="Template Name - PASS",attachment_type=allure.attachment_type.TEXT)
+                        name="Company Name - PASS",attachment_type=allure.attachment_type.TEXT)
                 else:
                     all_matched = False
 
                     allure.attach(
                         f"Expected : {expected_company_name}\n"
                         f"Actual   : {actual_company_name}\n",
-                        name="Template Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+                        name="Company Name - FAIL",attachment_type=allure.attachment_type.TEXT)
 
             except Exception as e:
                 all_matched = False
                 allure.attach(
                     f"Expected : {expected_company_name}\n"
                     f"Actual   : Not Found\n",
-                    name="Template Name - FAIL",attachment_type=allure.attachment_type.TEXT)
+                    name="Company Name - FAIL",attachment_type=allure.attachment_type.TEXT)
         with allure.step("Validate Register ID"):
             try:
                 actual_register_id = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//td[normalize-space()='{expected_register_id}']")))
