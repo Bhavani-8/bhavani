@@ -25,6 +25,8 @@ from utilities.audit_assignment_functions.view_assign import AssignViewColumnHea
 from utilities.audit_template_functions.edit_template import EditTemplate
 from utilities.audit_template_functions.add_questionnaire import CreateQuestionnaire
 from utilities.audit_template_functions.checklist import CreateChecklist
+from utilities.audit_assignment_functions.assign_questionnaire import AssignQuestionnaireForm
+
 def audit_check(driver, module_name=None, task_details=None):
     wait = WebDriverWait(driver, 30)
 
@@ -281,6 +283,19 @@ def audit_check(driver, module_name=None, task_details=None):
                     return False
             except Exception as e:
                     allure.attach(str(e), name="Creating Questionnaire", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'add_assign_form':
+        with allure.step("Verify Assign Questionnaire"):
+            try:
+                add_assign_questionnaire = AssignQuestionnaireForm(driver, wait)
+                if add_assign_questionnaire .assign_question_form():
+                    print("✅ View Assigning Questionnaire successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Assigning Questionnaire",name="Creating Assigning Questionnaire Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Creating Assigning Questionnaire", attachment_type=allure.attachment_type.TEXT)
     
             
     else:
