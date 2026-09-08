@@ -131,6 +131,18 @@ class CreateChecklist:
             allure.attach(msg, name = "Submit Button Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg) 
 
+    def click_continue(self):
+        try:
+            continue_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Continue']")))
+            highlight_element(self.driver, continue_btn)
+            continue_btn.click()
+            time.sleep(1)
+
+        except Exception as e:
+            msg = f"failed to Click Continue Button: {str(e)}"
+            allure.attach(msg, name = "Continue Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+
     def click_c_button(self):
         with allure.step("Click Q Button"):
             try:
@@ -287,6 +299,7 @@ class CreateChecklist:
                 msg = f"failed to Attach PDF Document File: {str(e)}"
                 allure.attach(msg, name = "Attach PDF Document File Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
+        
     
     def apply_button(self):
         with allure.step("Click Apply Button"):
@@ -300,6 +313,18 @@ class CreateChecklist:
                 allure.attach(msg, name = "Apply button Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
+    def click_continue(self):
+        try:
+            continue_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Continue']")))
+            highlight_element(self.driver, continue_btn)
+            continue_btn.click()
+            time.sleep(1)
+
+        except Exception as e:
+            msg = f"failed to Click Continue Button: {str(e)}"
+            allure.attach(msg, name = "Continue Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg)
+
     def check_toast_msg(self):
         with allure.step("Verify Toast Message"):
             try:
@@ -308,7 +333,7 @@ class CreateChecklist:
                 toast_text = toast.text.strip()
                 allure.attach(toast_text,name="Toast Message Text",attachment_type=allure.attachment_type.TEXT)
                 print(f"Toast Message: {toast_text}")
-                time.sleep(6)
+                time.sleep(7)
 
             except Exception as e:
                 msg = f"Toast message not found: {str(e)}"
@@ -623,6 +648,7 @@ class CreateChecklist:
         self.click_add_section()
         expected_checklist_section = self.enter_question_name()
         self.submit_btn()
+        self.click_continue()
         self.click_c_button()
         expected_checkpoint_name = self.add_checklist_question()
         expected_severity = self.select_severity()
@@ -632,6 +658,7 @@ class CreateChecklist:
         expected_penalty = self.penalty()
         expected_file = self.checklist_document_file()
         self.apply_button()
+        self.click_continue()
         self.check_toast_msg()
         self.done_button()
         self.click_verify_checklist()

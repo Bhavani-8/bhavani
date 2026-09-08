@@ -181,9 +181,10 @@ def audit_check(driver, module_name=None, task_details=None):
                     allure.attach(str(e), name="View column headers name", attachment_type=allure.attachment_type.TEXT)
 
     if module_name == 'create_assignment':
+        head_of_auditor = task_details.get("head_of_auditor")
         with allure.step("Verify Assignment"):
             try:
-                create_assignment = CreateAssignment(driver, wait)
+                create_assignment = CreateAssignment(driver, wait, head_of_auditor)
                 if create_assignment.create_audit_assignment():
                     print("Create Assignment successful")
                     return True
@@ -285,9 +286,10 @@ def audit_check(driver, module_name=None, task_details=None):
                     allure.attach(str(e), name="Creating Questionnaire", attachment_type=allure.attachment_type.TEXT)
 
     if module_name == 'add_assign_form':
+        email_id = task_details.get("email_id")
         with allure.step("Verify Assign Questionnaire"):
             try:
-                add_assign_questionnaire = AssignQuestionnaireForm(driver, wait)
+                add_assign_questionnaire = AssignQuestionnaireForm(driver, wait, email_id)
                 if add_assign_questionnaire .assign_question_form():
                     print("✅ View Assigning Questionnaire successful")
                     return True

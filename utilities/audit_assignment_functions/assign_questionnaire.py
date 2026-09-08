@@ -10,7 +10,7 @@ from utilities.other_utils_functions.highlight import highlight_element
 
 class AssignQuestionnaireForm:
 
-    def __init__(self, driver, wait,email_id):
+    def __init__(self, driver, wait,  email_id):
         self.driver = driver
         self.wait = wait
         self.email_id = email_id
@@ -48,6 +48,7 @@ class AssignQuestionnaireForm:
                 audit_assignment_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//span[text() = 'Assignments']")))
                 highlight_element(self.driver, audit_assignment_btn)
                 audit_assignment_btn.click()
+                time.sleep(2)
             except Exception as e:
                 msg = f"Failed to click Assignment button: {str(e)}"
                 allure.attach(msg, name = 'Audit Assignment Error', attachment_type = allure.attachment_type.TEXT)
@@ -56,12 +57,13 @@ class AssignQuestionnaireForm:
     def click_questionnaire_btn(self):
         with allure.step("Click Questionnaire Button"):
             try:
-                latest_questionnaire = os.path.join("latest_data", "audit_company.txt")
+                latest_questionnaire = os.path.join("latest_data", "audit_file.txt")
                 with open(latest_questionnaire, "r") as f:
                     created_latest_questionnaire = f.read().strip()
-                questionnaire_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{created_latest_questionnaire})']]//td[6]")))
+                questionnaire_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{created_latest_questionnaire}']]//td[6]")))
                 highlight_element(self.driver, questionnaire_btn)
                 questionnaire_btn.click()
+                time.sleep(3)
             except Exception as e:
                 msg = f"Failed to click Questionnaire button: {str(e)}"
                 allure.attach(msg, name = 'Questionnaire Error', attachment_type = allure.attachment_type.TEXT)
@@ -73,6 +75,7 @@ class AssignQuestionnaireForm:
                 assign_questionnaire_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Assign Questionnaire']")))
                 highlight_element(self.driver, assign_questionnaire_btn)
                 assign_questionnaire_btn.click()
+                time.sleep(1)
             except Exception as e:
                 msg = f"Failed to click Assign Questionnaire button: {str(e)}"
                 allure.attach(msg, name = 'Assign Questionnaire Error', attachment_type = allure.attachment_type.TEXT)
@@ -94,7 +97,7 @@ class AssignQuestionnaireForm:
                 highlight_element(self.driver, enter_email)
                 enter_email.click()
                 enter_email.send_keys(self.email_id)
-
+                allure.attach(f"Entered Team Member Email: {self.email_id}",name='Enter Team Member',attachment_type=allure.attachment_type.TEXT)
             except Exception as e:
                 msg = f"Failed to Enter Email: {str(e)}"
                 allure.attach(msg, name = 'Email Error', attachment_type = allure.attachment_type.TEXT)
@@ -103,7 +106,7 @@ class AssignQuestionnaireForm:
             try:
                 fetch_name = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='subordinates.0.name']")))
                 highlight_element(self.driver, fetch_name)
-                self.assign_fetched_name =  fetch_name.get_attribute("value").strip
+                self.assign_fetched_name = fetch_name.get_attribute("value").strip()
                 print(f"Fetched name: {self.assign_fetched_name}")
 
             except Exception as e:
@@ -128,17 +131,18 @@ class AssignQuestionnaireForm:
                 select_form = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[@role='combobox']//span[normalize-space()='Select']")))
                 highlight_element(self.driver, select_form)
                 select_form.click()
+                time.sleep(0.5)
             except Exception as e:
                 msg = f"Failed to select Questionnaire Form: {str(e)}"
                 allure.attach(msg, name = 'Questionnaire Form Selection Error', attachment_type = allure.attachment_type.TEXT)
                 raise Exception(msg)
 
             try:
-                select_option = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//div[@role='option'][normalize-space()='{self.assign_fetched_name}']")))
+                select_option = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//*[@role='option']//*[normalize-space(text())='{self.assign_fetched_name}']")))
                 highlight_element(self.driver, select_option)
                 select_option.click()
             except Exception as e:
-                msg = f"Failed to select option '{self.fetched_name}' from Questionnaire Form: {str(e)}"
+                msg = f"Failed to select option '{self.assign_fetched_name}' from Questionnaire Form: {str(e)}"
                 allure.attach(msg, name='Option Selection Error', attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 

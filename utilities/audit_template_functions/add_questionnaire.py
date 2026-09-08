@@ -107,6 +107,7 @@ class CreateQuestionnaire:
                 questionnaire_file = os.path.join("latest_data", "latest_question.txt")
                 with open(questionnaire_file, "w") as f:
                     f.write(unique_questionnaire_name)
+                allure.attach(unique_questionnaire_name,name="Questionnaire Name",attachment_type=allure.attachment_type.TEXT)
             except Exception as e:
                 msg = f"failed to Enter Template name: {str(e)}"
                 allure.attach(msg, name = "Template name Error", attachment_type=allure.attachment_type.TEXT)
@@ -121,6 +122,18 @@ class CreateQuestionnaire:
         except Exception as e:
             msg = f"failed to Click Submit Button: {str(e)}"
             allure.attach(msg, name = "Submit Button Error", attachment_type=allure.attachment_type.TEXT)
+            raise Exception(msg) 
+
+    def click_continue(self):
+        try:
+            continue_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Continue']")))
+            highlight_element(self.driver, continue_btn)
+            continue_btn.click()
+            time.sleep(1)
+
+        except Exception as e:
+            msg = f"failed to Click Continue Button: {str(e)}"
+            allure.attach(msg, name = "Continue Button Error", attachment_type=allure.attachment_type.TEXT)
             raise Exception(msg) 
 
     def click_q_button(self):
@@ -294,6 +307,22 @@ class CreateQuestionnaire:
                 allure.attach(msg, name = "Apply button Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
 
+    def check_toast_msg(self):
+        with allure.step("Verify Toast Message"):
+            try:
+                toast = self.wait.until(EC.presence_of_element_located((By.XPATH, self.toast_msg)))
+                highlight_element(self.driver, toast)
+                toast_text = toast.text.strip()
+                allure.attach(toast_text,name="Toast Message Text",attachment_type=allure.attachment_type.TEXT)
+                print(f"Toast Message: {toast_text}")
+                time.sleep(7)
+
+            except Exception as e:
+                msg = f"Toast message not found: {str(e)}"
+                print(msg)
+                allure.attach(str(e), name="Toast message Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+
     def done_button(self):
         with allure.step("Click Done Button"):
             try:
@@ -330,6 +359,7 @@ class CreateQuestionnaire:
                     step()
 
                 self.apply_button()
+                self.click_continue()
                 time.sleep(1)
 
             except Exception as e:
@@ -414,6 +444,8 @@ class CreateQuestionnaire:
                             self.validation_drop_down.dropdown_options()
 
                         self.apply_button()
+                        self.click_continue()
+                        time.sleep(1)
 
                     except Exception as e:
                         msg = f"Failed processing without-validation field '{field_type}': {str(e)}"
@@ -576,6 +608,8 @@ class CreateQuestionnaire:
         self.click_add_section()
         self.enter_question_name()
         self.submit_btn()
+        self.click_continue()
         self.add_questions_for_all_field_types(field_types)
+        self.check_toast_msg()
         self.done_button()
         return True

@@ -69,7 +69,10 @@ class AuditBranchTask:
                 company_droprdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "(//button[@role='combobox'])[2]")))
                 company_droprdown.click()
                 time.sleep(2)
-                company_name = self.wait.until(EC.presence_of_element_located((By.XPATH, "(//div[contains(@class,'whitespace-normal')])[1]")))
+                company_file = os.path.join("latest_data", "audit_company.txt")
+                with open(company_file, "r") as f:
+                    created_company_name = f.read().strip()
+                company_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//div[contains(@class,'whitespace-normal') and translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = translate('{created_company_name}', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')]")))
                 highlight_element(self.driver, company_name)
                 company_name.click()
                 allure.attach(company_name.text, name='Company name', attachment_type=allure.attachment_type.TEXT)

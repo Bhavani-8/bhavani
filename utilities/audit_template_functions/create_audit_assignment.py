@@ -11,9 +11,10 @@ from selenium.webdriver.common.keys import Keys
 
 class CreateAssignment:
 
-    def __init__(self, driver, wait):
+    def __init__(self, driver, wait, head_of_auditor):
         self.driver = driver
         self.wait = wait
+        self.head_of_auditor = head_of_auditor
         self.load_locators()
 
     def load_locators(self):
@@ -91,6 +92,9 @@ class CreateAssignment:
                 highlight_element(self.driver, audit_name)
                 unique_audit_name = f"Audit Name {random.randint(1000, 9999)}"
                 audit_name.send_keys(unique_audit_name)
+                audit_file_name = os.path.join("latest_data", "audit_file.txt")
+                with open(audit_file_name, "w") as f:
+                    f.write(unique_audit_name) 
                 expected_audit_name = audit_name.get_attribute("value").strip()
                 print(f"Expected Audit: {expected_audit_name}")
                 allure.attach(expected_audit_name,name="Audit Name",attachment_type=allure.attachment_type.TEXT)
@@ -184,6 +188,7 @@ class CreateAssignment:
     def branch_manager_email(self):
         with allure.step("Fecth Branch manager email"):
             try:
+                time.sleep(0.5)
                 manager_email = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='manager_email']")))
                 self.scroll_to_element(manager_email)
                 expected_manager_email = manager_email.get_attribute("value").strip()
@@ -196,7 +201,7 @@ class CreateAssignment:
                 raise Exception(msg) 
             
     def branch_manager_name(self):
-        with allure.step("Fecth Branch manager email"):
+        with allure.step("Fecth Branch manager name"):
             try:
                 manager_name = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='manager_name']")))
                 self.scroll_to_element(manager_name)
@@ -210,13 +215,13 @@ class CreateAssignment:
                 raise Exception(msg) 
 
     def head_of_auditor_email(self):
-        with allure.step("Enter Email Id"):
+        with allure.step("Enter Head of Auditor Email"):
             try:
                 enter_email_id = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='auditor_email_id']")))
                 self.scroll_to_element(enter_email_id)
                 highlight_element(self.driver, enter_email_id)
-                unique_auditor_email = f"testhead{random.randint(100, 999)}@gmail.com" 
-                enter_email_id.send_keys(unique_auditor_email)
+                # unique_auditor_email = f"testhead{random.randint(100, 999)}@gmail.com" 
+                enter_email_id.send_keys(self.head_of_auditor)
                 expected_enter_email_id = enter_email_id.get_attribute("value").strip()
                 print(f"Expected Email ID: {expected_enter_email_id}")
                 allure.attach(expected_enter_email_id, name='Email Id', attachment_type=allure.attachment_type.TEXT)
@@ -231,8 +236,7 @@ class CreateAssignment:
             try:
                 enter_name = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='auditor_name']")))
                 highlight_element(self.driver, enter_name)
-                unique_auditor_name = f"Audit Name {random.randint(1000, 9999)}"
-                enter_name.send_keys(unique_auditor_name)
+                
                 expected_auditor_name = enter_name.get_attribute("value").strip()
                 print(f"Expected Enter name: {expected_auditor_name}")
                 allure.attach(expected_auditor_name, name='Auditor name', attachment_type=allure.attachment_type.TEXT)
@@ -245,11 +249,11 @@ class CreateAssignment:
     def click_contact_number(self):
         with allure.step("Enter Contact Number"):
             try:
-                unique_contact_number = f"987{random.randint(1000000, 9999999)}"
+                # unique_contact_number = f"987{random.randint(1000000, 9999999)}"
                 contact_number = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter mobile number']")))
                 self.scroll_to_element(contact_number)
                 highlight_element(self.driver, contact_number)
-                contact_number.send_keys(unique_contact_number)
+                # contact_number.send_keys(unique_contact_number)
                 expected_contact_number = contact_number.get_attribute("value").strip() 
                 print(f"Expected Contact  :{expected_contact_number}")
                 allure.attach(expected_contact_number,name="Contact Number",attachment_type=allure.attachment_type.TEXT)
