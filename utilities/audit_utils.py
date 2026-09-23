@@ -26,6 +26,10 @@ from utilities.audit_template_functions.edit_template import EditTemplate
 from utilities.audit_template_functions.add_questionnaire import CreateQuestionnaire
 from utilities.audit_template_functions.checklist import CreateChecklist
 from utilities.audit_assignment_functions.assign_questionnaire import AssignQuestionnaireForm
+from utilities.audit_assignment_functions.assign_checklist import AssignChecklistForm
+from utilities.audit_dashboard.dash_audit_export import DashAuditExportData
+from utilities.audit_dashboard.dash_audit_search import DashSearchAuditTask
+from utilities.audit_dashboard.dash_audit_view import DashViewColumnHeaders
 
 def audit_check(driver, module_name=None, task_details=None):
     wait = WebDriverWait(driver, 30)
@@ -180,20 +184,94 @@ def audit_check(driver, module_name=None, task_details=None):
             except Exception as e:
                     allure.attach(str(e), name="View column headers name", attachment_type=allure.attachment_type.TEXT)
 
-    if module_name == 'create_assignment':
+    if module_name == 'show_audit_assignment':
         head_of_auditor = task_details.get("head_of_auditor")
         with allure.step("Verify Assignment"):
             try:
                 create_assignment = CreateAssignment(driver, wait, head_of_auditor)
-                if create_assignment.create_audit_assignment():
-                    print("Create Assignment successful")
+                if create_assignment.create_audit_assignment(show_checklist=True):
+                    print("Create Assignment - Show Checklist successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Create Assignment",name="Create Assignment Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Show Checklist to Auditee",name="Show Checklist Validation Failed",attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
                     allure.attach(str(e), name="Create Assignment", attachment_type=allure.attachment_type.TEXT)
 
+    if module_name == 'show_assign_questionnaire':
+        email_id = task_details.get("email_id")
+        with allure.step("Verify Assign Questionnaire"):
+            try:
+                add_assign_questionnaire = AssignQuestionnaireForm(driver, wait, email_id)
+                if add_assign_questionnaire.assign_question_form():
+                    print("✅ View Assigning Questionnaire successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Assigning Questionnaire",name="Creating Assigning Questionnaire Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Creating Assigning Questionnaire", attachment_type=allure.attachment_type.TEXT)
+    
+    if module_name == 'show_assign_checklist':
+        email_head = task_details.get("email_head")
+        email_subauditee1 = task_details.get("email_subauditee1")
+        email_subauditee2 = task_details.get("email_subauditee2")
+        with allure.step("Verify Assign Checklist"):
+            try:
+                add_assign_checklist = AssignChecklistForm(driver, wait, email_head, email_subauditee1, email_subauditee2)
+                if add_assign_checklist.assign_checklist_form():
+                    print("✅ View Assigning Checklist successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Assigning Questionnaire",name="Creating Assigning Questionnaire Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Creating Assigning Questionnaire", attachment_type=allure.attachment_type.TEXT)
+                                
+    if module_name == 'not_show_audit_assignment':
+        head_of_auditor = task_details.get("head_of_auditor")
+        with allure.step("Verify Assignment"):
+            try:
+                create_assignment = CreateAssignment(driver, wait, head_of_auditor)
+                if create_assignment.create_audit_assignment(show_checklist=False):
+                    print("Create Assignment - Not Show Checklist successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Not Show Checklist to Auditee",name="Not Show Checklist to Auditee Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Create Assignment", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'not_show_assign_questionnaire':
+        email_id = task_details.get("email_id")
+        with allure.step("Verify Assign Questionnaire"):
+            try:
+                add_assign_questionnaire = AssignQuestionnaireForm(driver, wait, email_id)
+                if add_assign_questionnaire.assign_question_form():
+                    print("✅ View Assigning Questionnaire successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Assigning Questionnaire",name="Creating Assigning Questionnaire Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Creating Assigning Questionnaire", attachment_type=allure.attachment_type.TEXT)
+    
+    if module_name == 'not_show_assign_checklist':
+        email_head = task_details.get("email_head")
+        email_subauditee1 = task_details.get("email_subauditee1")
+        email_subauditee2 = task_details.get("email_subauditee2")
+        with allure.step("Verify Assign Checklist"):
+            try:
+                add_assign_checklist = AssignChecklistForm(driver, wait, email_head, email_subauditee1, email_subauditee2)
+                if add_assign_checklist.assign_checklist_form():
+                    print("✅ View Assigning Checklist successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Assigning Questionnaire",name="Creating Assigning Questionnaire Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                allure.attach(str(e), name="Creating Assigning Questionnaire", attachment_type=allure.attachment_type.TEXT)
+                            
     if module_name == 'edit_company_name':
         with allure.step("Verify Edit Company"):
             try:
@@ -285,21 +363,47 @@ def audit_check(driver, module_name=None, task_details=None):
             except Exception as e:
                     allure.attach(str(e), name="Creating Questionnaire", attachment_type=allure.attachment_type.TEXT)
 
-    if module_name == 'add_assign_form':
-        email_id = task_details.get("email_id")
-        with allure.step("Verify Assign Questionnaire"):
+    
+    
+    if module_name == 'dash_audit_export_data':
+        with allure.step("Verify Dashboard Audit Export Data"):
             try:
-                add_assign_questionnaire = AssignQuestionnaireForm(driver, wait, email_id)
-                if add_assign_questionnaire .assign_question_form():
-                    print("✅ View Assigning Questionnaire successful")
+                dash_audit_export = DashAuditExportData(driver, wait)
+                if dash_audit_export.dash_audit_export_data():
+                    print("✅ View Audit Export Data successful")
                     return True
                 else:
-                    allure.attach("Test case failed for Assigning Questionnaire",name="Creating Assigning Questionnaire Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    allure.attach("Test case failed for Audit Export Data",name="Creating Audit Export Data Validation Failed",attachment_type=allure.attachment_type.TEXT)
                     return False
             except Exception as e:
-                    allure.attach(str(e), name="Creating Assigning Questionnaire", attachment_type=allure.attachment_type.TEXT)
-    
-            
+                    allure.attach(str(e), name="Creating Audit Export Data", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'dash_search_audit_task':
+        with allure.step("Verify Dashboard Search Audit Task"):
+            try:
+                dash_search_audit_task = DashSearchAuditTask(driver, wait)
+                if dash_search_audit_task.dash_search_audit_task():
+                    print("✅ View Search Audit Task successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Search Audit Task",name="Creating Search Audit Task Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Creating Search Audit Task", attachment_type=allure.attachment_type.TEXT)
+
+    if module_name == 'dash_view_column_headers':
+        with allure.step("Verify Dashboard View Column Headers"):
+            try:
+                dash_column_headers = DashViewColumnHeaders(driver, wait)
+                if dash_column_headers.dash_view_column_headers():
+                    print("✅ View Search Audit Task successful")
+                    return True
+                else:
+                    allure.attach("Test case failed for Search Audit Task",name="Creating Search Audit Task Validation Failed",attachment_type=allure.attachment_type.TEXT)
+                    return False
+            except Exception as e:
+                    allure.attach(str(e), name="Creating Search Audit Task", attachment_type=allure.attachment_type.TEXT)
+                     
     else:
         msg = f"❌ Unknown module name: {module_name}"
         allure.attach(msg,name="Unknown Module Error",attachment_type=allure.attachment_type.TEXT)

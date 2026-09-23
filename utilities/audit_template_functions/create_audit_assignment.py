@@ -85,12 +85,15 @@ class CreateAssignment:
                 allure.attach(msg, name = 'Assign Template Error', attachment_type = allure.attachment_type.TEXT)
                 raise Exception(msg)
 
-    def enter_audit_name(self):
+    def enter_audit_name(self, show_checklist):
         with allure.step("Enter Template Details"):
             try:
                 audit_name = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter name']")))
                 highlight_element(self.driver, audit_name)
-                unique_audit_name = f"Audit Name {random.randint(1000, 9999)}"
+                if show_checklist:
+                    unique_audit_name = f"Show Checklist to Auditee {random.randint(100, 999)}"
+                else:
+                    unique_audit_name = f"Not Show Checklist to Auditee {random.randint(100, 999)}"
                 audit_name.send_keys(unique_audit_name)
                 audit_file_name = os.path.join("latest_data", "audit_file.txt")
                 with open(audit_file_name, "w") as f:
@@ -260,7 +263,28 @@ class CreateAssignment:
                 return expected_contact_number
             except Exception as e:
                 msg = f"failed to Enter Mobile Number : {str(e)}"
-                allure.attach(msg, name = "Moible number Error", attachment_type=allure.attachment_type.TEXT)
+                allure.attach(msg, name = "Mobile number Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+
+    def click_checkbox(self, show_checklist):
+
+        with allure.step("Check checkbox"):
+            try:
+                checkbox = self.wait.until(EC.presence_of_element_located((By.XPATH, "//span[@data-slot='checkbox']")))
+                highlight_element(self.driver, checkbox)
+
+                if show_checklist:
+                    checkbox.click()
+                    print("Show Checklist to Auditee: Checkbox selected")
+                    allure.attach("Checkbox clicked - Show Checklist to Auditee",name="Checkbox Status",attachment_type=allure.attachment_type.TEXT)
+                else:
+                    print("Not Show Checklist to Auditee: Checkbox not selected")
+                    allure.attach("Checkbox not clicked - Not Show Checklist to Auditee",name="Checkbox Status",attachment_type=allure.attachment_type.TEXT)
+                time.sleep(0.5)
+
+            except Exception as e:
+                msg = f"Failed to click checkbox: {str(e)}"
+                allure.attach(msg,name="Checkbox Error",attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
     
     def click_save_button(self):
@@ -352,13 +376,25 @@ class CreateAssignment:
 
         assert all_matched, "Assignment validation failed"
 
-    def create_audit_assignment(self):
+    def click_submit(self):
+        with allure.step("Click Submit Button"):
+            try:
+                submit_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[text()='Submit']")))
+                highlight_element(self.driver, submit_btn)
+                submit_btn.click()
+            except Exception as e:
+                msg = f"failed to click Submit button : {str(e)}"
+                allure.attach(msg, name = "Submit Error", attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)
+
+    def create_audit_assignment(self, show_checklist):
+       
         self.click_audit()
         self.template_btn()
         self.click_assignment_btn()
 
         expected_template_name = self.fetch_audit_template()
-        expected_audit_name = self.enter_audit_name()
+        expected_audit_name = self.enter_audit_name(show_checklist)
 
         self.enter_start_date()
 
@@ -369,6 +405,7 @@ class CreateAssignment:
         self.head_of_auditor_email()
         expected_auditor_name = self.head_of_auditor_name()
         self.click_contact_number()
+        self.click_checkbox(show_checklist)
         self.click_save_button()
 
         self.validate_assignment_details(
@@ -379,7 +416,7 @@ class CreateAssignment:
             expected_auditor_name,
             expected_location_name,
         )
+        self.click_submit()
 
         return True
 
-                
