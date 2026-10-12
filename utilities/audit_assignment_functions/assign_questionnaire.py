@@ -11,10 +11,12 @@ from utilities.login_utils import login_check
 
 class AssignQuestionnaireForm:
 
-    def __init__(self, driver, wait,  email_id):
+    def __init__(self, driver, wait,  email_id, tm_user, tm_pswd):
         self.driver = driver
         self.wait = wait
         self.email_id = email_id
+        self.tm_user = tm_user
+        self.tm_pswd = tm_pswd
         self.load_locators()
 
     def load_locators(self):
@@ -22,7 +24,8 @@ class AssignQuestionnaireForm:
             with open(os.path.join("data", "locators.json"), "r") as f:
                 locators = json.load(f)
             self.audit_icon = locators["audit_icon"]
-
+            self.logout_icon = locators["logout_icon"]
+            self.settings_icon = locators["settings_icon"]
         except FileNotFoundError as e:
             allure.attach(str(e),name="Locators File Missing",attachment_type=allure.attachment_type.TEXT)
             raise
@@ -137,7 +140,6 @@ class AssignQuestionnaireForm:
                 msg = f"Failed to select Questionnaire Form: {str(e)}"
                 allure.attach(msg, name = 'Questionnaire Form Selection Error', attachment_type = allure.attachment_type.TEXT)
                 raise Exception(msg)
-
             try:
                 select_option = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//*[@role='option']//*[normalize-space(text())='{self.assign_fetched_name}']")))
                 highlight_element(self.driver, select_option)
@@ -172,16 +174,30 @@ class AssignQuestionnaireForm:
                 print(f"Expected : {expected_value}") 
                 print(f"Actual : {actual_value}") 
                 if expected_value.strip().lower() == actual_value.strip().lower(): 
-                    allure.attach( f"Expected : {expected_value}\n" f"Actual : {actual_value}", name="Assign To - PASS", attachment_type=allure.attachment_type.TEXT ) 
-                    return True 
+                    allure.attach(f"Expected : {expected_value}\n" f"Actual : {actual_value}", name="Assign To - PASS", attachment_type=allure.attachment_type.TEXT) 
+                    # return True 
                 else:
-                    allure.attach( f"Expected : {expected_value}\n" f"Actual : {actual_value}", name="Assign To - FAIL", attachment_type=allure.attachment_type.TEXT ) 
-                    raise AssertionError( f"Assign To mismatch: " f"Expected '{expected_value}', " f"Actual '{actual_value}'" )
+                    allure.attach(f"Expected : {expected_value}\n" f"Actual : {actual_value}", name="Assign To - FAIL", attachment_type=allure.attachment_type.TEXT) 
+                    raise AssertionError(f"Assign To mismatch: " f"Expected '{expected_value}', " f"Actual '{actual_value}'")
         except Exception as e: 
-            allure.attach( str(e), name="Verify Assign To Error", attachment_type=allure.attachment_type.TEXT ) 
+            allure.attach(str(e), name="Verify Assign To Error", attachment_type=allure.attachment_type.TEXT ) 
             raise
 
-    def click_logout(self, tm_user, tm_pwd,):
+    def click_settings(self):
+        with allure.step("Verify User name"):
+            try:
+                settings_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, self.settings_icon)))
+                highlight_element(self.driver, settings_btn)
+                settings_btn.click()
+                fetch_user_name = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@id='full_name']")))
+                highlight_element(self.driver, fetch_user_name)
+                self.fetch_user_name = fetch_user_name.get_attribute("value").strip()
+            except Exception as e:
+                msg = f"Failed to fetch user name: {str(e)}"
+                allure.attach(msg, name='Fetch User Name Error', attachment_type=allure.attachment_type.TEXT)
+                raise Exception(msg)  
+
+    def click_logout(self):
         with allure.step("Logout from application"):
             try:
                 logout_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, self.logout_icon)))
@@ -197,13 +213,15 @@ class AssignQuestionnaireForm:
         with allure.step("Login again with same credentials"):
             try:
                 # driver.get("http://192.168.30.11:8081/login") 
-                login_check(self.driver, waittime=30, trial=1, username=tm_user, password=tm_pwd) 
+                login_check(self.driver, waittime=30, trial=1, username=self.tm_user, password=self.tm_pswd) 
                 time.sleep(1.5)
+                self.driver.refresh()
+                time.sleep(1)
             except Exception as e:
                 print(f"❌ Logout failed: {e}")
                 return False
 
-    def click_audit(self):
+    def click_audit_btn(self):
         with allure.step("Click Audit Tab"):
             try:
                 audit_btn = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, '_tab_') and text()='Audit']")))
@@ -213,8 +231,26 @@ class AssignQuestionnaireForm:
                 msg = f"Failed to click Audit Tab: {str(e)}"
                 allure.attach(msg, name = "Audit Tab Error", attachment_type = allure.attachment_type.TEXT)
                 raise Exception(msg)
-    
-    
+
+    def verify_dash_assign_name(self):
+        with allure.step("Fetch Assign name in Dashboard"):
+            try:
+                latest_assign_name = os.path.join("latest_data", "audit_file.txt")
+                with open(latest_assign_name, "r") as f:
+                    created_latest_assign_name = f.read().strip()
+                fetch_assign_name = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{created_latest_assign_name}']]//td[6]")))
+                highlight_element(self.driver, fetch_assign_name)
+                actual_assign_name = fetch_assign_name.text.strip()
+                expected_assign_name = self.fetch_user_name
+                if expected_assign_name.strip().lower() == actual_assign_name.strip().lower():
+                    allure.attach(f"Expected : {expected_assign_name}\n" f"Actual : {actual_assign_name}", name="Assign Name - PASS", attachment_type=allure.attachment_type.TEXT)
+                    return True 
+                else:
+                    allure.attach(f"Expected : {expected_assign_name}\n" f"Actual : {actual_assign_name}", name="Assign To - FAIL", attachment_type=allure.attachment_type.TEXT) 
+                    raise AssertionError(f"Assign To mismatch: " f"Expected '{expected_assign_name}', " f"Actual '{actual_assign_name}'")
+            except Exception as e: 
+                allure.attach(str(e), name="Verify Assign To Error", attachment_type=allure.attachment_type.TEXT ) 
+                raise
 
     def assign_question_form(self):
         self.click_audit()
@@ -224,7 +260,10 @@ class AssignQuestionnaireForm:
         self.new_member()
         self.select_questionnaire_form()
         self.verify_assign_to()
-        self.click_audit()
+        self.click_settings()
+        self.click_logout()
+        self.click_audit_btn()
+        self.verify_dash_assign_name()
 
         return True
 

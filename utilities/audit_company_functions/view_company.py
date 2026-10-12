@@ -170,7 +170,7 @@ class ViewColumnHeaders:
 
    
         
-    def view_column_headers(self):
+    def company_column_headers(self):
         self.click_audit()
         self.click_company()
         self.view_filter()

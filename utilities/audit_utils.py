@@ -79,9 +79,10 @@ def audit_check(driver, module_name=None, task_details=None):
                  allure.attach(str(e), name="Audit Company details", attachment_type=allure.attachment_type.TEXT)
 
     if module_name == 'audit_branch':
+        email_id = task_details.get("email_id")
         with allure.step("Verify Audit Branch"):
             try:
-                audit_branch_task = AuditBranchTask(driver, wait)
+                audit_branch_task = AuditBranchTask(driver, wait, email_id)
                 if audit_branch_task.audit_branch():
                     print("✅ Audit Branch details successful")
                     return True
@@ -118,11 +119,11 @@ def audit_check(driver, module_name=None, task_details=None):
             except Exception as e:
                     allure.attach(str(e), name="Search company name", attachment_type=allure.attachment_type.TEXT)
 
-    if module_name == 'view_column_headers':
+    if module_name == 'company_column_headers':
         with allure.step("Verify Column Headers"):
             try:
                 view_column_header = ViewColumnHeaders(driver, wait)
-                if view_column_header.view_column_headers():
+                if view_column_header.company_column_headers():
                     print("✅ View column headers name successful")
                     return True
                 else:
@@ -200,9 +201,11 @@ def audit_check(driver, module_name=None, task_details=None):
 
     if module_name == 'show_assign_questionnaire':
         email_id = task_details.get("email_id")
+        tm_user = task_details.get("tm_user")
+        tm_pswd = task_details.get("tm_pswd")
         with allure.step("Verify Assign Questionnaire"):
             try:
-                add_assign_questionnaire = AssignQuestionnaireForm(driver, wait, email_id)
+                add_assign_questionnaire = AssignQuestionnaireForm(driver, wait, email_id, tm_user, tm_pswd)
                 if add_assign_questionnaire.assign_question_form():
                     print("✅ View Assigning Questionnaire successful")
                     return True
@@ -216,9 +219,11 @@ def audit_check(driver, module_name=None, task_details=None):
         email_head = task_details.get("email_head")
         email_subauditee1 = task_details.get("email_subauditee1")
         email_subauditee2 = task_details.get("email_subauditee2")
+        tm_user = task_details.get("tm_user")
+        tm_pswd = task_details.get("tm_pswd")
         with allure.step("Verify Assign Checklist"):
             try:
-                add_assign_checklist = AssignChecklistForm(driver, wait, email_head, email_subauditee1, email_subauditee2)
+                add_assign_checklist = AssignChecklistForm(driver, wait, email_head, email_subauditee1, email_subauditee2, tm_user, tm_pswd)
                 if add_assign_checklist.assign_checklist_form():
                     print("✅ View Assigning Checklist successful")
                     return True

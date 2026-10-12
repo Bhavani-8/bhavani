@@ -10,9 +10,10 @@ from utilities.other_utils_functions.highlight import highlight_element
 
 class AuditBranchTask:
 
-    def __init__(self, driver, wait):
+    def __init__(self, driver, wait, email_id):
         self.driver = driver
         self.wait = wait
+        self.email_id = email_id
         self.load_locators()
 
     def load_locators(self):
@@ -139,10 +140,10 @@ class AuditBranchTask:
     def manager_email(self):
         with allure.step("Enter Email Id"):
             try:
-                branch_manager_email = f"branchmanager{random.randint(100, 999)}@gmail.com"
+                
                 manager_email = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter Email']")))
                 highlight_element(self.driver, manager_email)
-                manager_email.send_keys(branch_manager_email)
+                manager_email.send_keys(self.email_id)
                 allure.attach(manager_email.get_attribute("value"), name='Branch Manager Email', attachment_type=allure.attachment_type.TEXT)
             except Exception as e:
                 msg = f"failed to Enter Branch Manager Email: {str(e)}"
@@ -152,11 +153,10 @@ class AuditBranchTask:
     def manager_name(self):
         with allure.step("Enter Manager name"):
             try:
-                branch_manager_name = f"Audit Manager {random.randint(100, 999)}"
                 manager_name = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='manager_name']")))
                 highlight_element(self.driver, manager_name)
-                manager_name.send_keys(branch_manager_name)
-                allure.attach(manager_name.get_attribute("value"),name="Address Line1",attachment_type=allure.attachment_type.TEXT)
+                fetch_manager_name = manager_name.get_attribute("value").strip()
+                allure.attach(fetch_manager_name,name="Address Line1",attachment_type=allure.attachment_type.TEXT)
             except Exception as e:
                 msg = f"failed to Enter Address Line1: {str(e)}"
                 allure.attach(msg, name = "Address Line1 Error", attachment_type=allure.attachment_type.TEXT)
@@ -165,11 +165,10 @@ class AuditBranchTask:
     def contact_number(self):
         with allure.step("Enter Contact Number"):
             try:
-                unique_contact_number = f"987{random.randint(1000000, 9999999)}"
                 contact_number = self.wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Enter Mobile No']")))
                 highlight_element(self.driver, contact_number)
-                contact_number.send_keys(unique_contact_number)
-                allure.attach(unique_contact_number,name="Contact Number",attachment_type=allure.attachment_type.TEXT)
+                fetch_contact_number = contact_number.get_attribute("value").strip()
+                allure.attach(fetch_contact_number,name="Contact Number",attachment_type=allure.attachment_type.TEXT)
             except Exception as e:
                 msg = f"failed to Enter Mobile Number : {str(e)}"
                 allure.attach(msg, name = "Moible number Error", attachment_type=allure.attachment_type.TEXT)
@@ -186,6 +185,32 @@ class AuditBranchTask:
                 msg = f"failed to Select Company Category: {str(e)}"
                 allure.attach(msg, name = "Company Category Error", attachment_type=allure.attachment_type.TEXT)
                 raise Exception(msg)
+
+    def click_branch_action(self):
+        with allure.step("Click Branch Action"):
+            try:
+                latest_assign_name = os.path.join("latest_data", "audit_company.txt")
+                with open(latest_assign_name, "r") as f:
+                    created_latest_assign_name = f.read().strip()
+                branch_action = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{created_latest_assign_name}']]//button//span")))
+                highlight_element(self.driver, branch_action)
+                branch_action.click()
+            except Exception as e: 
+                allure.attach(str(e), name="Verify Assign To Error", attachment_type=allure.attachment_type.TEXT ) 
+                raise
+
+    def verify_branch_details(self):
+        with allure.step("Fetch Branch Details"):
+            try:
+                latest_assign_name = os.path.join("latest_data", "audit_company.txt")
+                with open(latest_assign_name, "r") as f:
+                    created_latest_assign_name = f.read().strip()
+                branch_action = self.wait.until(EC.presence_of_element_located((By.XPATH, f"//tr[.//td[normalize-space()='{created_latest_assign_name}']]//button//span")))
+                highlight_element(self.driver, branch_action)
+                branch_action.click()
+            except Exception as e: 
+                allure.attach(str(e), name="Verify Assign To Error", attachment_type=allure.attachment_type.TEXT ) 
+                raise
     
 
    
